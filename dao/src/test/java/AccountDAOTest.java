@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -29,7 +30,7 @@ public class AccountDAOTest {
             String password = properties.getProperty("database.password");
             this.connection = DriverManager.getConnection(url, user, password);
             this.connection.setAutoCommit(false);
-            ScriptRunner runner = new ScriptRunner(connection, true, true);
+            ScriptRunnerUtil runner = new ScriptRunnerUtil(connection, true, true);
             runner.runScript(new BufferedReader(new FileReader("D:/Java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
             runner.runScript(new BufferedReader(new FileReader("D:/Java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
         } catch (IOException | SQLException e) {
@@ -40,8 +41,8 @@ public class AccountDAOTest {
 
     @After
     public void terminateTables() {
-        try {
-            this.connection.createStatement().execute("DROP TABLE accounts, account_info, groups, account_in_group");
+        try (Statement statement = this.connection.createStatement()) {
+            statement.execute("DROP TABLE accounts, account_info, groups, account_in_group");
         } catch (SQLException e) {
             e.printStackTrace();
         }

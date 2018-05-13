@@ -22,15 +22,16 @@ public class GroupDAO {
     private static final String DELETE_FROM_ACCOUNT_IN_GROUP = "DELETE FROM account_in_group WHERE account_id = ? AND group_id = ?";
     private static final String INSERT_INTO_GROUPS = "INSERT INTO groups (name, info, account_id_admin) VALUES(?, ?, ?)";
     private static final String DELETE_FROM_GROUPS = "DELETE FROM groups WHERE group_id = ?";
+    private static final String COLUMN_GROUP_ID = "group_id";
 
     private Connection connection;
 
     public GroupDAO() {
-        DBConnect DBConnect = new DBConnect();
-        if (DBConnect.getConnection() == null) {
-            DBConnect.createConnection();
+        DBConnect DbConnect = new DBConnect();
+        if (DbConnect.getConnection() == null) {
+            DbConnect.createConnection();
         }
-        connection = DBConnect.getConnection();
+        connection = DbConnect.getConnection();
     }
 
     public GroupDAO(Connection connection) {
@@ -40,12 +41,13 @@ public class GroupDAO {
     public boolean create(int accountIdAdmin, String groupName, String info) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_GROUP_BY_NAME)) {
             preparedStatement.setString(1, groupName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
-                insertRowGroup(accountIdAdmin, groupName, info);
-                return true;
-            } else {
-                throw new DaoException("Group name \"" + groupName + "\" is already used.");
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                if (!resultSet.next()) {
+                    insertRowGroup(accountIdAdmin, groupName, info);
+                    return true;
+                } else {
+                    throw new DaoException("Group name \"" + groupName + "\" is already used.");
+                }
             }
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -53,7 +55,7 @@ public class GroupDAO {
     }
 
 
-    public Group get(int id) {
+    public Group get(int id) throws DaoException {
         try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SELECT_GROUP_BY_ID);
              PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_ACCOUNT_ID_FROM_ACCOUNT_IN_GROUP)) {
             preparedStatementGroup.setInt(1, id);
@@ -66,17 +68,16 @@ public class GroupDAO {
             }
             return null;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DaoException(e);
         }
-        return null;
     }
 
-    public List<Group> getAll() {
+    public List<Group> getAll() throws DaoException {
         try (ResultSet resultSetGroups = this.connection.createStatement().executeQuery(SELECT_ALL_GROUPS)) {
             List<Group> groups = new ArrayList<>();
             while (resultSetGroups.next()) {
                 try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_ACCOUNT_ID_FROM_ACCOUNT_IN_GROUP)) {
-                    preparedStatement.setInt(1, resultSetGroups.getInt("group_id"));
+                    preparedStatement.setInt(1, resultSetGroups.getInt(COLUMN_GROUP_ID));
                     try (ResultSet resultSetMembers = preparedStatement.executeQuery()) {
                         groups.add(createGroupFromResult(resultSetGroups, resultSetMembers));
                     }
@@ -84,12 +85,11 @@ public class GroupDAO {
             }
             return groups;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new DaoException(e);
         }
     }
 
-    public boolean update(Group group) {
+    public boolean update(Group group) throws DaoException {
         int id = group.getId();
         String name = group.getName();
         if (name != null) {
@@ -98,8 +98,7 @@ public class GroupDAO {
                 preparedStatement.setInt(2, id);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
+                throw new DaoException(e);
             }
         }
         String info = group.getInfo();
@@ -109,8 +108,7 @@ public class GroupDAO {
                 preparedStatement.setInt(2, id);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
+                throw new DaoException(e);
             }
         }
         int accountIdAdmin = group.getAccountIdAdmin();
@@ -118,9 +116,10 @@ public class GroupDAO {
             int currentIdAdmin = 0;
             try (PreparedStatement preparedStatementSelect = this.connection.prepareStatement(SELECT_ACCOUNT_ID_ADMIN_FROM_GROUPS)) {
                 preparedStatementSelect.setInt(1, id);
-                ResultSet resultSet = preparedStatementSelect.executeQuery();
-                if (resultSet.next()) {
-                    currentIdAdmin = resultSet.getInt("account_id_admin");
+                try (ResultSet resultSet = preparedStatementSelect.executeQuery()) {
+                    if (resultSet.next()) {
+                        currentIdAdmin = resultSet.getInt("account_id_admin");
+                    }
                 }
                 try (PreparedStatement preparedStatementUpdate1 = this.connection.prepareStatement(UPDATE_GROUPS_SET_ACCOUNT_ID_ADMIN)) {
                     preparedStatementUpdate1.setInt(1, accountIdAdmin);
@@ -134,20 +133,18 @@ public class GroupDAO {
                     preparedStatementUpdate2.executeUpdate();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
+                throw new DaoException(e);
             }
         }
         try {
             this.connection.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 
-    public boolean addMemberToGroup(int idGroup, int idNewMember) {
+    public boolean addMemberToGroup(int idGroup, int idNewMember) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_INTO_ACCOUNT_IN_GROUP)) {
             preparedStatement.setInt(1, idNewMember);
             preparedStatement.setInt(2, idGroup);
@@ -155,12 +152,11 @@ public class GroupDAO {
             this.connection.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 
-    public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
+    public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(DELETE_FROM_ACCOUNT_IN_GROUP)) {
             preparedStatement.setInt(1, idMemberToDelete);
             preparedStatement.setInt(2, idGroup);
@@ -168,24 +164,22 @@ public class GroupDAO {
             this.connection.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 
-    public boolean removeGroup(int idGroup) {
+    public boolean removeGroup(int idGroup) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(DELETE_FROM_GROUPS)) {
             preparedStatement.setInt(1, idGroup);
             preparedStatement.executeUpdate();
             this.connection.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 
-    private boolean insertRowGroup(int accountIdAdmin, String groupName, String info) {
+    private boolean insertRowGroup(int accountIdAdmin, String groupName, String info) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_INTO_GROUPS)) {
             preparedStatement.setString(1, groupName);
             preparedStatement.setString(2, info);
@@ -194,9 +188,10 @@ public class GroupDAO {
             int groupIdToInsert = -1;
             try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_GROUP_ID_FROM_GROUPS)) {
                 preparedStatementGroupID.setString(1, groupName);
-                ResultSet resultSet = preparedStatementGroupID.executeQuery();
-                if (resultSet.next()) {
-                    groupIdToInsert = resultSet.getInt("group_id");
+                try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
+                    if (resultSet.next()) {
+                        groupIdToInsert = resultSet.getInt(COLUMN_GROUP_ID);
+                    }
                 }
             }
             try (PreparedStatement preparedStatementInsertAccountsInGroupTable = this.connection
@@ -208,14 +203,13 @@ public class GroupDAO {
             this.connection.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DaoException(e);
         }
     }
 
     private Group createGroupFromResult(ResultSet resultSetGroup, ResultSet resultSetMembers) throws SQLException {
         Group group = new Group();
-        group.setId(resultSetGroup.getInt("group_id"));
+        group.setId(resultSetGroup.getInt(COLUMN_GROUP_ID));
         group.setName(resultSetGroup.getString("name"));
         group.setInfo(resultSetGroup.getString("info"));
         group.setAccountIdAdmin(resultSetGroup.getInt("account_id_admin"));

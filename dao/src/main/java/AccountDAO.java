@@ -14,7 +14,7 @@ public class AccountDAO {
             "icq, skype, extra FROM accounts a JOIN account_info ai ON a.account_id = ai.account_id";
     private static final String SELECT_ACCOUNT_INFO = SELECT_ALL_ACCOUNTS_INFO +
             " WHERE a.account_id = ?";
-    private static final String UPDATE_ACCOUNT_PASSWORD = "UPDATE accounts SET password = ? WHERE account_id = ?";
+    private static final String UPDATE_ACCOUNT_PASS = "UPDATE accounts SET password = ? WHERE account_id = ?";
     private static final String UPDATE_ACCOUNT_INFO_SET_FIRST_NAME = "UPDATE account_info SET first_name = ? WHERE account_id = ?";
     private static final String UPDATE_ACCOUNT_INFO_SET_LAST_NAME = "UPDATE account_info SET last_name = ? WHERE account_id = ?";
     private static final String UPDATE_ACCOUNT_INFO_SET_MIDDLE_NAME = "UPDATE account_info SET middle_name = ? WHERE account_id = ?";
@@ -33,16 +33,15 @@ public class AccountDAO {
     private static final String INSERT_NEW_ACCOUNT_INFO = "INSERT INTO account_info (account_id, first_name, last_name, " +
             "middle_name, birthday, phone_pers, phone_work, address_pers, address_work, email, icq, skype, extra) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+    private static final String COLUMN_ACCOUNT_ID = "account_id";
     private Connection connection;
 
     public AccountDAO() {
-        //TODO
-        DBConnect DBConnect = new DBConnect();
-        if (DBConnect.getConnection() == null) {
-            DBConnect.createConnection();
+        DBConnect DbConnect = new DBConnect();
+        if (DbConnect.getConnection() == null) {
+            DbConnect.createConnection();
         }
-        connection = DBConnect.getConnection();
+        connection = DbConnect.getConnection();
         System.out.println(connection);
     }
 
@@ -55,13 +54,14 @@ public class AccountDAO {
                           String email, int icq, String skype, String extra) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_ALL_FROM_ACCOUNTS)) {
             preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
-                insertRowInAccountAndAccountInfo(username, password, firstName, lastName, middleName, birthday, phonePers,
-                        phoneWork, addressPers, addressWork, email, icq, skype, extra);
-                return true;
-            } else {
-                throw new DaoException("Username \"" + username + "\" is already used.");
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    insertRowInAccountAndAccountInfo(username, password, firstName, lastName, middleName, birthday, phonePers,
+                            phoneWork, addressPers, addressWork, email, icq, skype, extra);
+                    return true;
+                } else {
+                    throw new DaoException("Username \"" + username + "\" is already used.");
+                }
             }
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -87,7 +87,7 @@ public class AccountDAO {
             preparedStatement.setString(1, username);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet.getInt("account_id");
+                    return resultSet.getInt(COLUMN_ACCOUNT_ID);
                 } else {
                     throw new DaoException("Username \"" + username + "\" not found in database.");
                 }
@@ -110,7 +110,7 @@ public class AccountDAO {
     }
 
     public boolean updatePassword(int id, String newPassword) throws DaoException {
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_PASSWORD)) {
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_PASS)) {
             preparedStatement.setString(1, newPassword);
             preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
@@ -269,16 +269,17 @@ public class AccountDAO {
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);
             preparedStatement.executeUpdate();
-            int account_id = -1;
+            int accountId = -1;
             try (PreparedStatement preparedStatementId = this.connection.prepareStatement(SELECT_ACCOUNT_ID_FROM_ACCOUNTS)) {
                 preparedStatementId.setString(1, username);
-                ResultSet resultSet = preparedStatementId.executeQuery();
-                if (resultSet.next()) {
-                    account_id = resultSet.getInt("account_id");
+                try (ResultSet resultSet = preparedStatementId.executeQuery()) {
+                    if (resultSet.next()) {
+                        accountId = resultSet.getInt(COLUMN_ACCOUNT_ID);
+                    }
                 }
             }
             try (PreparedStatement preparedStatementInsert = this.connection.prepareStatement(INSERT_NEW_ACCOUNT_INFO)) {
-                preparedStatementInsert.setInt(1, account_id);
+                preparedStatementInsert.setInt(1, accountId);
                 preparedStatementInsert.setString(2, firstName);
                 preparedStatementInsert.setString(3, lastName);
                 preparedStatementInsert.setString(4, middleName);
@@ -302,7 +303,7 @@ public class AccountDAO {
 
     private Account createAccountFromResult(ResultSet resultSet) throws SQLException {
         Account account = new Account();
-        account.setId(resultSet.getInt("account_id"));
+        account.setId(resultSet.getInt(COLUMN_ACCOUNT_ID));
         account.setUsername(resultSet.getString("username"));
         account.setPassword(resultSet.getString("password"));
         account.setFirstName(resultSet.getString("first_name"));
