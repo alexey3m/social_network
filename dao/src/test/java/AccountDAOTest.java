@@ -31,8 +31,8 @@ public class AccountDAOTest {
             this.connection = DriverManager.getConnection(url, user, password);
             this.connection.setAutoCommit(false);
             ScriptRunnerUtil runner = new ScriptRunnerUtil(connection, true, true);
-            runner.runScript(new BufferedReader(new FileReader("D:/Java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-            runner.runScript(new BufferedReader(new FileReader("D:/Java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
+            runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
+            runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -42,7 +42,7 @@ public class AccountDAOTest {
     @After
     public void terminateTables() {
         try (Statement statement = this.connection.createStatement()) {
-            statement.execute("DROP TABLE accounts, account_info, groups, account_in_group");
+            statement.execute("DROP TABLE accounts, account_info, groups, account_in_group, relationship");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,11 +55,11 @@ public class AccountDAOTest {
         boolean result = accountDAO.create("kolya1", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "13.12.1982", "+79999999999", "+79999999999",
                 "Lenina str. 145565", "Lenina 2", "ddd@dd.ru", 12345, "asdf", "-");
-        String expectedResultNewAccount = "Account{id=4, username='kolya1', firstName='Nikolay', lastName='Malcev', " +
+        String expectedResultNewAccount = "Account{id=5, username='kolya1', firstName='Nikolay', lastName='Malcev', " +
                 "middleName='Nikolaevich', birthday='13.12.1982', phonePers='+79999999999', phoneWork='+79999999999', " +
                 "addressPers='Lenina str. 145565', addressWork='Lenina 2', email='ddd@dd.ru', icq=12345, skype='asdf', extra='-'}";
         assertTrue(result);
-        assertEquals(expectedResultNewAccount, accountDAO.get(4).toString());
+        assertEquals(expectedResultNewAccount, accountDAO.get(5).toString());
     }
 
     @Test(expected = DaoException.class)
@@ -75,14 +75,14 @@ public class AccountDAOTest {
 
     @Test
     public void getTest() throws DaoException {
-        Account expected = new Account(4, "kolya1", "123", "Nikolay", "Malcev",
+        Account expected = new Account(5, "kolya1", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "13.12.1982", "+79999999999", "+79999999999",
                 "Lenina str. 145565", "Lenina 2", "ddd@dd.ru", 12345, "asdf", "-");
         AccountDAO accountDAO = new AccountDAO(connection);
         accountDAO.create("kolya1", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "13.12.1982", "+79999999999", "+79999999999",
                 "Lenina str. 145565", "Lenina 2", "ddd@dd.ru", 12345, "asdf", "-");
-        assertEquals(expected, accountDAO.get(4));
+        assertEquals(expected, accountDAO.get(5));
     }
 
     @Test
@@ -92,10 +92,12 @@ public class AccountDAOTest {
                 "Krasnoyarsk, Svobodny pr.", "a@a.ru", 1234567890, "aaaaa", "extra information");
         Account account2 = new Account(2, "ivan1", "1234", "Ivan", "Ivanov", "Alexeyevich", "27.01.1993", "+79230000001", "+739121231212", "Moskow", "Moskow 2", "a2@a.ru", 1234500000, "bbbb", "extra information");
         Account account3 = new Account(3, "sergey1", "12345", "Sergey", "Nosov", "Ivanovych", "02.09.1987", "+79230000002", "+739121231212", "Sankt Petersburg", "Sankt Petersburg 2", "a3@a.ru", 1234500001, "ccccc", "extra information");
+        Account account4 = new Account(4, "ivan2", "123456", "Ivan", "Menshov", "Maksimovich", "19.01.1981", "+79230000003", "+739121231212", "Novosibirsk 1", "Novosibirsk 2", "cc@c.ru", 1234500002, "dddd", "extra information");
         List<Account> expected = new ArrayList<>();
         expected.add(account1);
         expected.add(account2);
         expected.add(account3);
+        expected.add(account4);
         AccountDAO accountDAO = new AccountDAO(connection);
         assertEquals(expected, accountDAO.getAll());
     }
@@ -285,6 +287,6 @@ public class AccountDAOTest {
     public void deleteTest() throws DaoException {
         AccountDAO accountDAO = new AccountDAO(connection);
         assertTrue(accountDAO.remove(1));
-        assertEquals(2, accountDAO.getAll().size());
+        assertEquals(3, accountDAO.getAll().size());
     }
 }

@@ -31,8 +31,8 @@ public class GroupDAOTest {
             this.connection = DriverManager.getConnection(url, user, password);
             this.connection.setAutoCommit(false);
             ScriptRunnerUtil runner = new ScriptRunnerUtil(connection, true, true);
-            runner.runScript(new BufferedReader(new FileReader("D:/Java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-            runner.runScript(new BufferedReader(new FileReader("D:/Java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
+            runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
+            runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -41,7 +41,7 @@ public class GroupDAOTest {
     @After
     public void terminateTables() {
         try (Statement statement = this.connection.createStatement()) {
-            statement.execute("DROP TABLE accounts, account_info, groups, account_in_group");
+            statement.execute("DROP TABLE accounts, account_info, groups, account_in_group, relationship");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -45,3 +45,16 @@ CREATE TABLE account_in_group (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+
+CREATE TABLE relationship (
+    user_one_id INT NOT NULL,
+    user_two_id INT NOT NULL,
+    status SMALLINT NOT NULL,
+    FOREIGN KEY (user_one_id) REFERENCES accounts (account_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (user_two_id) REFERENCES accounts (account_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    UNIQUE KEY (user_one_id, user_two_id)
+);
