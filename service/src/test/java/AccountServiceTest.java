@@ -84,6 +84,10 @@ public class AccountServiceTest {
                 "19.01.1981", "+79230000003", "+739121231212", "Novosibirsk 1", "Novosibirsk 2",
                 "cc@c.ru", 1234500002, "dddd", "extra information");
         List<Account> accounts = new ArrayList<>();
+        accounts.add(account1);
+        accounts.add(account2);
+        accounts.add(account3);
+        accounts.add(account4);
         when(accountDAO.getAll()).thenReturn(accounts);
         assertEquals(accounts, accountService.getAll());
     }

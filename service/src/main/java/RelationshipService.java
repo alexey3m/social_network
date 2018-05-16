@@ -1,6 +1,7 @@
 import exceptions.DaoException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RelationshipService {
@@ -52,7 +53,7 @@ public class RelationshipService {
             }
         } catch (DaoException e) {
             e.printStackTrace();
-            return null;
+            return Collections.emptyList();
         }
         return friends;
     }

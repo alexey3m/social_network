@@ -1,5 +1,6 @@
 import exceptions.DaoException;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AccountService {
@@ -100,7 +101,7 @@ public class AccountService {
             return accountDAO.getAll();
         } catch (DaoException e) {
             e.printStackTrace();
-            return null;
+            return Collections.emptyList();
         }
     }
 }
