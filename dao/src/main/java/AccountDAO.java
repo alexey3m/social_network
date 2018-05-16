@@ -35,16 +35,14 @@ public class AccountDAO {
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String COLUMN_ACCOUNT_ID = "account_id";
     private Connection connection;
+    private ConnectionPool connectionPool;
 
-    public AccountDAO() {
-        DBConnect DbConnect = new DBConnect();
-        if (DbConnect.getConnection() == null) {
-            DbConnect.createConnection();
-        }
-        connection = DbConnect.getConnection();
-        System.out.println(connection);
+    public AccountDAO() throws DaoException {
+        connectionPool = ConnectionPool.getPool();
+        connection = connectionPool.getConnection();
     }
 
+    // Constructor for tests
     public AccountDAO(Connection connection) {
         this.connection = connection;
     }
@@ -259,6 +257,10 @@ public class AccountDAO {
         } catch (SQLException e) {
             throw new DaoException(e);
         }
+    }
+
+    public void closeConnection() {
+        connectionPool.returnConnection(connection);
     }
 
     private boolean insertRowInAccountAndAccountInfo(String username, String password, String firstName, String lastName,

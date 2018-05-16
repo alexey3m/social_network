@@ -25,15 +25,14 @@ public class GroupDAO {
     private static final String COLUMN_GROUP_ID = "group_id";
 
     private Connection connection;
+    private ConnectionPool connectionPool;
 
-    public GroupDAO() {
-        DBConnect DbConnect = new DBConnect();
-        if (DbConnect.getConnection() == null) {
-            DbConnect.createConnection();
-        }
-        connection = DbConnect.getConnection();
+    public GroupDAO() throws DaoException {
+        connectionPool = ConnectionPool.getPool();
+        connection = connectionPool.getConnection();
     }
 
+    // Constructor for tests
     public GroupDAO(Connection connection) {
         this.connection = connection;
     }
@@ -177,6 +176,10 @@ public class GroupDAO {
         } catch (SQLException e) {
             throw new DaoException(e);
         }
+    }
+
+    public void closeConnection() {
+        connectionPool.returnConnection(connection);
     }
 
     private boolean insertRowGroup(int accountIdAdmin, String groupName, String info) throws DaoException {
