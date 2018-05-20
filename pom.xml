@@ -12,6 +12,7 @@
         <module>common</module>
         <module>dao</module>
         <module>service</module>
+        <module>webapp</module>
     </modules>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
@@ -46,7 +47,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.11</version>
+            <version>5.1.23</version>
         </dependency>
     </dependencies>
 </project>
