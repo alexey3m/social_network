@@ -259,7 +259,7 @@ public class AccountDAO {
         }
     }
 
-    public void closeConnection() {
+    public void close() {
         connectionPool.returnConnection(connection);
     }
 

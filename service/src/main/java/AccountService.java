@@ -23,8 +23,14 @@ public class AccountService {
                           String birthday, String phonePers, String phoneWork, String addressPers, String addressWork,
                           String email, int icq, String skype, String extra) {
         try {
-            return accountDAO.create(username, password, firstName, lastName, middleName, birthday, phonePers,
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
+            boolean result = accountDAO.create(username, password, firstName, lastName, middleName, birthday, phonePers,
                     phoneWork, addressPers, addressWork, email, icq, skype, extra);
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return false;
@@ -35,6 +41,9 @@ public class AccountService {
                               String birthday, String phonePers, String phoneWork, String addressPers, String addressWork,
                               String email, int icq, String skype, String extra) {
         try {
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
             int id = accountDAO.getId(username);
             Account account = new Account();
             account.setId(id);
@@ -51,7 +60,10 @@ public class AccountService {
             account.setIcq(icq);
             account.setSkype(skype);
             account.setExtra(extra);
-            return accountDAO.update(account);
+            boolean result = accountDAO.update(account);
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return false;
@@ -60,8 +72,14 @@ public class AccountService {
 
     public boolean updatePassword(String username, String newPassword) {
         try {
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
             int id = accountDAO.getId(username);
-            return accountDAO.updatePassword(id, newPassword);
+            boolean result = accountDAO.updatePassword(id, newPassword);
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return false;
@@ -70,7 +88,13 @@ public class AccountService {
 
     public boolean remove(int id) {
         try {
-            return accountDAO.remove(id);
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
+            boolean result = accountDAO.remove(id);
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return false;
@@ -79,8 +103,14 @@ public class AccountService {
 
     public boolean remove(String username) {
         try {
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
             int id = accountDAO.getId(username);
-            return accountDAO.remove(id);
+            boolean result = accountDAO.remove(id);
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return false;
@@ -89,7 +119,13 @@ public class AccountService {
 
     public Account get(int id) {
         try {
-            return accountDAO.get(id);
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
+            Account result = accountDAO.get(id);
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return null;
@@ -98,7 +134,13 @@ public class AccountService {
 
     public List<Account> getAll() {
         try {
-            return accountDAO.getAll();
+            if (accountDAO == null) {
+                accountDAO = new AccountDAO();
+            }
+            List<Account> result = accountDAO.getAll();
+            accountDAO.close();
+            accountDAO = null;
+            return result;
         } catch (DaoException e) {
             e.printStackTrace();
             return Collections.emptyList();

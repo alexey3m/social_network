@@ -31,12 +31,11 @@ public class AccountDAOTest {
             this.connection = DriverManager.getConnection(url, user, password);
             this.connection.setAutoCommit(false);
             ScriptRunnerUtil runner = new ScriptRunnerUtil(connection, true, true);
-            runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-            runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
+            runner.runScript(new BufferedReader(new FileReader("d:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
+            runner.runScript(new BufferedReader(new FileReader("d:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     @After
@@ -47,7 +46,6 @@ public class AccountDAOTest {
             e.printStackTrace();
         }
     }
-
 
     @Test
     public void createTest() throws DaoException {
