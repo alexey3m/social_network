@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class AccountViewServlet extends HttpServlet {
+    private static final String START_TAG_TD = "<td>";
+    private static final String END_TAG_TD = "</td>";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,15 +38,15 @@ public class AccountViewServlet extends HttpServlet {
                 "</head><body>");
         AccountService service = new AccountService();
         List<Account> accounts = service.getAll();
-        sb.append("<table id=\"accounts\"><tr><th>Id</th><th>First name</th><th>Last name</th><th>Phone personally</th><th>phone work</th><th>Address personally</th></tr>");
+        sb.append("<table id=\"accounts\"><tr><th>Id</th><th>First name</th><th>Last name</th><th>Phone personally</th><th>Phone work</th><th>Address personally</th></tr>");
         for (Account account : accounts) {
             sb.append("<tr>");
-            sb.append("<td>").append(account.getId()).append("</td>");
-            sb.append("<td>").append(account.getFirstName()).append("</td>");
-            sb.append("<td>").append(account.getLastName()).append("</td>");
-            sb.append("<td>").append(account.getPhonePers()).append("</td>");
-            sb.append("<td>").append(account.getPhoneWork()).append("</td>");
-            sb.append("<td>").append(account.getAddressPers()).append("</td>");
+            sb.append(START_TAG_TD).append(account.getId()).append(END_TAG_TD);
+            sb.append(START_TAG_TD).append(account.getFirstName()).append(END_TAG_TD);
+            sb.append(START_TAG_TD).append(account.getLastName()).append(END_TAG_TD);
+            sb.append(START_TAG_TD).append(account.getPhonePers()).append(END_TAG_TD);
+            sb.append(START_TAG_TD).append(account.getPhoneWork()).append(END_TAG_TD);
+            sb.append(START_TAG_TD).append(account.getAddressPers()).append(END_TAG_TD);
             sb.append("</tr>");
         }
         sb.append("</table></html></body>");
