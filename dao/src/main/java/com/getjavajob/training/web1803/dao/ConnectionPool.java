@@ -1,4 +1,6 @@
-import exceptions.DaoException;
+package com.getjavajob.training.web1803.dao;
+
+import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,14 +11,13 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
-public class ConnectionPool {
+public class ConnectionPool implements Pool {
     private static ConnectionPool pool;
     private Queue<Connection> freeConnections;
-    private Queue<Connection> busyConnections;
     private Properties properties;
     private Semaphore semaphore;
 
-    public ConnectionPool() {
+    private ConnectionPool() throws DaoException {
         if (properties == null) {
             properties = new Properties();
             try {
@@ -26,13 +27,14 @@ public class ConnectionPool {
             }
             int size = Integer.valueOf(properties.getProperty("pool.size"));
             freeConnections = new ConcurrentLinkedQueue<>();
-            busyConnections = new ConcurrentLinkedQueue<>();
             semaphore = new Semaphore(size);
-            System.out.println("Connection Pool created.");
+            for (int i = 0; i < size; i++) {
+                freeConnections.add(newConnection());
+            }
         }
     }
 
-    public static ConnectionPool getPool() {
+    public static ConnectionPool getPool() throws DaoException {
         if (pool == null) {
             pool = new ConnectionPool();
         }
@@ -40,33 +42,47 @@ public class ConnectionPool {
     }
 
     public Connection getConnection() throws DaoException {
-        Connection connection = freeConnections.poll();
-        if (connection == null) {
-            try {
-                semaphore.acquire();
-            } catch (InterruptedException e) {
-                throw new DaoException(e);
+        try {
+            semaphore.acquire();
+            Connection connection = freeConnections.poll();
+            boolean isValid = false;
+            if (connection != null) {
+                isValid = connection.isValid(0);
+                if (!isValid) {
+                    connection.close();
+                }
             }
-            String url = properties.getProperty("database.url");
-            String user = properties.getProperty("database.user");
-            String password = properties.getProperty("database.password");
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(url, user, password);
-                connection.setAutoCommit(false);
-                busyConnections.add(connection);
-                return connection;
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new DaoException(e);
-            }
-        } else {
-            return connection;
+            return isValid ? connection : newConnection();
+        } catch (InterruptedException | SQLException e) {
+            throw new DaoException(e);
         }
     }
 
-    public void returnConnection(Connection connection) {
-        busyConnections.remove(connection);
-        freeConnections.add(connection);
+    private Connection newConnection() throws DaoException {
+        System.out.println("Create NEW connection!");
+        String url = properties.getProperty("database.url");
+        String user = properties.getProperty("database.user");
+        String password = properties.getProperty("database.password");
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+            connection.setAutoCommit(true);
+            return connection;
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public void returnConnection(Connection connection) throws DaoException {
+        try {
+            boolean isValid = connection.isValid(0);
+            if (!isValid) {
+                connection.close();
+            }
+            freeConnections.add(isValid ? connection : newConnection());
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
         semaphore.release();
     }
 }

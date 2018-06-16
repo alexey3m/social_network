@@ -1,4 +1,4 @@
-package exceptions;
+package com.getjavajob.training.web1803.dao.exceptions;
 
 public class DaoException extends Exception {
     public DaoException() {
