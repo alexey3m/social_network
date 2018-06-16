@@ -11,8 +11,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css"
-          integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/friends.css" rel="stylesheet" type="text/css"/>
     <title>You friends list Social net!</title>
@@ -76,14 +75,14 @@
             Request from ${actionAccount.firstName} ${actionAccount.lastName} has been declined!
         </div>
     </c:if>
+    <c:if test="${message == 'removeRequestTrue'}">
+        <div class="alert alert-success text-alert" role="alert">
+            <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has been removed!
+        </div>
+    </c:if>
     <c:if test="${message == 'friendsFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Oops!</strong> <br>Oops! Something went wrong..!
-        </div>
-    </c:if>
-    <c:if test="${friendsMessage == 'addQueryTrue'}">
-        <div class="alert alert-success text-alert" role="alert">
-            <strong>Success!</strong> <br>You query friendship to
         </div>
     </c:if>
     <div>
@@ -95,6 +94,11 @@
                 <a href="account.jsp?id=${account.id}">
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
+            </div>
+            <div class="col-3">
+                <form method="post" action="FriendsServlet?action=removeRequest&actionId=${account.id}">
+                    <button type="submit" class="btn btn-secondary">Remove my request!</button>
+                </form>
             </div>
         </div>
     </c:forEach>
@@ -109,11 +113,11 @@
                 </a>
             </div>
             <div class="col-3">
-                <form method="post" action="FriendsServlet?action=accept&actionId=${account.id}">
-                    <button type="submit" class="btn btn-success">Add to friend!</button>
+                <form class="d-inline" method="post" action="FriendsServlet?action=accept&actionId=${account.id}">
+                    <button type="submit" class="btn btn-sm btn-success">Add to friend!</button>
                 </form>
-                <form method="post" action="FriendsServlet?action=decline&actionId=${account.id}">
-                    <button type="submit" class="btn btn-danger">Decline request!</button>
+                <form class="d-inline" method="post" action="FriendsServlet?action=decline&actionId=${account.id}">
+                    <button type="submit" class="btn btn-sm btn-danger">Decline request!</button>
                 </form>
             </div>
         </div>
@@ -130,7 +134,7 @@
             </div>
             <div class="col-3">
                 <form method="post" action="FriendsServlet?action=remove&actionId=${account.id}">
-                    <button type="submit" class="btn btn-warning">Remove from friend!</button>
+                    <button type="submit" class="btn btn-sm btn-warning">Remove from friend!</button>
                 </form>
             </div>
         </div>
@@ -138,14 +142,8 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="resources/js/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-<script src="resources/js/bootstrap.min.js"
-        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
-        crossorigin="anonymous"></script>
+<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
+<script src="resources/js/popper.min.js"></script>
+<script src="resources/js/bootstrap.min.js"></script>
 </body>
 </html>

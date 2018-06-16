@@ -16,8 +16,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css"
-          integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/account.css" rel="stylesheet" type="text/css"/>
     <title>Account Social net!</title>
@@ -85,6 +84,12 @@
             <strong>It's a pity!</strong> <br>Now you are not friends with ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
+    <c:if test="${message == 'removeRequestTrue'}">
+        <div class="alert alert-success text-alert" role="alert">
+            <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has been removed!
+        </div>
+    </c:if>
+
     <c:if test="${message == 'friendsDeclineTrue'}">
         <div class="alert alert-danger text-alert" role="alert">
             Request from ${actionAccount.firstName} ${actionAccount.lastName} has been declined!
@@ -92,7 +97,7 @@
     </c:if>
     <c:if test="${message == 'friendsFalse' || message == 'updateRoleFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
-            <strong>Oops!</strong> <br>Oops! Something went wrong..!
+            <strong>Oops!</strong> <br>Something went wrong..!
         </div>
     </c:if>
     <c:if test="${message == 'updateRoleUser'}">
@@ -149,7 +154,9 @@
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.PENDING}">
                     <div class="control-panel">
-                        <button type="submit" class="btn btn-primary" disabled>Request has been sent! Wait!</button>
+                        <form method="post" action="FriendsServlet?action=removeRequest&actionId=${id}">
+                            <button type="submit" class="btn btn-secondary">Remove my request!</button>
+                        </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.DECLINE}">
@@ -222,14 +229,8 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="resources/js/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-<script src="resources/js/bootstrap.min.js"
-        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
-        crossorigin="anonymous"></script>
+<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
+<script src="resources/js/popper.min.js"></script>
+<script src="resources/js/bootstrap.min.js"></script>
 </body>
 </html>

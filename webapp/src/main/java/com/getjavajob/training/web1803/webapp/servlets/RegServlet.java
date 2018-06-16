@@ -64,7 +64,7 @@ public class RegServlet extends HttpServlet {
             }
             response.sendRedirect("login.jsp?&message=reg");
         } catch (DaoNameException e) {
-            response.sendRedirect("reg.jsp?usernameSuccess=false");
+            response.sendRedirect("reg.jsp?message=emailFalse");
         }
     }
 }

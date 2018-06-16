@@ -32,6 +32,21 @@
         <jsp-file>/jsp/friends.jsp</jsp-file>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>GroupJSP</servlet-name>
+        <jsp-file>/jsp/group.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateGroupJSP</servlet-name>
+        <jsp-file>/jsp/createGroup.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>GroupsJSP</servlet-name>
+        <jsp-file>/jsp/groups.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -66,6 +81,21 @@
     <servlet>
         <servlet-name>UpdateRoleServlet</servlet-name>
         <servlet-class>com.getjavajob.training.web1803.webapp.servlets.UpdateRoleServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>GetPhotoGroupServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.GetPhotoGroupServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateGroupServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.CreateGroupServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>GroupActionServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.GroupActionServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -105,9 +135,22 @@
         <url-pattern>/friends.jsp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>GroupJSP</servlet-name>
+        <url-pattern>/group.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateAccountJSP</servlet-name>
         <url-pattern>/updateAccount.jsp</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateGroupJSP</servlet-name>
+        <url-pattern>/createGroup.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GroupsJSP</servlet-name>
+        <url-pattern>/groups.jsp</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -128,7 +171,19 @@
         <servlet-name>UpdateRoleServlet</servlet-name>
         <url-pattern>/UpdateRoleServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetPhotoGroupServlet</servlet-name>
+        <url-pattern>/GetPhotoGroupServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateGroupServlet</servlet-name>
+        <url-pattern>/CreateGroupServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GroupActionServlet</servlet-name>
+        <url-pattern>/GroupActionServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
-        <session-timeout>1</session-timeout>
+        <session-timeout>10</session-timeout>
     </session-config>
 </web-app>

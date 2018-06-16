@@ -38,7 +38,14 @@ public class FriendsServlet extends HttpServlet {
                     message = "friendsRemoveTrue";
                     break;
                 }
+            case "removeRequest":
+                if (service.removeFriend(currentId, actionId)) {
+                    message = "removeRequestTrue";
+                    break;
+                }
         }
+        System.out.println("----"+request.getRequestURI());
+        System.out.println(request.getContextPath());
         if (request.getServletPath().equals("/account.jsp")) {
             response.sendRedirect("account.jsp?id=" + currentId + "&message=" + message + "&actionId=" + actionId);
         } else {

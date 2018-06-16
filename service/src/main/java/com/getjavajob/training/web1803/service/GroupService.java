@@ -1,6 +1,6 @@
 package com.getjavajob.training.web1803.service;
 
-import com.getjavajob.training.web1803.common.Group;
+import com.getjavajob.training.web1803.common.*;
 import com.getjavajob.training.web1803.dao.GroupDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
@@ -52,6 +52,69 @@ public class GroupService {
         } catch (DaoException e) {
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+
+    public List<Group> getAllById(int userId) {
+        try {
+            return groupDAO.getAllById(userId);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
+        try {
+            return groupDAO.getRoleMemberInGroup(groupId, memberId);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
+        try {
+            return groupDAO.getStatusMemberInGroup(groupId, memberId);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
+        try {
+            return groupDAO.addPendingMemberToGroup(idGroup, idNewMember);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean setStatusMemberInGroup(int idGroup, int idMember, GroupStatus status) {
+        try {
+            return groupDAO.setStatusMemberInGroup(idGroup, idMember, status);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean setRoleMemberInGroup(int idGroup, int idMember, GroupRole role) {
+        try {
+            return groupDAO.setRoleMemberInGroup(idGroup, idMember, role);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
+        try {
+            return groupDAO.removeMemberFromGroup(idGroup, idMemberToDelete);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

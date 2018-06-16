@@ -1,8 +1,8 @@
 package com.getjavajob.training.web1803.dao;
 
 import com.getjavajob.training.web1803.common.Group;
-import com.getjavajob.training.web1803.common.Role;
-import com.getjavajob.training.web1803.common.Status;
+import com.getjavajob.training.web1803.common.GroupRole;
+import com.getjavajob.training.web1803.common.GroupStatus;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 
@@ -17,10 +17,14 @@ import java.util.List;
 public class GroupDAO {
     private static final String SELECT_ALL_GROUPS = "SELECT * FROM soc_group";
     private static final String SELECT_GROUP_BY_NAME = SELECT_ALL_GROUPS + " WHERE name = ?";
-    private static final String INSERT_GROUP = "INSERT INTO soc_group (name, photo, photo_file_name, date_create, " +
+    private static final String INSERT_GROUP = "INSERT INTO soc_group (name, photo, photo_file_name, create_date, " +
             "info, user_creator_id) VALUES(?, ?, ?, ?, ?, ?)";
     private static final String INSERT_ACCOUNT_IN_GROUP = "INSERT INTO account_in_group (group_id, user_member_id, role, status) VALUES (?, ?, ?, ?)";
-    private static final String SELECT_GROUP_ID_FROM_GROUP = "SELECT group_id FROM soc_group WHERE name = ?";
+    private static final String SELECT_GROUPS_ID_BY_NAME = "SELECT group_id FROM soc_group WHERE name = ?";
+    private static final String SELECT_GROUPS_ID_BY_USER_MEMBER_ID = "SELECT * FROM soc_group WHERE group_id IN " +
+            "(SELECT group_id FROM account_in_group WHERE user_member_id = ? AND status = 2)";
+    private static final String SELECT_ROLE_MEMBER = "SELECT role FROM account_in_group WHERE group_id = ? AND user_member_id = ?";
+    private static final String SELECT_STATUS_MEMBER = "SELECT status FROM account_in_group WHERE group_id = ? AND user_member_id = ?";
     private static final String COLUMN_GROUP_ID = "group_id";
     private static final String SELECT_GROUP_BY_ID = SELECT_ALL_GROUPS + " WHERE group_id = ?";
     private static final String SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP = "SELECT * FROM account_in_group WHERE group_id = ?";
@@ -106,9 +110,31 @@ public class GroupDAO {
         }
     }
 
+    public List<Group> getAllById(int userId) throws DaoException {
+        connection = connectionPool.getConnection();
+        try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SELECT_GROUPS_ID_BY_USER_MEMBER_ID);
+             PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
+            preparedStatementGroup.setInt(1, userId);
+            List<Group> groups = new ArrayList<>();
+            try (ResultSet resultSetGroup = preparedStatementGroup.executeQuery()) {
+                while (resultSetGroup.next()) {
+                    preparedStatementMembers.setInt(1, resultSetGroup.getInt(COLUMN_GROUP_ID));
+                    try (ResultSet resultSetMembers = preparedStatementMembers.executeQuery()) {
+                        groups.add(createGroupFromResult(resultSetGroup, resultSetMembers));
+                    }
+                }
+            }
+            return groups;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        } finally {
+            connectionPool.returnConnection(connection);
+        }
+    }
+
     public int getId(String name) throws DaoException {
         connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_GROUP_ID_FROM_GROUP)) {
+        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_GROUPS_ID_BY_NAME)) {
             preparedStatementGroupID.setString(1, name);
             try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
                 if (resultSet.next()) {
@@ -121,6 +147,38 @@ public class GroupDAO {
             connectionPool.returnConnection(connection);
         }
         return -1;
+    }
+
+    public GroupRole getRoleMemberInGroup(int groupId, int memberId) throws DaoException {
+        connection = connectionPool.getConnection();
+        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_ROLE_MEMBER)) {
+            preparedStatementGroupID.setInt(1, groupId);
+            preparedStatementGroupID.setInt(2, memberId);
+            try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
+                return resultSet.next() ? GroupRole.values()[resultSet.getInt("role")] : GroupRole.UNKNOWN;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connectionPool.returnConnection(connection);
+        }
+        return null;
+    }
+
+    public GroupStatus getStatusMemberInGroup(int groupId, int memberId) throws DaoException {
+        connection = connectionPool.getConnection();
+        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_STATUS_MEMBER)) {
+            preparedStatementGroupID.setInt(1, groupId);
+            preparedStatementGroupID.setInt(2, memberId);
+            try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
+                return resultSet.next() ? GroupStatus.values()[resultSet.getInt("status")] : GroupStatus.UNKNOWN;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connectionPool.returnConnection(connection);
+        }
+        return null;
     }
 
     public boolean update(Group group) throws DaoException {
@@ -152,8 +210,8 @@ public class GroupDAO {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_ACCOUNT_IN_GROUP)) {
             preparedStatement.setInt(1, idGroup);
             preparedStatement.setInt(2, idNewMember);
-            preparedStatement.setInt(3, 0);
-            preparedStatement.setInt(4, 0);
+            preparedStatement.setInt(3, GroupRole.USER.getStatus());
+            preparedStatement.setInt(4, GroupStatus.PENDING.getStatus());
             preparedStatement.executeUpdate();
 //            this.connection.commit();
             return true;
@@ -164,7 +222,7 @@ public class GroupDAO {
         }
     }
 
-    public boolean setStatusMemberInGroup(int idGroup, int member, Status status) throws DaoException {
+    public boolean setStatusMemberInGroup(int idGroup, int member, GroupStatus status) throws DaoException {
         connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_STATUS_MEMBER)) {
             preparedStatement.setInt(1, status.getStatus());
@@ -180,7 +238,7 @@ public class GroupDAO {
         }
     }
 
-    public boolean setRoleMemberInGroup(int idGroup, int member, Role role) throws DaoException {
+    public boolean setRoleMemberInGroup(int idGroup, int member, GroupRole role) throws DaoException {
         connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ROLE_MEMBER)) {
             preparedStatement.setInt(1, role.getStatus());
@@ -242,8 +300,8 @@ public class GroupDAO {
             try (PreparedStatement preparedStatementInsertAccountInGroup = this.connection.prepareStatement(INSERT_ACCOUNT_IN_GROUP)) {
                 preparedStatementInsertAccountInGroup.setInt(1, groupId);
                 preparedStatementInsertAccountInGroup.setInt(2, userCreatorId);
-                preparedStatementInsertAccountInGroup.setInt(3, 1);
-                preparedStatementInsertAccountInGroup.setInt(4, 1);
+                preparedStatementInsertAccountInGroup.setInt(3, GroupRole.ADMIN.getStatus());
+                preparedStatementInsertAccountInGroup.setInt(4, GroupStatus.ACCEPTED.getStatus());
                 preparedStatementInsertAccountInGroup.executeUpdate();
             }
             return true;
@@ -258,7 +316,7 @@ public class GroupDAO {
         group.setName(resultSetGroup.getString("name"));
         group.setPhoto(resultSetGroup.getBytes("photo"));
         group.setPhotoFileName(resultSetGroup.getString("photo_file_name"));
-        group.setCreateDate(resultSetGroup.getString("date_create"));
+        group.setCreateDate(resultSetGroup.getString("create_date"));
         group.setInfo(resultSetGroup.getString("info"));
         group.setUserCreatorId(resultSetGroup.getInt("user_creator_id"));
         List<Integer> acceptedMembersId = new ArrayList<>();
@@ -268,12 +326,12 @@ public class GroupDAO {
             int memberId = resultSetMembers.getInt("user_member_id");
             int role = resultSetMembers.getInt("role");
             int status = resultSetMembers.getInt("status");
-            if (Status.values()[status] == Status.ACCEPTED) {
+            if (GroupStatus.values()[status] == GroupStatus.ACCEPTED) {
                 acceptedMembersId.add(memberId);
-            } else if (Status.values()[status] == Status.PENDING) {
+            } else if (GroupStatus.values()[status] == GroupStatus.PENDING) {
                 pendingMembersId.add(memberId);
             }
-            if (Role.values()[role] == Role.ADMIN) {
+            if (GroupRole.values()[role] == GroupRole.ADMIN) {
                 adminsId.add(memberId);
             }
         }

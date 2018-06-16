@@ -46,7 +46,7 @@ CREATE TABLE soc_group (
     name VARCHAR(255) NOT NULL,
     photo MEDIUMBLOB,
     photo_file_name VARCHAR(255),
-    date_create DATE,
+    create_date DATE,
     info VARCHAR(255) NOT NULL,
     user_creator_id INT NOT NULL,
     PRIMARY KEY (group_id),

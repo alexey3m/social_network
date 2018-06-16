@@ -1,6 +1,4 @@
-import com.getjavajob.training.web1803.common.Group;
-import com.getjavajob.training.web1803.common.Role;
-import com.getjavajob.training.web1803.common.Status;
+import com.getjavajob.training.web1803.common.*;
 import com.getjavajob.training.web1803.dao.GroupDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
@@ -25,9 +23,9 @@ public class GroupDAOTest {
     public void initDB() throws IOException, SQLException {
         connectionPool = new ConnectionPool();
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
-        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
+        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/create-data-model.sql")));
-        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
+        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/fillDB.sql")));
     }
 
@@ -67,6 +65,7 @@ public class GroupDAOTest {
     public void getTest() throws DaoException {
         List<Integer> acceptedMembersId = new ArrayList<>();
         acceptedMembersId.add(1);
+        acceptedMembersId.add(3);
         List<Integer> pendingMembersId = new ArrayList<>();
         List<Integer> adminsId = new ArrayList<>();
         adminsId.add(1);
@@ -80,6 +79,7 @@ public class GroupDAOTest {
     public void getAllTest() throws DaoException {
         List<Integer> acceptedMembersId1 = new ArrayList<>();
         acceptedMembersId1.add(1);
+        acceptedMembersId1.add(3);
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
@@ -100,11 +100,40 @@ public class GroupDAOTest {
     }
 
     @Test
+    public void getAllByIdTest() throws DaoException {
+        List<Integer> acceptedMembersId1 = new ArrayList<>();
+        acceptedMembersId1.add(1);
+        acceptedMembersId1.add(3);
+        List<Integer> pendingMembersId1 = new ArrayList<>();
+        List<Integer> adminsId1 = new ArrayList<>();
+        adminsId1.add(1);
+        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+        List<Group> expected = new ArrayList<>();
+        expected.add(group1);
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        assertEquals(expected, groupDAO.getAllById(1));
+    }
+
+    @Test
     public void getIdTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(2, groupDAO.getId("Group 2"));
     }
 
+    @Test
+    public void getRoleMemberInGroupTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        assertEquals(GroupRole.ADMIN, groupDAO.getRoleMemberInGroup(1, 1));
+        assertEquals(GroupRole.USER, groupDAO.getRoleMemberInGroup(1, 3));
+        assertEquals(GroupRole.UNKNOWN, groupDAO.getRoleMemberInGroup(1, 2));
+    }
+
+    @Test
+    public void getStatusMemberInGroupTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        assertEquals(GroupStatus.ACCEPTED, groupDAO.getStatusMemberInGroup(1, 1));
+    }
 
     @Test
     public void updateGroupNameTest() throws DaoException {
@@ -113,6 +142,7 @@ public class GroupDAOTest {
         groupToUpdate.setName("NEW name group 1");
         List<Integer> acceptedMembersId = new ArrayList<>();
         acceptedMembersId.add(1);
+        acceptedMembersId.add(3);
         List<Integer> pendingMembersId = new ArrayList<>();
         List<Integer> adminsId = new ArrayList<>();
         adminsId.add(1);
@@ -131,6 +161,7 @@ public class GroupDAOTest {
 
         List<Integer> acceptedMembersId = new ArrayList<>();
         acceptedMembersId.add(1);
+        acceptedMembersId.add(3);
         List<Integer> pendingMembersId = new ArrayList<>();
         List<Integer> adminsId = new ArrayList<>();
         adminsId.add(1);
@@ -146,10 +177,9 @@ public class GroupDAOTest {
     @Test
     public void addPendingMemberToGroupTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
-        boolean result = groupDAO.addPendingMemberToGroup(1, 2);
         List<Integer> expected = new ArrayList<>();
         expected.add(2);
-        assertTrue(result);
+        assertTrue(groupDAO.addPendingMemberToGroup(1, 2));
         assertEquals(expected, groupDAO.get(1).getPendingMembersId());
     }
 
@@ -157,12 +187,12 @@ public class GroupDAOTest {
     public void setStatusMemberInGroupAcceptTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         groupDAO.addPendingMemberToGroup(1, 2);
-        boolean result = groupDAO.setStatusMemberInGroup(1, 2, Status.ACCEPTED);
+        assertTrue(groupDAO.setStatusMemberInGroup(1, 2, GroupStatus.ACCEPTED));
         List<Integer> expectedPending = new ArrayList<>();
         List<Integer> expectedAccepted = new ArrayList<>();
         expectedAccepted.add(1);
+        expectedAccepted.add(3);
         expectedAccepted.add(2);
-        assertTrue(result);
         assertEquals(expectedPending, groupDAO.get(1).getPendingMembersId());
         assertEquals(expectedAccepted, groupDAO.get(1).getAcceptedMembersId());
     }
@@ -171,26 +201,23 @@ public class GroupDAOTest {
     public void setRoleMemberInGroupAcceptTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         groupDAO.addPendingMemberToGroup(1, 2);
-        groupDAO.setStatusMemberInGroup(1, 2, Status.ACCEPTED);
-        boolean result = groupDAO.setRoleMemberInGroup(1, 2, Role.ADMIN);
+        groupDAO.setStatusMemberInGroup(1, 2, GroupStatus.ACCEPTED);
+        assertTrue(groupDAO.setRoleMemberInGroup(1, 2, GroupRole.ADMIN));
         List<Integer> expected = new ArrayList<>();
         expected.add(1);
         expected.add(2);
-        assertTrue(result);
         assertEquals(expected, groupDAO.get(1).getAdminsId());
     }
-
-
 
     @Test
     public void removeMemberFromGroupTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         groupDAO.addPendingMemberToGroup(1, 2);
-        groupDAO.setStatusMemberInGroup(1, 2, Status.ACCEPTED);
-        boolean result = groupDAO.removeMemberFromGroup(1, 2);
+        groupDAO.setStatusMemberInGroup(1, 2, GroupStatus.ACCEPTED);
+        assertTrue(groupDAO.removeMemberFromGroup(1, 2));
         List<Integer> expected = new ArrayList<>();
         expected.add(1);
-        assertTrue(result);
+        expected.add(3);
         assertEquals(expected, groupDAO.get(1).getAcceptedMembersId());
     }
 
