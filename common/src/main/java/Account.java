@@ -1,3 +1,5 @@
+package com.getjavajob.training.web1803.common;
+
 public class Account {
     private int id;
     private String username;
@@ -159,7 +161,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account{" +
+        return "com.getjavajob.training.web1803.common.Account{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +

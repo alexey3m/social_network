@@ -1,3 +1,5 @@
+package com.getjavajob.training.web1803.common;
+
 import java.util.List;
 
 public class Group {
@@ -60,7 +62,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return "Group \"" + name + "\". Id: " + id + ", info: " + info + ", accountIdAdmin: " + accountIdAdmin +
+        return "com.getjavajob.training.web1803.common.Group \"" + name + "\". Id: " + id + ", info: " + info + ", accountIdAdmin: " + accountIdAdmin +
                 ", members id: " + membersId + ".";
     }
 

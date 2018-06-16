@@ -1,4 +1,7 @@
-import exceptions.DaoException;
+package com.getjavajob.training.web1803.dao;
+
+import com.getjavajob.training.web1803.common.Group;
+import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +48,7 @@ public class GroupDAO {
                     insertRowGroup(accountIdAdmin, groupName, info);
                     return true;
                 } else {
-                    throw new DaoException("Group name \"" + groupName + "\" is already used.");
+                    throw new DaoException("com.getjavajob.training.web1803.common.Group name \"" + groupName + "\" is already used.");
                 }
             }
         } catch (SQLException e) {

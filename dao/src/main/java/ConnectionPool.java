@@ -1,4 +1,6 @@
-import exceptions.DaoException;
+package com.getjavajob.training.web1803.dao;
+
+import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.io.IOException;
 import java.sql.Connection;
