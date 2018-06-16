@@ -119,6 +119,15 @@ public class AccountService {
         }
     }
 
+    public boolean updateRole(int id, Role role) {
+        try {
+            return accountDAO.updateRole(id, role);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean remove(int id) {
         try {
             return accountDAO.remove(id);

@@ -69,6 +69,7 @@
     <jsp:useBean id="accountService" class="com.getjavajob.training.web1803.service.AccountService"/>
     <c:set var="actionId" scope="page" value="${param.actionId}"/>
     <c:set var="actionAccount" scope="page" value="${accountService.get(actionId)}"/>
+    <c:set var="account" scope="page" value="${accountService.get(id)}"/>
     <c:if test="${message == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Good!</strong> <br>Your friend request with ${actionAccount.firstName} ${actionAccount.lastName} was sent!
@@ -89,12 +90,22 @@
             Request from ${actionAccount.firstName} ${actionAccount.lastName} has been declined!
         </div>
     </c:if>
-    <c:if test="${message == 'friendsFalse'}">
+    <c:if test="${message == 'friendsFalse' || message == 'updateRoleFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Oops!</strong> <br>Oops! Something went wrong..!
         </div>
     </c:if>
-    <c:set var="account" scope="page" value="${accountService.get(id)}"/>
+    <c:if test="${message == 'updateRoleUser'}">
+        <div class="alert alert-success text-alert" role="alert">
+            <strong>Success!</strong> <br>New role ${account.firstName} ${account.lastName} - "USER"!
+        </div>
+    </c:if>
+    <c:if test="${message == 'updateRoleAdmin'}">
+        <div class="alert alert-success text-alert" role="alert">
+            <strong>Success!</strong> <br>New role ${account.firstName} ${account.lastName} - "ADMIN"!
+        </div>
+    </c:if>
+
     <div class="row">
         <div class="col-md-3">
             <div class="text-center">
@@ -108,6 +119,21 @@
                         <a href="updateAccount.jsp?id=${id}">
                             <button type="button" class="btn btn-sm btn-primary">Update account</button>
                         </a>
+                    </div>
+                </c:if>
+                <c:if test="${sessionScope.role == Role.ADMIN && sessionScope.id != id}">
+                    <c:set var="role" scope="page" value="${accountService.getRole(id)}"/>
+                    <div class="control-panel">
+                        <c:if test="${role == Role.ADMIN}">
+                            <form method="post" action="UpdateRoleServlet?action=toUser&actionId=${id}">
+                                <button type="submit" class="btn btn-sm btn-primary">Change role to "USER"</button>
+                            </form>
+                        </c:if>
+                        <c:if test="${role == Role.USER}">
+                            <form method="post" action="UpdateRoleServlet?action=toAdmin&actionId=${id}">
+                                <button type="submit" class="btn btn-sm btn-primary">Change role to "ADMIN"</button>
+                            </form>
+                        </c:if>
                     </div>
                 </c:if>
                 <jsp:useBean id="relService" class="com.getjavajob.training.web1803.service.RelationshipService"/>

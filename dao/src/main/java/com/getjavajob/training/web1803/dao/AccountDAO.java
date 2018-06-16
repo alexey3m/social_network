@@ -6,7 +6,10 @@ import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 
 import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -204,14 +207,13 @@ public class AccountDAO {
     }
 
     private static void executePrepStatementUpdateInt(int id, int field, Connection connection, String query) throws DaoException {
-        if (field != 0) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, field);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, field);
+            preparedStatement.setInt(2, id);
+            System.out.println(preparedStatement.executeUpdate());
+        } catch (SQLException e) {
+            throw new DaoException(e);
         }
     }
 

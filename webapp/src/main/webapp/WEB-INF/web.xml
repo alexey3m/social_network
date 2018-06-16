@@ -63,6 +63,11 @@
         <servlet-class>com.getjavajob.training.web1803.webapp.servlets.FriendsServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateRoleServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.UpdateRoleServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <filter>
         <filter-name>LoginFilter</filter-name>
@@ -118,6 +123,10 @@
     <servlet-mapping>
         <servlet-name>UpdateAccountServlet</servlet-name>
         <url-pattern>/UpdateAccountServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateRoleServlet</servlet-name>
+        <url-pattern>/UpdateRoleServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>1</session-timeout>
