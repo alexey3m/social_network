@@ -53,7 +53,7 @@ public class GroupDAO {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
                     boolean result = insertGroup(name, photo, photoFileName, createDate, info, userCreatorId);
-                    this.connection.commit();
+//                    this.connection.commit();
                     return result;
                 } else {
                     throw new DaoNameException("Group name \"" + name + "\" is already used.");
@@ -140,10 +140,8 @@ public class GroupDAO {
         executePrepStatementUpdateString(id, group.getPhotoFileName(), this.connection, UPDATE_GROUP_SET_PHOTO_FILE_NAME);
         executePrepStatementUpdateString(id, group.getInfo(), this.connection, UPDATE_GROUP_SET_INFO);
         try {
-            this.connection.commit();
+//            this.connection.commit();
             return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
         } finally {
             connectionPool.returnConnection(connection);
         }
@@ -157,7 +155,7 @@ public class GroupDAO {
             preparedStatement.setInt(3, 0);
             preparedStatement.setInt(4, 0);
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -173,7 +171,7 @@ public class GroupDAO {
             preparedStatement.setInt(2, idGroup);
             preparedStatement.setInt(3, member);
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -189,7 +187,7 @@ public class GroupDAO {
             preparedStatement.setInt(2, idGroup);
             preparedStatement.setInt(3, member);
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -204,7 +202,7 @@ public class GroupDAO {
             preparedStatement.setInt(1, idMemberToDelete);
             preparedStatement.setInt(2, idGroup);
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -221,7 +219,7 @@ public class GroupDAO {
             try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(REMOVE_GROUP)) {
                 preparedStatementGroup.setInt(1, idGroup);
                 preparedStatementGroup.executeUpdate();
-                this.connection.commit();
+//                this.connection.commit();
                 return true;
             }
         } catch (SQLException e) {

@@ -175,10 +175,8 @@ public class AccountDAO {
         executePrepStatementUpdateString(id, account.getSkype(), this.connection, UPDATE_ACCOUNT_SET_SKYPE);
         executePrepStatementUpdateInt(id, account.getIcq(), this.connection, UPDATE_ACCOUNT_SET_ICQ);
         try {
-            this.connection.commit();
+//            this.connection.commit();
             return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
         } finally {
             connectionPool.returnConnection(connection);
         }
@@ -196,7 +194,7 @@ public class AccountDAO {
         try (PreparedStatement preparedStatement1 = this.connection.prepareStatement(REMOVE_ACCOUNT)) {
             preparedStatement1.setInt(1, id);
             preparedStatement1.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -247,7 +245,7 @@ public class AccountDAO {
             preparedStatement.setString(11, regDate);
             preparedStatement.setInt(12, role.getStatus());
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);

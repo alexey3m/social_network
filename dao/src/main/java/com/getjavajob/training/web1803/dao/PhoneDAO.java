@@ -35,7 +35,7 @@ public class PhoneDAO {
             preparedStatement.setString(2, number);
             preparedStatement.setInt(3, type.getStatus());
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -81,7 +81,7 @@ public class PhoneDAO {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(REMOVE_PHONES)) {
             preparedStatement.setInt(1, accountId);
             preparedStatement.executeUpdate();
-            this.connection.commit();
+//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);

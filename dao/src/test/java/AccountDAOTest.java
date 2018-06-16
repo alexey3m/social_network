@@ -29,8 +29,8 @@ public class AccountDAOTest {
         connectionPool = new ConnectionPool();
         phoneDAO = new PhoneDAO(connectionPool);
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
-        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
+        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
+        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
 
     }
 

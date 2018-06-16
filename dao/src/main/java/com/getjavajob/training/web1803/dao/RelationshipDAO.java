@@ -139,14 +139,11 @@ public class RelationshipDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> friends = new ArrayList<>();
             while (resultSet.next()) {
-                System.out.println("resultset: "+resultSet);
                 int friendId = resultSet.getInt("id");
-                System.out.println("friendId:" + friendId + " id: " + id);
                 if (friendId != id) {
                     friends.add(friendId);
                 }
             }
-            System.out.println(friends);
             return friends;
         } catch (SQLException e) {
             throw new DaoException(e);
