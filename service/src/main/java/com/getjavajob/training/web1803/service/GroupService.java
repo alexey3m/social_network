@@ -127,8 +127,7 @@ public class GroupService {
         }
     }
 
-    public boolean update(String name, InputStream photo, String photoFileName, String info, List<Integer> acceptedMembersId,
-                          List<Integer> pendingMembersId, List<Integer> adminsId) {
+    public boolean update(String name, InputStream photo, String photoFileName, String info) {
         try {
             int id = groupDAO.getId(name);
 
@@ -138,9 +137,6 @@ public class GroupService {
             group.setPhoto(IOUtils.toByteArray(photo));
             group.setPhotoFileName(photoFileName);
             group.setInfo(info);
-            group.setAcceptedMembersId(acceptedMembersId);
-            group.setPendingMembersId(pendingMembersId);
-            group.setAdminsId(adminsId);
             return groupDAO.update(group);
         } catch (DaoException | IOException e) {
             e.printStackTrace();

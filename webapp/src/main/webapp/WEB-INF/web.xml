@@ -47,6 +47,11 @@
         <jsp-file>/jsp/groups.jsp</jsp-file>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateGroupJSP</servlet-name>
+        <jsp-file>/jsp/update-group.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -96,6 +101,11 @@
     <servlet>
         <servlet-name>GroupActionServlet</servlet-name>
         <servlet-class>com.getjavajob.training.web1803.webapp.servlets.GroupActionServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateGroupServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.UpdateGroupServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -150,6 +160,10 @@
         <servlet-name>GroupsJSP</servlet-name>
         <url-pattern>/groups.jsp</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateGroupJSP</servlet-name>
+        <url-pattern>/updateGroup.jsp</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -182,6 +196,10 @@
     <servlet-mapping>
         <servlet-name>GroupActionServlet</servlet-name>
         <url-pattern>/GroupActionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateGroupServlet</servlet-name>
+        <url-pattern>/UpdateGroupServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>10</session-timeout>
