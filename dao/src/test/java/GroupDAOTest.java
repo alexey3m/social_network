@@ -1,4 +1,9 @@
-import exceptions.DaoException;
+import com.getjavajob.training.web1803.common.Group;
+import com.getjavajob.training.web1803.common.Role;
+import com.getjavajob.training.web1803.common.Status;
+import com.getjavajob.training.web1803.dao.GroupDAO;
+import com.getjavajob.training.web1803.dao.exceptions.DaoException;
+import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -6,103 +11,114 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class GroupDAOTest {
-    private Connection connection;
+    private ConnectionPool connectionPool;
 
     @Before
-    public void initDB() {
-        try {
-            Properties properties = new Properties();
-            properties.load(this.getClass().getClassLoader().getResourceAsStream("H2connect.properties"));
-            String url = properties.getProperty("database.url");
-            String user = properties.getProperty("database.user");
-            String password = properties.getProperty("database.password");
-            this.connection = DriverManager.getConnection(url, user, password);
-            this.connection.setAutoCommit(false);
-            ScriptRunnerUtil runner = new ScriptRunnerUtil(connection, true, true);
-            runner.runScript(new BufferedReader(new FileReader("d:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-            runner.runScript(new BufferedReader(new FileReader("d:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        }
+    public void initDB() throws IOException, SQLException {
+        connectionPool = new ConnectionPool();
+        ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
+        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
+                "dao/src/test/resources/create-data-model.sql")));
+        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
+                "dao/src/test/resources/fillDB.sql")));
     }
 
     @After
     public void terminateTables() {
-        try (Statement statement = this.connection.createStatement()) {
-            statement.execute("DROP TABLE accounts, account_info, groups, account_in_group, relationship");
+        try (Statement statement = connectionPool.getConnection().createStatement()) {
+            statement.execute("DROP TABLE messages, account_in_group, soc_group, relationship, phone, account");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void createTest() throws DaoException {
-        GroupDAO groupDAO = new GroupDAO(connection);
-        boolean result = groupDAO.create(3, "Group3", "Info3");
-        List<Integer> members = new ArrayList<>();
-        members.add(3);
-        Group expected = new Group(3, "Group3", "Info3", 3, members);
+    public void createTest() throws DaoException, DaoNameException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        boolean result = groupDAO.create("Group 3", null, null, "2018-06-13",
+                "Info 3", 2);
+        List<Integer> acceptedMembersId = new ArrayList<>();
+        acceptedMembersId.add(2);
+        List<Integer> pendingMembersId = new ArrayList<>();
+        List<Integer> adminsId = new ArrayList<>();
+        adminsId.add(2);
+        Group expected = new Group(3, "Group 3", null, null, "2018-06-13",
+                "Info 3", 2, acceptedMembersId, pendingMembersId, adminsId);
         assertTrue(result);
         assertEquals(expected, groupDAO.get(3));
     }
 
-    @Test(expected = DaoException.class)
-    public void createExceptionTest() throws DaoException {
-        GroupDAO groupDAO = new GroupDAO(connection);
-        groupDAO.create(3, "Group3", "Info3");
-        groupDAO.create(3, "Group3", "Info3");
+    @Test(expected = DaoNameException.class)
+    public void createExceptionTest() throws DaoException, DaoNameException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        groupDAO.create("Group 3", null, null, "2018-06-13", "Info 3", 2);
+        groupDAO.create("Group 3", null, null, "2018-06-13", "Info 3", 2);
     }
 
     @Test
     public void getTest() throws DaoException {
-        List<Integer> members = new ArrayList<>();
-        members.add(1);
-        members.add(3);
-        Group expected = new Group(1, "Group 1", "Info 1", 1, members);
-        GroupDAO groupDAO = new GroupDAO(connection);
+        List<Integer> acceptedMembersId = new ArrayList<>();
+        acceptedMembersId.add(1);
+        List<Integer> pendingMembersId = new ArrayList<>();
+        List<Integer> adminsId = new ArrayList<>();
+        adminsId.add(1);
+        Group expected = new Group(1, "Group 1", null, null, "2018-06-07",
+                "Info 1", 1, acceptedMembersId, pendingMembersId, adminsId);
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(expected, groupDAO.get(1));
     }
 
     @Test
     public void getAllTest() throws DaoException {
-        List<Integer> members1 = new ArrayList<>();
-        members1.add(1);
-        members1.add(3);
-        Group group1 = new Group(1, "Group 1", "Info 1", 1, members1);
-        List<Integer> members2 = new ArrayList<>();
-        members2.add(2);
-        Group group2 = new Group(2, "Group 2", "Info 2", 2, members2);
+        List<Integer> acceptedMembersId1 = new ArrayList<>();
+        acceptedMembersId1.add(1);
+        List<Integer> pendingMembersId1 = new ArrayList<>();
+        List<Integer> adminsId1 = new ArrayList<>();
+        adminsId1.add(1);
+        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+        List<Integer> acceptedMembersId2 = new ArrayList<>();
+        acceptedMembersId2.add(2);
+        List<Integer> pendingMembersId2 = new ArrayList<>();
+        List<Integer> adminsId2 = new ArrayList<>();
+        adminsId2.add(2);
+        Group group2 = new Group(2, "Group 2", null, null, "2018-06-09",
+                "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
         expected.add(group2);
-        GroupDAO groupDAO = new GroupDAO(connection);
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(expected, groupDAO.getAll());
     }
+
+    @Test
+    public void getIdTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        assertEquals(2, groupDAO.getId("Group 2"));
+    }
+
 
     @Test
     public void updateGroupNameTest() throws DaoException {
         Group groupToUpdate = new Group();
         groupToUpdate.setId(1);
         groupToUpdate.setName("NEW name group 1");
-
-        List<Integer> members1 = new ArrayList<>();
-        members1.add(1);
-        members1.add(3);
-        Group expected = new Group(1, "NEW name group 1", "Info 1", 1, members1);
-
-        GroupDAO groupDAO = new GroupDAO(connection);
+        List<Integer> acceptedMembersId = new ArrayList<>();
+        acceptedMembersId.add(1);
+        List<Integer> pendingMembersId = new ArrayList<>();
+        List<Integer> adminsId = new ArrayList<>();
+        adminsId.add(1);
+        Group expected = new Group(1, "NEW name group 1", null, null, "2018-06-07",
+                "Info 1", 1, acceptedMembersId, pendingMembersId, adminsId);
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
         groupDAO.update(groupToUpdate);
         assertEquals(expected, groupDAO.get(1));
     }
@@ -113,55 +129,75 @@ public class GroupDAOTest {
         groupToUpdate.setId(1);
         groupToUpdate.setInfo("NEW info group 1");
 
-        List<Integer> members1 = new ArrayList<>();
-        members1.add(1);
-        members1.add(3);
-        Group expected = new Group(1, "Group 1", "NEW info group 1", 1, members1);
+        List<Integer> acceptedMembersId = new ArrayList<>();
+        acceptedMembersId.add(1);
+        List<Integer> pendingMembersId = new ArrayList<>();
+        List<Integer> adminsId = new ArrayList<>();
+        adminsId.add(1);
+        Group expected = new Group(1, "Group 1", null, null, "2018-06-07",
+                "NEW info group 1", 1, acceptedMembersId, pendingMembersId, adminsId);
 
-        GroupDAO groupDAO = new GroupDAO(connection);
-        groupDAO.update(groupToUpdate);
-        assertEquals(expected, groupDAO.get(1));
-    }
-
-    @Test
-    public void updateGroupAccountIdAdminTest() throws DaoException {
-        Group groupToUpdate = new Group();
-        groupToUpdate.setId(1);
-        groupToUpdate.setAccountIdAdmin(2);
-
-        List<Integer> members1 = new ArrayList<>();
-        members1.add(2);
-        members1.add(3);
-        Group expected = new Group(1, "Group 1", "Info 1", 2, members1);
-
-        GroupDAO groupDAO = new GroupDAO(connection);
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
         groupDAO.update(groupToUpdate);
         assertEquals(expected, groupDAO.get(1));
     }
 
 
     @Test
-    public void addMemberToGroupTest() throws DaoException {
-        GroupDAO groupDAO = new GroupDAO(connection);
-        groupDAO.addMemberToGroup(1, 2);
-        assertEquals(3, groupDAO.get(1).getMembersId().size());
+    public void addPendingMemberToGroupTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        boolean result = groupDAO.addPendingMemberToGroup(1, 2);
+        List<Integer> expected = new ArrayList<>();
+        expected.add(2);
+        assertTrue(result);
+        assertEquals(expected, groupDAO.get(1).getPendingMembersId());
     }
 
     @Test
-    public void deleteMemberFromGroupTest() throws DaoException {
-        GroupDAO groupDAO = new GroupDAO(connection);
-        groupDAO.removeMemberFromGroup(1, 3);
-
-        List<Integer> members1 = new ArrayList<>();
-        members1.add(1);
-        Group expected = new Group(1, "Group 1", "Info 1", 1, members1);
-        assertEquals(expected, groupDAO.get(1));
+    public void setStatusMemberInGroupAcceptTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        groupDAO.addPendingMemberToGroup(1, 2);
+        boolean result = groupDAO.setStatusMemberInGroup(1, 2, Status.ACCEPTED);
+        List<Integer> expectedPending = new ArrayList<>();
+        List<Integer> expectedAccepted = new ArrayList<>();
+        expectedAccepted.add(1);
+        expectedAccepted.add(2);
+        assertTrue(result);
+        assertEquals(expectedPending, groupDAO.get(1).getPendingMembersId());
+        assertEquals(expectedAccepted, groupDAO.get(1).getAcceptedMembersId());
     }
 
     @Test
-    public void deleteGroupTest() throws DaoException {
-        GroupDAO groupDAO = new GroupDAO(connection);
-        groupDAO.removeGroup(1);
-        assertEquals(1, groupDAO.getAll().size());
+    public void setRoleMemberInGroupAcceptTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        groupDAO.addPendingMemberToGroup(1, 2);
+        groupDAO.setStatusMemberInGroup(1, 2, Status.ACCEPTED);
+        boolean result = groupDAO.setRoleMemberInGroup(1, 2, Role.ADMIN);
+        List<Integer> expected = new ArrayList<>();
+        expected.add(1);
+        expected.add(2);
+        assertTrue(result);
+        assertEquals(expected, groupDAO.get(1).getAdminsId());
+    }
+
+
+
+    @Test
+    public void removeMemberFromGroupTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        groupDAO.addPendingMemberToGroup(1, 2);
+        groupDAO.setStatusMemberInGroup(1, 2, Status.ACCEPTED);
+        boolean result = groupDAO.removeMemberFromGroup(1, 2);
+        List<Integer> expected = new ArrayList<>();
+        expected.add(1);
+        assertTrue(result);
+        assertEquals(expected, groupDAO.get(1).getAcceptedMembersId());
+    }
+
+    @Test
+    public void removeGroupTest() throws DaoException {
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        groupDAO.remove(1);
+        assertNull(groupDAO.get(1));
     }
 }
