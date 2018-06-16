@@ -1,17 +1,18 @@
 import exceptions.DaoException;
+import exceptions.DaoUsernameException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.InputStream;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
 
 public class AccountDAO {
     private static final String SELECT_ALL_FROM_ACCOUNTS = "SELECT * FROM accounts WHERE username = ?";
     private static final String SELECT_ALL_ACCOUNTS_INFO = "SELECT a.account_id, username, password, " +
             "first_name, last_name, middle_name, birthday, phone_pers, phone_work, address_pers, address_work, email, " +
-            "icq, skype, extra FROM accounts a JOIN account_info ai ON a.account_id = ai.account_id";
+            "icq, skype, extra, photo, photo_file_name FROM accounts a JOIN account_info ai ON a.account_id = ai.account_id";
     private static final String SELECT_ACCOUNT_INFO = SELECT_ALL_ACCOUNTS_INFO +
             " WHERE a.account_id = ?";
     private static final String UPDATE_ACCOUNT_PASS = "UPDATE accounts SET password = ? WHERE account_id = ?";
@@ -27,19 +28,21 @@ public class AccountDAO {
     private static final String UPDATE_ACCOUNT_INFO_SET_ICQ = "UPDATE account_info SET icq = ? WHERE account_id = ?";
     private static final String UPDATE_ACCOUNT_INFO_SET_SKYPE = "UPDATE account_info SET skype = ? WHERE account_id = ?";
     private static final String UPDATE_ACCOUNT_INFO_SET_EXTRA = "UPDATE account_info SET extra = ? WHERE account_id = ?";
+    private static final String UPDATE_ACCOUNT_INFO_SET_PHOTO = "UPDATE account_info SET photo = ? WHERE account_id = ?";
+    private static final String UPDATE_ACCOUNT_INFO_SET_PHOTO_FILE_NAME = "UPDATE account_info SET photo_file_name = ? WHERE account_id = ?";
     private static final String REMOVE_ACCOUNT = "DELETE FROM accounts WHERE account_id = ?";
     private static final String INSERT_NEW_ACCOUNT = "INSERT INTO accounts (username, password) VALUES (?, ?)";
     private static final String SELECT_ACCOUNT_ID_FROM_ACCOUNTS = "SELECT account_id FROM accounts WHERE username = ?";
     private static final String INSERT_NEW_ACCOUNT_INFO = "INSERT INTO account_info (account_id, first_name, last_name, " +
-            "middle_name, birthday, phone_pers, phone_work, address_pers, address_work, email, icq, skype, extra) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "middle_name, birthday, phone_pers, phone_work, address_pers, address_work, email, icq, skype, extra, photo, photo_file_name) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String COLUMN_ACCOUNT_ID = "account_id";
     private Connection connection;
     private ConnectionPool connectionPool;
 
     public AccountDAO() throws DaoException {
         connectionPool = ConnectionPool.getPool();
-        connection = connectionPool.getConnection();
+
     }
 
     // Constructor for tests
@@ -49,28 +52,34 @@ public class AccountDAO {
 
     public boolean create(String username, String password, String firstName, String lastName, String middleName,
                           String birthday, String phonePers, String phoneWork, String addressPers, String addressWork,
-                          String email, int icq, String skype, String extra) throws DaoException {
+                          String email, int icq, String skype, String extra, InputStream photo, String photoFileName) throws DaoException, DaoUsernameException {
+        connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_ALL_FROM_ACCOUNTS)) {
             preparedStatement.setString(1, username);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
                     insertRowInAccountAndAccountInfo(username, password, firstName, lastName, middleName, birthday, phonePers,
-                            phoneWork, addressPers, addressWork, email, icq, skype, extra);
+                            phoneWork, addressPers, addressWork, email, icq, skype, extra, photo, photoFileName);
+                    close();
                     return true;
                 } else {
-                    throw new DaoException("Username \"" + username + "\" is already used.");
+                    close();
+                    throw new DaoUsernameException("Username \"" + username + "\" is already used.");
                 }
             }
+
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public Account get(int id) throws DaoException {
+        connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_ACCOUNT_INFO)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
+                    close();
                     return createAccountFromResult(resultSet);
                 }
             }
@@ -81,12 +90,15 @@ public class AccountDAO {
     }
 
     public int getId(String username) throws DaoException {
+        connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_ALL_FROM_ACCOUNTS)) {
             preparedStatement.setString(1, username);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
+                    close();
                     return resultSet.getInt(COLUMN_ACCOUNT_ID);
                 } else {
+                    close();
                     throw new DaoException("Username \"" + username + "\" not found in database.");
                 }
             }
@@ -96,11 +108,14 @@ public class AccountDAO {
     }
 
     public List<Account> getAll() throws DaoException {
+        connection = connectionPool.getConnection();
         try (ResultSet resultSet = this.connection.createStatement().executeQuery(SELECT_ALL_ACCOUNTS_INFO)) {
+            close();
             List<Account> accounts = new ArrayList<>();
             while (resultSet.next()) {
                 accounts.add(createAccountFromResult(resultSet));
             }
+
             return accounts;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -108,10 +123,12 @@ public class AccountDAO {
     }
 
     public boolean updatePassword(int id, String newPassword) throws DaoException {
+        connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_PASS)) {
             preparedStatement.setString(1, newPassword);
             preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
+            close();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -119,97 +136,17 @@ public class AccountDAO {
     }
 
     public boolean update(Account account) throws DaoException {
+        connection = connectionPool.getConnection();
         int id = account.getId();
-        String firstName = account.getFirstName();
-        if (firstName != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_FIRST_NAME)) {
-                preparedStatement.setString(1, firstName);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String lastName = account.getLastName();
-        if (lastName != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_LAST_NAME)) {
-                preparedStatement.setString(1, lastName);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String middleName = account.getMiddleName();
-        if (middleName != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_MIDDLE_NAME)) {
-                preparedStatement.setString(1, middleName);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String birthday = account.getBirthday();
-        if (birthday != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_BIRTHDAY)) {
-                preparedStatement.setString(1, birthday);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String phonePers = account.getPhonePers();
-        if (phonePers != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_PHONE_PERS)) {
-                preparedStatement.setString(1, phonePers);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String phoneWork = account.getPhoneWork();
-        if (phoneWork != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_PHONE_WORK)) {
-                preparedStatement.setString(1, phoneWork);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String addressPers = account.getAddressPers();
-        if (addressPers != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_ADDRESS_PERS)) {
-                preparedStatement.setString(1, addressPers);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String addressWork = account.getAddressWork();
-        if (addressWork != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_ADDRESS_WORK)) {
-                preparedStatement.setString(1, addressWork);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-        String email = account.getEmail();
-        if (email != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_EMAIL)) {
-                preparedStatement.setString(1, email);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
+        executePrepStatementUpdate(id, account.getFirstName(), this.connection, UPDATE_ACCOUNT_INFO_SET_FIRST_NAME);
+        executePrepStatementUpdate(id, account.getLastName(), this.connection, UPDATE_ACCOUNT_INFO_SET_LAST_NAME);
+        executePrepStatementUpdate(id, account.getMiddleName(), this.connection, UPDATE_ACCOUNT_INFO_SET_MIDDLE_NAME);
+        executePrepStatementUpdate(id, account.getBirthday(), this.connection, UPDATE_ACCOUNT_INFO_SET_BIRTHDAY);
+        executePrepStatementUpdate(id, account.getPhonePers(), this.connection, UPDATE_ACCOUNT_INFO_SET_PHONE_PERS);
+        executePrepStatementUpdate(id, account.getPhoneWork(), this.connection, UPDATE_ACCOUNT_INFO_SET_PHONE_WORK);
+        executePrepStatementUpdate(id, account.getAddressPers(), this.connection, UPDATE_ACCOUNT_INFO_SET_ADDRESS_PERS);
+        executePrepStatementUpdate(id, account.getAddressWork(), this.connection, UPDATE_ACCOUNT_INFO_SET_ADDRESS_WORK);
+        executePrepStatementUpdate(id, account.getEmail(), this.connection, UPDATE_ACCOUNT_INFO_SET_EMAIL);
         int icq = account.getIcq();
         if (icq != 0) {
             try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_ICQ)) {
@@ -220,53 +157,61 @@ public class AccountDAO {
                 throw new DaoException(e);
             }
         }
-        String skype = account.getSkype();
-        if (skype != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_SKYPE)) {
-                preparedStatement.setString(1, skype);
+        executePrepStatementUpdate(id, account.getSkype(), this.connection, UPDATE_ACCOUNT_INFO_SET_SKYPE);
+        executePrepStatementUpdate(id, account.getExtra(), this.connection, UPDATE_ACCOUNT_INFO_SET_EXTRA);
+        byte[] photo = account.getPhoto();
+        if (photo != null) {
+            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_PHOTO)) {
+                preparedStatement.setBytes(1, photo);
                 preparedStatement.setInt(2, id);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
                 throw new DaoException(e);
             }
         }
-        String extra = account.getExtra();
-        if (extra != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ACCOUNT_INFO_SET_EXTRA)) {
-                preparedStatement.setString(1, extra);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
+        executePrepStatementUpdate(id, account.getPhotoFileName(), this.connection, UPDATE_ACCOUNT_INFO_SET_PHOTO_FILE_NAME);
         try {
             this.connection.commit();
+            close();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
+        }
+    }
+
+    static void executePrepStatementUpdate(int id, String field, Connection connection, String query) throws DaoException {
+        if (field != null) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, field);
+                preparedStatement.setInt(2, id);
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DaoException(e);
+            }
         }
     }
 
     public boolean remove(int id) throws DaoException {
+        connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement1 = this.connection.prepareStatement(REMOVE_ACCOUNT)) {
             preparedStatement1.setInt(1, id);
             preparedStatement1.executeUpdate();
             this.connection.commit();
+            close();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
-    public void closeConnection() {
+    public void close() {
         connectionPool.returnConnection(connection);
     }
 
     private boolean insertRowInAccountAndAccountInfo(String username, String password, String firstName, String lastName,
                                                      String middleName, String birthday, String phonePers, String phoneWork,
                                                      String addressPers, String addressWork, String email, int icq, String skype,
-                                                     String extra) throws DaoException {
+                                                     String extra, InputStream photo, String photoFileName) throws DaoException {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_NEW_ACCOUNT)) {
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);
@@ -294,6 +239,8 @@ public class AccountDAO {
                 preparedStatementInsert.setInt(11, icq);
                 preparedStatementInsert.setString(12, skype);
                 preparedStatementInsert.setString(13, extra);
+                preparedStatementInsert.setBlob(14, photo);
+                preparedStatementInsert.setString(15, photoFileName);
                 preparedStatementInsert.executeUpdate();
                 this.connection.commit();
             }
@@ -320,6 +267,8 @@ public class AccountDAO {
         account.setIcq(resultSet.getInt("icq"));
         account.setSkype(resultSet.getString("skype"));
         account.setExtra(resultSet.getString("extra"));
+        account.setPhoto(resultSet.getBytes("photo"));
+        account.setPhotoFileName(resultSet.getString("photo_file_name"));
         return account;
     }
 }

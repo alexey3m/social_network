@@ -1,5 +1,7 @@
 import exceptions.DaoException;
+import exceptions.DaoUsernameException;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,10 +23,10 @@ public class AccountService {
 
     public boolean create(String username, String password, String firstName, String lastName, String middleName,
                           String birthday, String phonePers, String phoneWork, String addressPers, String addressWork,
-                          String email, int icq, String skype, String extra) {
+                          String email, int icq, String skype, String extra, InputStream photo, String photoFileName) throws DaoUsernameException {
         try {
             return accountDAO.create(username, password, firstName, lastName, middleName, birthday, phonePers,
-                    phoneWork, addressPers, addressWork, email, icq, skype, extra);
+                    phoneWork, addressPers, addressWork, email, icq, skype, extra, photo, photoFileName);
         } catch (DaoException e) {
             e.printStackTrace();
             return false;
@@ -33,7 +35,7 @@ public class AccountService {
 
     public boolean updateInfo(String username, String firstName, String lastName, String middleName,
                               String birthday, String phonePers, String phoneWork, String addressPers, String addressWork,
-                              String email, int icq, String skype, String extra) {
+                              String email, int icq, String skype, String extra, byte[] photo, String photoFileName) {
         try {
             int id = accountDAO.getId(username);
             Account account = new Account();
@@ -51,6 +53,8 @@ public class AccountService {
             account.setIcq(icq);
             account.setSkype(skype);
             account.setExtra(extra);
+            account.setPhoto(photo);
+            account.setPhotoFileName(photoFileName);
             return accountDAO.update(account);
         } catch (DaoException e) {
             e.printStackTrace();

@@ -14,9 +14,12 @@ public class Account {
     private int icq;
     private String skype;
     private String extra;
+    private byte[] photo;
+    private String photoFileName;
 
     public Account(int id, String username, String password, String firstName, String lastName, String middleName, String birthday,
-                   String phonePers, String phoneWork, String addressPers, String addressWork, String email, int icq, String skype, String extra) {
+                   String phonePers, String phoneWork, String addressPers, String addressWork, String email, int icq, String skype,
+                   String extra, byte[] photo, String photoFileName) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -32,6 +35,8 @@ public class Account {
         this.icq = icq;
         this.skype = skype;
         this.extra = extra;
+        this.photo = photo;
+        this.photoFileName = photoFileName;
     }
 
     public Account() {
@@ -157,11 +162,28 @@ public class Account {
         this.extra = extra;
     }
 
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
+    public String getPhotoFileName() {
+        return photoFileName;
+    }
+
+    public void setPhotoFileName(String photoFileName) {
+        this.photoFileName = photoFileName;
+    }
+
     @Override
     public String toString() {
         return "Account{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", middleName='" + middleName + '\'' +
@@ -174,6 +196,7 @@ public class Account {
                 ", icq=" + icq +
                 ", skype='" + skype + '\'' +
                 ", extra='" + extra + '\'' +
+                ", photoFileName='" + photoFileName + '\'' +
                 '}';
     }
 
@@ -197,6 +220,7 @@ public class Account {
         if (addressWork != null ? !addressWork.equals(account.addressWork) : account.addressWork != null) return false;
         if (email != null ? !email.equals(account.email) : account.email != null) return false;
         if (skype != null ? !skype.equals(account.skype) : account.skype != null) return false;
+        if (photoFileName != null ? !photoFileName.equals(account.photoFileName) : account.photoFileName != null) return false;
         return extra != null ? extra.equals(account.extra) : account.extra == null;
     }
 
@@ -216,6 +240,7 @@ public class Account {
         result = 31 * result + icq;
         result = 31 * result + (skype != null ? skype.hashCode() : 0);
         result = 31 * result + (extra != null ? extra.hashCode() : 0);
+        result = 31 * result + (photoFileName != null ? photoFileName.hashCode() : 0);
         return result;
     }
 }
