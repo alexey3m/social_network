@@ -31,7 +31,5 @@ public class UpdateGroupServlet extends HttpServlet {
         } else {
             response.sendRedirect("group.jsp?id=" + id + "&message=updateFalse");
         }
-
     }
-
 }

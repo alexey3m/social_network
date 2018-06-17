@@ -44,8 +44,6 @@
         <jsp:include page="search.jsp"/>
     </div>
 </nav>
-<%--<main role="main" class="container">--%>
-<%--</main><!-- /.container -->--%>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="resources/js/jquery-3.3.1.slim.min.js"></script>

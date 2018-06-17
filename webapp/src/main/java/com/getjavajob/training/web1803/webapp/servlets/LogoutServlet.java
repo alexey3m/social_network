@@ -1,11 +1,10 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class LogoutServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         session.removeAttribute("email");
         session.removeAttribute("id");

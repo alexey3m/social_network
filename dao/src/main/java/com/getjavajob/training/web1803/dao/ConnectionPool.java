@@ -21,7 +21,7 @@ public class ConnectionPool implements Pool {
         if (properties == null) {
             properties = new Properties();
             try {
-                properties.load(this.getClass().getClassLoader().getResourceAsStream("DBconnectLocal.properties"));
+                properties.load(this.getClass().getClassLoader().getResourceAsStream("DBconnect.properties"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -34,7 +34,7 @@ public class ConnectionPool implements Pool {
         }
     }
 
-    public static ConnectionPool getPool() throws DaoException {
+    static ConnectionPool getPool() throws DaoException {
         if (pool == null) {
             pool = new ConnectionPool();
         }

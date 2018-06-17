@@ -57,9 +57,8 @@ public class GroupDAO {
             preparedStatement.setString(1, name);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
-                    boolean result = insertGroup(name, photo, photoFileName, createDate, info, userCreatorId);
 //                    this.connection.commit();
-                    return result;
+                    return insertGroup(name, photo, photoFileName, createDate, info, userCreatorId);
                 } else {
                     throw new DaoNameException("Group name \"" + name + "\" is already used.");
                 }

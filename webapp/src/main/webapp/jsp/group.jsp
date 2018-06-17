@@ -28,7 +28,6 @@
     <c:set var="actionId" scope="page" value="${param.actionId}"/>
     <jsp:useBean id="accountService" class="com.getjavajob.training.web1803.service.AccountService"/>
     <c:set var="actionAccount" scope="page" value="${accountService.get(actionId)}"/>
-
     <c:if test="${message == 'reg'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Success!</strong> <br>You group created!
@@ -44,7 +43,6 @@
             <strong>Error!</strong> <br>You group was not updated! Try again.
         </div>
     </c:if>
-
     <c:if test="${message == 'acceptTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Success!</strong> <br>${actionAccount.firstName} ${actionAccount.lastName} was added in group!
@@ -90,7 +88,6 @@
             <strong>Oops!</strong> <br>Something went wrong..!
         </div>
     </c:if>
-
     <jsp:useBean id="groupService" class="com.getjavajob.training.web1803.service.GroupService"/>
     <c:set var="group" scope="page" value="${groupService.get(groupId)}"/>
     <c:set var="sessionId" scope="page" value="${sessionScope.id}"/>
@@ -161,12 +158,12 @@
                     <c:forEach var="currentAccountId" items="${group.pendingMembersId}">
                         <c:set var="currentAccount" scope="page" value="${accountService.get(currentAccountId)}"/>
                         <div class="row row-friends">
-                            <div class="col-3">
+                            <div class="col-4">
                                 <a href="account.jsp?id=${currentAccount.id}">
                                         ${currentAccount.firstName} ${currentAccount.middleName} ${currentAccount.lastName}
                                 </a>
                             </div>
-                            <div class="col-6">
+                            <div class="col-5">
                                 <form class="d-inline" method="post" action="GroupActionServlet?action=acceptMember&groupId=${groupId}&actionId=${currentAccount.id}">
                                     <button type="submit" class="btn btn-sm btn-success">Add to group!</button>
                                 </form>
@@ -183,7 +180,7 @@
                 <c:forEach var="currentAccountId" items="${group.acceptedMembersId}">
                     <c:set var="currentAccount" scope="page" value="${accountService.get(currentAccountId)}"/>
                     <div class="row row-friends">
-                        <div class="col-3">
+                        <div class="col-4">
                             <a href="account.jsp?id=${currentAccount.id}">
                                     ${currentAccount.firstName} ${currentAccount.middleName} ${currentAccount.lastName}
                             </a>
@@ -193,7 +190,6 @@
                                 <form class="d-inline" method="post" action="GroupActionServlet?action=removeMember&groupId=${groupId}&actionId=${currentAccount.id}">
                                     <button type="submit" class="btn btn-sm btn-danger">Remove from group!</button>
                                 </form>
-
                                 <c:set var="rowRole" scope="page" value="${groupService.getRoleMemberInGroup(groupId, currentAccountId)}"/>
                                 <c:if test="${rowRole == GroupRole.ADMIN && currentAccountId != sessionId}">
                                     <form class="d-inline" method="post" action="GroupActionServlet?action=toUser&groupId=${groupId}&actionId=${currentAccount.id}">

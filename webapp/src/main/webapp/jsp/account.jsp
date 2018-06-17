@@ -123,7 +123,7 @@
                         </form>
                     </div>
                 </c:if>
-                <c:if test="${sessionId != id && status == Status.PENDING}">
+                <c:if test="${sessionId != id && status == Status.PENDING && pendingStatus != Status.PENDING}">
                     <div class="control-panel">
                         <form method="post" action="FriendsServlet?action=removeRequest&actionId=${id}">
                             <button type="submit" class="btn btn-secondary">Remove my request!</button>
