@@ -17,37 +17,7 @@
     <title>You friends list Social net!</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="./">Social-Network</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="friends.jsp">My friends</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="groups.jsp">My groups</a>
-            </li>
-        </ul>
-        <div class="navbar-nav mr-auto text-login">
-            <div class="text-login">
-                Current user: <c:out value="${sessionScope.userName}"/>
-            </div>
-            <c:set var="email" scope="page" value="${sessionScope.email}"/>
-            <c:if test="${email != null}">
-                <div class="control-panel">
-                    <form class="form-inline my-2 my-lg-0" action="LogoutServlet">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout!</button>
-                    </form>
-                </div>
-            </c:if>
-        </div>
-    </div>
-</nav>
-
+<jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
     <c:set var="id" scope="page" value="${sessionScope.id}"/>
     <jsp:useBean id="relService" class="com.getjavajob.training.web1803.service.RelationshipService"/>

@@ -52,6 +52,21 @@
         <jsp-file>/jsp/update-group.jsp</jsp-file>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>SearchJSP</servlet-name>
+        <jsp-file>/jsp/search.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>SearchResultJSP</servlet-name>
+        <jsp-file>/jsp/search-result.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>NavbarJSP</servlet-name>
+        <jsp-file>/jsp/navbar.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -161,8 +176,20 @@
         <url-pattern>/groups.jsp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateGroupJSP</servlet-name>
-        <url-pattern>/updateGroup.jsp</url-pattern>
+    <servlet-name>UpdateGroupJSP</servlet-name>
+    <url-pattern>/updateGroup.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchJSP</servlet-name>
+        <url-pattern>/search.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchResultJSP</servlet-name>
+        <url-pattern>/searchResult.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NavbarJSP</servlet-name>
+        <url-pattern>/navbar.jsp</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

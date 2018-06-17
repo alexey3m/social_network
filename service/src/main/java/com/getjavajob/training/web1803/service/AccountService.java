@@ -68,6 +68,15 @@ public class AccountService {
         }
     }
 
+    public List<Account> searchByString(String search) {
+        try {
+            return accountDAO.searchByString(search);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
     public Role getRole(int accountId) {
         try {
             return accountDAO.getRole(accountId);

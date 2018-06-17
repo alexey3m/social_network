@@ -37,6 +37,7 @@ public class GroupDAO {
     private static final String REMOVE_ACCOUNT_IN_GROUP = "DELETE FROM account_in_group WHERE user_member_id = ? AND group_id = ?";
     private static final String REMOVE_ALL_ACCOUNTS_IN_GROUP = "DELETE FROM account_in_group WHERE group_id = ?";
     private static final String REMOVE_GROUP = "DELETE FROM soc_group WHERE group_id = ?";
+    private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
 
     private Connection connection;
     private Pool connectionPool;
@@ -115,6 +116,28 @@ public class GroupDAO {
         try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SELECT_GROUPS_ID_BY_USER_MEMBER_ID);
              PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
             preparedStatementGroup.setInt(1, userId);
+            List<Group> groups = new ArrayList<>();
+            try (ResultSet resultSetGroup = preparedStatementGroup.executeQuery()) {
+                while (resultSetGroup.next()) {
+                    preparedStatementMembers.setInt(1, resultSetGroup.getInt(COLUMN_GROUP_ID));
+                    try (ResultSet resultSetMembers = preparedStatementMembers.executeQuery()) {
+                        groups.add(createGroupFromResult(resultSetGroup, resultSetMembers));
+                    }
+                }
+            }
+            return groups;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        } finally {
+            connectionPool.returnConnection(connection);
+        }
+    }
+
+    public List<Group> searchByString(String search) throws DaoException {
+        connection = connectionPool.getConnection();
+        try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SEARCH_GROUPS_BY_STRING);
+             PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
+            preparedStatementGroup.setString(1, "%" + search.toLowerCase() + "%");
             List<Group> groups = new ArrayList<>();
             try (ResultSet resultSetGroup = preparedStatementGroup.executeQuery()) {
                 while (resultSetGroup.next()) {

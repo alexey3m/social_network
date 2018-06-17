@@ -15,6 +15,9 @@ import java.util.List;
 
 public class AccountDAO {
     private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM account";
+    private static final String SEARCH_ACCOUNTS_BY_STRING = "SELECT * FROM account WHERE LOWER(first_name) LIKE ? " +
+            "UNION SELECT * FROM account WHERE LOWER(last_name) LIKE ? " +
+            "UNION SELECT * FROM account WHERE LOWER(middle_name) LIKE ? ORDER BY account_id";
     private static final String SELECT_ACCOUNT_BY_ID = SELECT_ALL_ACCOUNTS + " WHERE account_id = ?";
     private static final String SELECT_ACCOUNT_BY_EMAIL = SELECT_ALL_ACCOUNTS + " WHERE email = ?";
     private static final String CHECK_EMAIL_AND_PASSWORD = SELECT_ACCOUNT_BY_EMAIL + " AND password = ?";
@@ -147,6 +150,27 @@ public class AccountDAO {
             List<Account> accounts = new ArrayList<>();
             while (resultSet.next()) {
                 accounts.add(createAccountFromResult(resultSet));
+            }
+            return accounts;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        } finally {
+            connectionPool.returnConnection(connection);
+        }
+    }
+
+    public List<Account> searchByString(String search) throws DaoException {
+        connection = connectionPool.getConnection();
+        try (PreparedStatement preparedStatement =  this.connection.prepareStatement(SEARCH_ACCOUNTS_BY_STRING)) {
+            String lowerSearch = search.toLowerCase();
+            preparedStatement.setString(1, "%" + lowerSearch + "%");
+            preparedStatement.setString(2, "%" + lowerSearch + "%");
+            preparedStatement.setString(3, "%" + lowerSearch + "%");
+            List<Account> accounts = new ArrayList<>();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    accounts.add(createAccountFromResult(resultSet));
+                }
             }
             return accounts;
         } catch (SQLException e) {

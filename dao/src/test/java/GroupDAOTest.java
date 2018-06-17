@@ -116,6 +116,30 @@ public class GroupDAOTest {
     }
 
     @Test
+    public void searchByStringTest() throws DaoException {
+        List<Integer> acceptedMembersId1 = new ArrayList<>();
+        acceptedMembersId1.add(1);
+        acceptedMembersId1.add(3);
+        List<Integer> pendingMembersId1 = new ArrayList<>();
+        List<Integer> adminsId1 = new ArrayList<>();
+        adminsId1.add(1);
+        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+        List<Integer> acceptedMembersId2 = new ArrayList<>();
+        acceptedMembersId2.add(2);
+        List<Integer> pendingMembersId2 = new ArrayList<>();
+        List<Integer> adminsId2 = new ArrayList<>();
+        adminsId2.add(2);
+        Group group2 = new Group(2, "Group 2", null, null, "2018-06-09",
+                "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
+        List<Group> expected = new ArrayList<>();
+        expected.add(group1);
+        expected.add(group2);
+        GroupDAO groupDAO = new GroupDAO(connectionPool);
+        assertEquals(expected, groupDAO.searchByString("Gr"));
+    }
+
+    @Test
     public void getIdTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(2, groupDAO.getId("Group 2"));

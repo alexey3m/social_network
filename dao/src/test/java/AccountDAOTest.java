@@ -1,4 +1,5 @@
 import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.PhoneType;
 import com.getjavajob.training.web1803.common.Role;
 import com.getjavajob.training.web1803.dao.AccountDAO;
 import com.getjavajob.training.web1803.dao.PhoneDAO;
@@ -16,6 +17,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -133,6 +135,60 @@ public class AccountDAOTest {
         expected.add(account3);
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         assertEquals(expected, accountDAO.getAll());
+    }
+
+    @Test
+    public void searchByStringFirstNameTest() throws DaoException {
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
+        Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
+                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
+                "2018-06-08", Role.ADMIN, phones);
+        Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
+                null, "1990-01-01", null, null, "bbbbb", 0,
+                "2018-06-13", Role.USER, new HashMap<>());
+        List<Account> expected = new ArrayList<>();
+        expected.add(account1);
+        expected.add(account2);
+        AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
+        assertEquals(expected, accountDAO.searchByString("ey"));
+    }
+
+    @Test
+    public void searchByStringMiddleNameTest() throws DaoException {
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
+        Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
+                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
+                "2018-06-08", Role.ADMIN, phones);
+        List<Account> expected = new ArrayList<>();
+        expected.add(account1);
+        AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
+        assertEquals(expected, accountDAO.searchByString("URI"));
+    }
+
+    @Test
+    public void searchByStringLastNameTest() throws DaoException {
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
+        Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
+                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
+                "2018-06-08", Role.ADMIN, phones);
+        Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
+                null, "1990-01-01", null, null, "bbbbb", 0,
+                "2018-06-13", Role.USER, new HashMap<>());
+        Account account3 = new Account(3, "c@c.ru", "123", "Ivan", "Ivanov",
+                "Ivanovich", "1970-05-29", null, null, "ccccc", 12345,
+                "2018-06-13", Role.USER, new HashMap<>());
+        List<Account> expected = new ArrayList<>();
+        expected.add(account1);
+        expected.add(account2);
+        expected.add(account3);
+        AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
+        assertEquals(expected, accountDAO.searchByString("ov"));
     }
 
 

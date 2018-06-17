@@ -55,6 +55,15 @@ public class GroupService {
         }
     }
 
+    public List<Group> searchByString(String search) {
+        try {
+            return groupDAO.searchByString(search);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
     public List<Group> getAllById(int userId) {
         try {
             return groupDAO.getAllById(userId);
