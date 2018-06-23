@@ -7,8 +7,9 @@ import com.getjavajob.training.web1803.service.AccountService;
 import javax.servlet.http.*;
 import java.io.IOException;
 
-
 public class LoginServlet extends HttpServlet {
+    private static final String EMAIL = "email";
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = null;
         String password = null;
@@ -17,7 +18,7 @@ public class LoginServlet extends HttpServlet {
             Cookie[] cookies = request.getCookies();
             for (Cookie cookie : cookies) {
                 String cookieName = cookie.getName();
-                if (cookieName.equals("email")) {
+                if (cookieName.equals(EMAIL)) {
                     email = cookie.getValue();
                 }
                 if (cookieName.equals("password")) {
@@ -33,13 +34,13 @@ public class LoginServlet extends HttpServlet {
             int id = service.loginAndGetId(email, password);
             Account currentAccount = service.get(id);
             HttpSession session = request.getSession(true);
-            session.setAttribute("email", email);
+            session.setAttribute(EMAIL, email);
             session.setAttribute("id", id);
             session.setAttribute("userName", currentAccount.getFirstName() + " " + currentAccount.getLastName());
             session.setAttribute("role", currentAccount.getRole());
             String rememberMeActive = request.getParameter("rememberMe");
             if ("active".equals(rememberMeActive)) {
-                Cookie cookieUsername = new Cookie("email", email);
+                Cookie cookieUsername = new Cookie(EMAIL, email);
                 Cookie cookiePassword = new Cookie("password", password);
                 Cookie cookieId = new Cookie("id", String.valueOf(id));
                 response.addCookie(cookieUsername);

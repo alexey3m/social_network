@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class LoginFilter implements Filter {
     public void destroy() {
+        //Without body because method is necessary to work filter.
     }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
@@ -39,7 +40,7 @@ public class LoginFilter implements Filter {
     }
 
     public void init(FilterConfig config) {
-
+        //Without body because method is necessary to work filter.
     }
 
 }

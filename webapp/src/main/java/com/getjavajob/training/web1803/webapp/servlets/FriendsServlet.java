@@ -20,28 +20,30 @@ public class FriendsServlet extends HttpServlet {
             case "add":
                 if (service.addQueryFriend(currentId, actionId)) {
                     message = "friendsAddQueryTrue";
-                    break;
                 }
+                break;
             case "accept":
                 if (service.acceptFriend(currentId, actionId)) {
                     message = "friendsAcceptTrue";
-                    break;
                 }
+                break;
             case "decline":
                 if (service.declineFriend(currentId, actionId)) {
                     message = "friendsDeclineTrue";
-                    break;
                 }
+                break;
             case "remove":
                 if (service.removeFriend(currentId, actionId)) {
                     message = "friendsRemoveTrue";
-                    break;
                 }
+                break;
             case "removeRequest":
                 if (service.removeFriend(currentId, actionId)) {
                     message = "removeRequestTrue";
-                    break;
                 }
+                break;
+            default:
+                throw new UnsupportedOperationException("action: \"" + action + "\" do not recognized");
         }
         if (request.getServletPath().equals("/account.jsp")) {
             response.sendRedirect("account.jsp?id=" + currentId + "&message=" + message + "&actionId=" + actionId);
