@@ -43,8 +43,6 @@ public class FriendsServlet extends HttpServlet {
                     break;
                 }
         }
-        System.out.println("----"+request.getRequestURI());
-        System.out.println(request.getContextPath());
         if (request.getServletPath().equals("/account.jsp")) {
             response.sendRedirect("account.jsp?id=" + currentId + "&message=" + message + "&actionId=" + actionId);
         } else {

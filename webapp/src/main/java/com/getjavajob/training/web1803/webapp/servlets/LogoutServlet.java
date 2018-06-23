@@ -11,7 +11,6 @@ public class LogoutServlet extends HttpServlet {
         session.removeAttribute("userName");
         session.removeAttribute("role");
         session.invalidate();
-
         Cookie cookieUsername = new Cookie("email", null);
         cookieUsername.setMaxAge(0);
         cookieUsername.setPath("/");

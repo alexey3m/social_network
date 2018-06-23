@@ -21,7 +21,7 @@ public class ConnectionPool implements Pool {
         if (properties == null) {
             properties = new Properties();
             try {
-                properties.load(this.getClass().getClassLoader().getResourceAsStream("DBconnect.properties"));
+                properties.load(this.getClass().getClassLoader().getResourceAsStream("DBconnectLocal.properties"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,7 +59,6 @@ public class ConnectionPool implements Pool {
     }
 
     private Connection newConnection() throws DaoException {
-        System.out.println("Create NEW connection!");
         String url = properties.getProperty("database.url");
         String user = properties.getProperty("database.user");
         String password = properties.getProperty("database.password");

@@ -143,7 +143,7 @@ public class GroupService {
             Group group = new Group();
             group.setId(id);
             group.setName(name);
-            group.setPhoto(IOUtils.toByteArray(photo));
+            group.setPhoto(photo != null ? IOUtils.toByteArray(photo) : null);
             group.setPhotoFileName(photoFileName);
             group.setInfo(info);
             return groupDAO.update(group);

@@ -67,6 +67,11 @@
         <jsp-file>/jsp/navbar.jsp</jsp-file>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>AccountMessJSP</servlet-name>
+        <jsp-file>/jsp/accountMess.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -123,6 +128,16 @@
         <servlet-class>com.getjavajob.training.web1803.webapp.servlets.UpdateGroupServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>MessageServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.MessageServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>GetImageMessageServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.GetImageMessageServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <filter>
         <filter-name>LoginFilter</filter-name>
@@ -176,8 +191,8 @@
         <url-pattern>/groups.jsp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-    <servlet-name>UpdateGroupJSP</servlet-name>
-    <url-pattern>/updateGroup.jsp</url-pattern>
+        <servlet-name>UpdateGroupJSP</servlet-name>
+        <url-pattern>/updateGroup.jsp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SearchJSP</servlet-name>
@@ -190,6 +205,10 @@
     <servlet-mapping>
         <servlet-name>NavbarJSP</servlet-name>
         <url-pattern>/navbar.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AccountMessJSP</servlet-name>
+        <url-pattern>/accountMess.jsp</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -227,6 +246,14 @@
     <servlet-mapping>
         <servlet-name>UpdateGroupServlet</servlet-name>
         <url-pattern>/UpdateGroupServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MessageServlet</servlet-name>
+        <url-pattern>/MessageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetImageMessageServlet</servlet-name>
+        <url-pattern>/GetImageMessageServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>10</session-timeout>

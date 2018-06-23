@@ -107,22 +107,12 @@ public class AccountService {
             account.setLastName(lastName);
             account.setMiddleName(middleName);
             account.setBirthday(birthday);
-            account.setPhoto(IOUtils.toByteArray(photo));
+            account.setPhoto(photo != null ? IOUtils.toByteArray(photo) : null);
             account.setPhotoFileName(photoFileName);
             account.setSkype(skype);
             account.setIcq(icq);
             return accountDAO.update(account);
         } catch (DaoException | IOException | DaoNameException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean updateRole(String email, Role role) {
-        try {
-            int id = accountDAO.getId(email);
-            return accountDAO.updateRole(id, role);
-        } catch (DaoException | DaoNameException e) {
             e.printStackTrace();
             return false;
         }

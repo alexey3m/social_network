@@ -29,6 +29,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="groups.jsp">My groups</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="accountMess.jsp">My messages</a>
+            </li>
         </ul>
         <div class="col-md-4 navs">
         <form class="form-inline my-2 my-lg-0" action="LogoutServlet">

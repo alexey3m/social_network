@@ -1,3 +1,5 @@
+package com.getjavajob.training.web1803.dao.test;
+
 import com.getjavajob.training.web1803.common.PhoneType;
 import com.getjavajob.training.web1803.dao.PhoneDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
@@ -31,7 +33,7 @@ public class PhoneDAOTest {
     @After
     public void terminateTables() {
         try (Statement statement = connectionPool.getConnection().createStatement()) {
-            statement.execute("DROP TABLE messages, account_in_group, soc_group, relationship, phone, account");
+            statement.execute("DROP TABLE message, account_in_group, soc_group, relationship, phone, account");
         } catch (SQLException e) {
             e.printStackTrace();
         }

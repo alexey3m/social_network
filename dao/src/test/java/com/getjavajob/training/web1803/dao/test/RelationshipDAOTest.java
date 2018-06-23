@@ -1,3 +1,5 @@
+package com.getjavajob.training.web1803.dao.test;
+
 import com.getjavajob.training.web1803.common.Status;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
@@ -23,16 +25,16 @@ public class RelationshipDAOTest {
     public void initDB() throws IOException, SQLException {
         connectionPool = new ConnectionPool();
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
-        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/" +
+        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/create-data-model.sql")));
-        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/" +
+        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/fillDB.sql")));
     }
 
     @After
     public void terminateTables() {
         try (Statement statement = connectionPool.getConnection().createStatement()) {
-            statement.execute("DROP TABLE messages, account_in_group, soc_group, relationship, phone, account");
+            statement.execute("DROP TABLE message, account_in_group, soc_group, relationship, phone, account");
         } catch (SQLException e) {
             e.printStackTrace();
         }

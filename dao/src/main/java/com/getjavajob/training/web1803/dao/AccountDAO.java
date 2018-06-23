@@ -201,12 +201,8 @@ public class AccountDAO {
         executePrepStatementUpdateString(id, account.getPhotoFileName(), this.connection, UPDATE_ACCOUNT_SET_PHOTO_FILE_NAME);
         executePrepStatementUpdateString(id, account.getSkype(), this.connection, UPDATE_ACCOUNT_SET_SKYPE);
         executePrepStatementUpdateInt(id, account.getIcq(), this.connection, UPDATE_ACCOUNT_SET_ICQ);
-        try {
-//            this.connection.commit();
-            return true;
-        } finally {
-            connectionPool.returnConnection(connection);
-        }
+        connectionPool.returnConnection(connection);
+        return true;
     }
 
     public boolean updateRole(int accountId, Role newRole) throws DaoException {
@@ -221,7 +217,6 @@ public class AccountDAO {
         try (PreparedStatement preparedStatement1 = this.connection.prepareStatement(REMOVE_ACCOUNT)) {
             preparedStatement1.setInt(1, id);
             preparedStatement1.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -231,11 +226,10 @@ public class AccountDAO {
     }
 
     private static void executePrepStatementUpdateInt(int id, int field, Connection connection, String query) throws DaoException {
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, field);
             preparedStatement.setInt(2, id);
-            System.out.println(preparedStatement.executeUpdate());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -252,7 +246,6 @@ public class AccountDAO {
             }
         }
     }
-
 
     private boolean insertRowInAccount(String email, String password, String firstName, String lastName, String middleName,
                                        String birthday, InputStream photo, String photoFileName, String skype, int icq,

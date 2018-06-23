@@ -12,10 +12,12 @@ import java.util.List;
 
 public class RelationshipService {
     private RelationshipDAO relationshipDAO;
+    AccountDAO accountDAO;
 
     public RelationshipService() {
         try {
             relationshipDAO = new RelationshipDAO();
+            accountDAO = new AccountDAO();
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -24,6 +26,7 @@ public class RelationshipService {
     //Constructor for tests
     public RelationshipService(RelationshipDAO relationshipDAO, AccountDAO accountDAO) {
         this.relationshipDAO = relationshipDAO;
+        this.accountDAO = accountDAO;
     }
 
     public boolean addQueryFriend(int idFrom, int idTo) {
@@ -85,7 +88,6 @@ public class RelationshipService {
         List<Account> friends = new ArrayList<>();
         try {
             friendsId = relationshipDAO.getFriendsIdList(id);
-            AccountDAO accountDAO = new AccountDAO();
             for (int idFriend : friendsId) {
                 friends.add(accountDAO.get(idFriend));
             }
@@ -101,7 +103,6 @@ public class RelationshipService {
         List<Account> friends = new ArrayList<>();
         try {
             friendsId = relationshipDAO.getPendingRequestToId(id);
-            AccountDAO accountDAO = new AccountDAO();
             for (int idFriend : friendsId) {
                 friends.add(accountDAO.get(idFriend));
             }
@@ -117,7 +118,6 @@ public class RelationshipService {
         List<Account> friends = new ArrayList<>();
         try {
             friendsId = relationshipDAO.getFriendRequestsFromId(id);
-            AccountDAO accountDAO = new AccountDAO();
             for (int idFriend : friendsId) {
                 friends.add(accountDAO.get(idFriend));
             }

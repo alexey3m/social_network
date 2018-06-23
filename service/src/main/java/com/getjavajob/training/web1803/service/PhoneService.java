@@ -22,7 +22,6 @@ public class PhoneService {
         this.phoneDAO = phoneDAO;
     }
 
-
     public boolean create(int accountId, String number, PhoneType type) {
         try {
             return phoneDAO.create(accountId, number, type);

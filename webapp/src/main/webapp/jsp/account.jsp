@@ -1,10 +1,13 @@
 <%@page import="com.getjavajob.training.web1803.service.AccountService" %>
 <%@page import="com.getjavajob.training.web1803.service.PhoneService" %>
+<%@page import="com.getjavajob.training.web1803.service.MessageService" %>
 <%@page import="com.getjavajob.training.web1803.service.RelationshipService" %>
 <%@page import="com.getjavajob.training.web1803.common.Account" %>
+<%@page import="com.getjavajob.training.web1803.common.Message" %>
 <%@page import="com.getjavajob.training.web1803.common.Role" %>
 <%@page import="com.getjavajob.training.web1803.common.Status" %>
 <%@page import="com.getjavajob.training.web1803.common.PhoneType" %>
+<%@page import="com.getjavajob.training.web1803.common.MessageType" %>
 <%@page import="java.util.Map" %>
 <%@page import="java.lang.Integer" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -40,9 +43,14 @@
     <c:set var="actionId" scope="page" value="${param.actionId}"/>
     <c:set var="actionAccount" scope="page" value="${accountService.get(actionId)}"/>
     <c:set var="account" scope="page" value="${accountService.get(id)}"/>
+    <c:set var="sessionId" scope="page" value="${sessionScope.id}"/>
+    <c:if test="${account == null}">
+        <c:redirect url="account.jsp?id=${sessionId}"/>
+    </c:if>
     <c:if test="${message == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Good!</strong> <br>Your friend request with ${actionAccount.firstName} ${actionAccount.lastName} was sent!
+            <strong>Good!</strong> <br>Your friend request with ${actionAccount.firstName} ${actionAccount.lastName} was
+            sent!
         </div>
     </c:if>
     <c:if test="${message == 'friendsAcceptTrue'}">
@@ -52,12 +60,14 @@
     </c:if>
     <c:if test="${message == 'friendsRemoveTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>It's a pity!</strong> <br>Now you are not friends with ${actionAccount.firstName} ${actionAccount.lastName}!
+            <strong>It's a pity!</strong> <br>Now you are not friends
+            with ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
     <c:if test="${message == 'removeRequestTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has been removed!
+            <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has
+            been removed!
         </div>
     </c:if>
 
@@ -90,14 +100,14 @@
                 <div class="control-panel">
                     Control panel<br>
                 </div>
-                <c:if test="${sessionScope.role == Role.ADMIN || sessionScope.id == id}">
+                <c:if test="${sessionScope.role == Role.ADMIN || sessionId == id}">
                     <div class="control-panel">
                         <a href="updateAccount.jsp?id=${id}">
                             <button type="button" class="btn btn-sm btn-primary">Update account</button>
                         </a>
                     </div>
                 </c:if>
-                <c:if test="${sessionScope.role == Role.ADMIN && sessionScope.id != id}">
+                <c:if test="${sessionScope.role == Role.ADMIN && sessionId != id}">
                     <c:set var="role" scope="page" value="${accountService.getRole(id)}"/>
                     <div class="control-panel">
                         <c:if test="${role == Role.ADMIN}">
@@ -113,7 +123,7 @@
                     </div>
                 </c:if>
                 <jsp:useBean id="relService" class="com.getjavajob.training.web1803.service.RelationshipService"/>
-                <c:set var="sessionId" scope="page" value="${sessionScope.id}"/>
+
                 <c:set var="status" scope="page" value="${relService.getStatus(sessionId, id)}"/>
                 <c:set var="pendingStatus" scope="page" value="${relService.getPendingRequestToMe(id, sessionId)}"/>
                 <c:if test="${sessionId != id && status == Status.UNKNOWN}">
@@ -152,11 +162,18 @@
                         </form>
                     </div>
                 </c:if>
-                <c:if test="${sessionScope.id == id}">
+                <c:if test="${sessionId == id}">
                     <div class="control-panel">
                         <form method="post" action="createGroup.jsp">
                             <button type="submit" class="btn btn-primary">Create group!</button>
                         </form>
+                    </div>
+                </c:if>
+                <c:if test="${sessionId != id}">
+                    <div class="control-panel">
+                        <a href="accountMess.jsp?assignId=${id}">
+                            <button type="submit" class="btn btn-primary">Send message!</button>
+                        </a>
                     </div>
                 </c:if>
             </div>
@@ -195,6 +212,67 @@
                 <div class="col-5">Role:</div>
                 <div class="col-5">${account.role}</div>
             </div>
+            <div class="row">
+                <hr/>
+                <h5>Wall</h5>
+                <hr>
+            </div>
+            <div class="card mb-1 box-shadow">
+                <div class="card-body">
+                    <form action="MessageServlet?action=new&type=accountWall&assignId=${account.id}"
+                          method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <label for="inputNewMessage" class="sr-only">New message</label>
+                            <textarea class="form-control" id="inputNewMessage" name="inputNewMessage" rows="3"
+                                      placeholder="New message"></textarea>
+                        </div>
+                        <div class="row blog-post">
+                            <div class="col">
+                                <input type="file" id="uploadImage" name="uploadImage" class="form-control-file">
+                            </div>
+                            <div class="float-right">
+                                <button type="submit" class="btn btn-outline-primary">Send message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <jsp:useBean id="messageService" class="com.getjavajob.training.web1803.service.MessageService"/>
+            <c:forEach var="message"
+                       items="${messageService.getAllByTypeAndAssignId(MessageType.ACCOUNT_WALL, account.id)}">
+                <c:set var="messageAccount" value="${accountService.get(message.userCreatorId)}"/>
+                <div class="card mb-1 box-shadow">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col">
+                                <p class="blog-post-meta">Posted ${message.createDate} by <a
+                                        href="account.jsp?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
+                                </p>
+                            </div>
+                            <div class="float-right">
+                                <c:if test="${sessionScope.role == Role.ADMIN || sessionId == id}">
+                                    <form action="MessageServlet?action=remove&type=accountWall&assignId=${account.id}&messageId=${message.id}"
+                                          method="post">
+                                        <button type="submit" class="btn btn-outline-primary">Remove</button>
+                                    </form>
+                                </c:if>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body form-inline">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="GetImageMessageServlet?id=${message.id}"
+                                     onerror="this.src='resources/img/no-image-group.png'" class="img-fluid"
+                                     alt="Responsive image">
+                            </div>
+                            <div class="col-md-7">
+                                <p>${message.text}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
         </div>
     </div>
 </main><!-- /.container -->

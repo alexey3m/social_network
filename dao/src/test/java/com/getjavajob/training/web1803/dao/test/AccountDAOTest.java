@@ -1,3 +1,5 @@
+package com.getjavajob.training.web1803.dao.test;
+
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.PhoneType;
 import com.getjavajob.training.web1803.common.Role;
@@ -31,15 +33,14 @@ public class AccountDAOTest {
         connectionPool = new ConnectionPool();
         phoneDAO = new PhoneDAO(connectionPool);
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
-        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-        runner.runScript(new BufferedReader(new FileReader("c:/java/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
-
+        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
+        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
     }
 
     @After
     public void terminateTables() {
         try (Statement statement = connectionPool.getConnection().createStatement()) {
-            statement.execute("DROP TABLE messages, account_in_group, soc_group, relationship, phone, account");
+            statement.execute("DROP TABLE message, account_in_group, soc_group, relationship, phone, account");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -120,9 +121,12 @@ public class AccountDAOTest {
 
     @Test
     public void getAllTest() throws DaoException {
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
+                "2018-06-08", Role.ADMIN, phones);
         Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
                 null, "1990-01-01", null, null, "bbbbb", 0,
                 "2018-06-13", Role.USER, new HashMap<>());
@@ -143,7 +147,7 @@ public class AccountDAOTest {
         phones.put("900", PhoneType.HOME);
         phones.put("901", PhoneType.WORK);
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
                 "2018-06-08", Role.ADMIN, phones);
         Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
                 null, "1990-01-01", null, null, "bbbbb", 0,
@@ -161,7 +165,7 @@ public class AccountDAOTest {
         phones.put("900", PhoneType.HOME);
         phones.put("901", PhoneType.WORK);
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
                 "2018-06-08", Role.ADMIN, phones);
         List<Account> expected = new ArrayList<>();
         expected.add(account1);
@@ -175,7 +179,7 @@ public class AccountDAOTest {
         phones.put("900", PhoneType.HOME);
         phones.put("901", PhoneType.WORK);
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
                 "2018-06-08", Role.ADMIN, phones);
         Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
                 null, "1990-01-01", null, null, "bbbbb", 0,
@@ -199,9 +203,12 @@ public class AccountDAOTest {
         accountUpdate.setPassword("456");
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "456", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -212,9 +219,12 @@ public class AccountDAOTest {
         accountUpdate.setFirstName("Ivan");
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "123", "Ivan", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -225,9 +235,12 @@ public class AccountDAOTest {
         accountUpdate.setLastName("Bondarev");
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "123", "Alexey", "Bondarev",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -238,9 +251,12 @@ public class AccountDAOTest {
         accountUpdate.setMiddleName("Vasilyevich");
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Vasilyevich", "1988-07-22", null, null, "aaaaa", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Vasilyevich", "1988-07-22", null, null, "aaaaa", 0,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -251,9 +267,12 @@ public class AccountDAOTest {
         accountUpdate.setBirthday("1990-01-01");
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1990-01-01", null, null, "aaaaa", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1990-01-01", null, null, "aaaaa", 0,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -264,9 +283,12 @@ public class AccountDAOTest {
         accountUpdate.setSkype("bbbbb");
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "bbbbb", 1234567890,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1988-07-22", null, null, "bbbbb", 0,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -274,12 +296,15 @@ public class AccountDAOTest {
     public void updateAccountIcqTest() throws DaoException {
         Account accountUpdate = new Account();
         accountUpdate.setId(1);
-        accountUpdate.setIcq(12345);
+        accountUpdate.setIcq(1234567);
         AccountDAO accountDAO = new AccountDAO(connectionPool, phoneDAO);
         accountDAO.update(accountUpdate);
+        Map<String, PhoneType> phones = new HashMap<>();
+        phones.put("900", PhoneType.HOME);
+        phones.put("901", PhoneType.WORK);
         Account expected = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 12345,
-                "2018-06-08", Role.ADMIN, new HashMap<>());
+                "Urievich", "1988-07-22", null, null, "aaaaa", 1234567,
+                "2018-06-08", Role.ADMIN, phones);
         assertEquals(expected, accountDAO.get(1));
     }
 

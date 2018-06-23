@@ -47,7 +47,7 @@ CREATE TABLE soc_group (
     photo MEDIUMBLOB,
     photo_file_name VARCHAR(255),
     create_date DATE,
-    info VARCHAR(255) NOT NULL,
+    info TEXT NOT NULL,
     user_creator_id INT NOT NULL,
     PRIMARY KEY (group_id),
     FOREIGN KEY (user_creator_id) REFERENCES account (account_id)
@@ -68,14 +68,15 @@ CREATE TABLE account_in_group (
         ON UPDATE CASCADE
 );
 
-CREATE TABLE messages (
+CREATE TABLE message (
     message_id INT NOT NULL AUTO_INCREMENT,
+    assign_id INT NOT NULL,
+    type TINYINT NOT NULL,
     photo MEDIUMBLOB,
     photo_file_name VARCHAR(255),
-    text VARCHAR(255) NOT NULL,
+    text TEXT,
     date_create DATE NOT NULL,
     user_creator_id INT NOT NULL,
-    purpose TINYINT NOT NULL,
     PRIMARY KEY (message_id),
     FOREIGN KEY (user_creator_id) REFERENCES account (account_id)
         ON DELETE CASCADE
