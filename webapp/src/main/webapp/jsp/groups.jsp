@@ -1,5 +1,3 @@
-<%@page import="com.getjavajob.training.web1803.service.GroupService" %>
-<%@page import="com.getjavajob.training.web1803.common.Group" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
@@ -17,14 +15,12 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <jsp:useBean id="groupService" class="com.getjavajob.training.web1803.service.GroupService"/>
-    <c:set var="sessionId" scope="page" value="${sessionScope.id}"/>
     <div>
         <h5>My groups</h5>
     </div>
-    <c:forEach var="group" items="${groupService.getAllById(sessionId)}">
+    <c:forEach var="group" items="${myGroups}">
         <div class="row row-groups">
-            <a href="group.jsp?id=${group.id}">
+            <a href="GroupViewServlet?id=${group.id}">
                     ${group.name}
             </a>
         </div>
@@ -32,9 +28,9 @@
     <div>
         <h5>All groups</h5>
     </div>
-    <c:forEach var="group" items="${groupService.getAll()}">
+    <c:forEach var="group" items="${allGroups}">
         <div class="row row-groups">
-            <a href="group.jsp?id=${group.id}">
+            <a href="GroupViewServlet?id=${group.id}">
                     ${group.name}
             </a>
         </div>

@@ -1,10 +1,9 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
-import com.getjavajob.training.web1803.common.PhoneType;
-import com.getjavajob.training.web1803.common.Role;
+import com.getjavajob.training.web1803.common.enums.PhoneType;
+import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.AccountService;
-import com.getjavajob.training.web1803.service.PhoneService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @MultipartConfig
 public class RegServlet extends HttpServlet {
@@ -54,17 +52,14 @@ public class RegServlet extends HttpServlet {
             photoFileName = filePart.getName();
         }
         AccountService accountService = new AccountService();
-        PhoneService phoneService = new PhoneService();
         try {
-            accountService.create(email, password, firstName, lastName, middleName, birthday, photo,
-                    photoFileName, skype, icq, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), Role.USER);
-            int id = accountService.getId(email);
-            for (Entry<String, PhoneType> phone : phones.entrySet()) {
-                phoneService.create(id, phone.getKey(), phone.getValue());
-            }
-            response.sendRedirect("login.jsp?&message=reg");
+            accountService.create(email, password, firstName, lastName, middleName, birthday, photo, photoFileName, skype,
+                    icq, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), Role.USER, phones);
+            response.sendRedirect("login.jsp?&infoMessage=reg");
         } catch (DaoNameException e) {
-            response.sendRedirect("reg.jsp?message=emailFalse");
+            response.sendRedirect("reg.jsp?infoMessage=emailFalse");
+        } finally {
+            accountService.closeService();
         }
     }
 }

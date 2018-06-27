@@ -1,6 +1,6 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
-import com.getjavajob.training.web1803.common.Role;
+import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.service.AccountService;
 
 import javax.servlet.http.HttpServlet;
@@ -21,6 +21,7 @@ public class UpdateRoleServlet extends HttpServlet {
             service.updateRole(actionId, Role.ADMIN);
             message = "updateRoleAdmin";
         }
-        response.sendRedirect("account.jsp?id=" + actionId + "&message=" + message);
+        service.closeService();
+        response.sendRedirect("AccountViewServlet?id=" + actionId + "&infoMessage=" + message);
     }
 }

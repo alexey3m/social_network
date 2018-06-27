@@ -1,8 +1,7 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
-import com.getjavajob.training.web1803.common.PhoneType;
+import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.service.AccountService;
-import com.getjavajob.training.web1803.service.PhoneService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -50,14 +49,13 @@ public class UpdateAccountServlet extends HttpServlet {
             photoFileName = filePart.getName();
         }
         AccountService accountService = new AccountService();
-        PhoneService phoneService = new PhoneService();
-        boolean result1 = accountService.update(email, password, firstName, lastName, middleName, birthday, photo,
-                    photoFileName, skype, icq);
-        boolean result2 = phoneService.update(id, phones);
-        if (result1 && result2) {
-            response.sendRedirect("account.jsp?id=" + id + "&message=updateTrue");
+        boolean result = accountService.update(email, password, firstName, lastName, middleName, birthday, photo,
+                photoFileName, skype, icq, phones);
+        accountService.closeService();
+        if (result) {
+            response.sendRedirect("AccountViewServlet?id=" + id + "&infoMessage=updateTrue");
         } else {
-            response.sendRedirect("account.jsp?id=" + id + "&message=updateFalse");
+            response.sendRedirect("AccountViewServlet?id=" + id + "&infoMessage=updateFalse");
         }
     }
 }

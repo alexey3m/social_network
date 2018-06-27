@@ -1,7 +1,8 @@
 package com.getjavajob.training.web1803.service;
 
 import com.getjavajob.training.web1803.common.Message;
-import com.getjavajob.training.web1803.common.MessageType;
+import com.getjavajob.training.web1803.common.enums.MessageType;
+import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.MessageDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
@@ -12,26 +13,22 @@ import java.util.Map;
 
 public class MessageService {
     private MessageDAO messageDAO;
+    private ConnectionPool connectionPool;
+
 
     public MessageService() {
-        try {
-            messageDAO = new MessageDAO();
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
+        connectionPool = ConnectionPool.getPool();
+        messageDAO = MessageDAO.getInstance();
     }
-
-    //Constructor for tests
-    public MessageService(MessageDAO messageDAO) {
-        this.messageDAO = messageDAO;
-    }
-
 
     public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName,
                           String text, String createDate, int userCreatorId) {
         try {
-            return messageDAO.create(groupId, accountId, type, photo, photoFileName, text, createDate, userCreatorId);
+            int id = messageDAO.create(groupId, accountId, type, photo, photoFileName, text, createDate, userCreatorId);
+            connectionPool.commit();
+            return id;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return 0;
         }
@@ -76,10 +73,17 @@ public class MessageService {
 
     public boolean remove(int id) {
         try {
-            return messageDAO.remove(id);
+            messageDAO.remove(id);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void closeService() {
+        connectionPool.returnConnection();
     }
 }

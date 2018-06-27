@@ -1,7 +1,3 @@
-<%@page import="com.getjavajob.training.web1803.service.AccountService" %>
-<%@page import="com.getjavajob.training.web1803.service.GroupService" %>
-<%@page import="com.getjavajob.training.web1803.common.Account" %>
-<%@page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
@@ -19,9 +15,6 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <jsp:useBean id="accountService" class="com.getjavajob.training.web1803.service.AccountService"/>
-    <jsp:useBean id="groupService" class="com.getjavajob.training.web1803.service.GroupService"/>
-    <c:set var="searchString" value="${param.inputSearch}"/>
     <div>
         <h5>Search result for string "${searchString}"</h5>
     </div>
@@ -32,10 +25,10 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach var="account" items="${accountService.searchByString(searchString)}">
+        <c:forEach var="account" items="${findAccounts}">
             <tr>
                 <th>
-                    <a href="account.jsp?id=${account.id}">${account.firstName} ${account.middleName} ${account.lastName}</a>
+                    <a href="AccountViewServlet?id=${account.id}">${account.firstName} ${account.middleName} ${account.lastName}</a>
                 </th>
             </tr>
         </c:forEach>
@@ -48,10 +41,10 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach var="group" items="${groupService.searchByString(searchString)}">
+        <c:forEach var="group" items="${findGroups}">
             <tr>
                 <th>
-                    <a href="group.jsp?id=${group.id}">${group.name}</a>
+                    <a href="GroupViewServlet?id=${group.id}">${group.name}</a>
                 </th>
             </tr>
         </c:forEach>

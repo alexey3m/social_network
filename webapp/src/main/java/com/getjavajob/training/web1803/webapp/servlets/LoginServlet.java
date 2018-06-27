@@ -29,13 +29,15 @@ public class LoginServlet extends HttpServlet {
             email = request.getParameter("inputEmail");
             password = request.getParameter("inputPassword");
         }
-        AccountService service = new AccountService();
+        AccountService service = null;
         try {
+            service = new AccountService();
             int id = service.loginAndGetId(email, password);
             Account currentAccount = service.get(id);
             HttpSession session = request.getSession(true);
             session.setAttribute(EMAIL, email);
             session.setAttribute("id", id);
+            session.setAttribute("email", email);
             session.setAttribute("userName", currentAccount.getFirstName() + " " + currentAccount.getLastName());
             session.setAttribute("role", currentAccount.getRole());
             String rememberMeActive = request.getParameter("rememberMe");
@@ -47,10 +49,11 @@ public class LoginServlet extends HttpServlet {
                 response.addCookie(cookiePassword);
                 response.addCookie(cookieId);
             }
-            response.sendRedirect("account.jsp?id=" + id);
+            response.sendRedirect("AccountViewServlet?id=" + id);
         } catch (DaoNameException e) {
-            response.sendRedirect("login.jsp?message=alert");
+            response.sendRedirect("login.jsp?infoMessage=alert");
         }
+        service.closeService();
     }
 
     @Override

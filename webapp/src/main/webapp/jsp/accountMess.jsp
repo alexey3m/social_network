@@ -1,8 +1,3 @@
-<%@page import="com.getjavajob.training.web1803.service.MessageService" %>
-<%@page import="com.getjavajob.training.web1803.service.AccountService" %>
-<%@page import="com.getjavajob.training.web1803.common.Message" %>
-<%@page import="com.getjavajob.training.web1803.common.Account" %>
-<%@page import="com.getjavajob.training.web1803.common.MessageType" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
@@ -20,30 +15,22 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <jsp:useBean id="messageService" class="com.getjavajob.training.web1803.service.MessageService"/>
-    <jsp:useBean id="accountService" class="com.getjavajob.training.web1803.service.AccountService"/>
-    <c:set var="sessionId" scope="page" value="${sessionScope.id}"/>
-    <c:set var="assignId" scope="page" value="${param.assignId}"/>
-    <c:if test="${assignId == null}">
-        <c:set var="assignId" scope="page" value="${param.id}"/>
-    </c:if>
-    <c:set var="newMessageAccount" value="${accountService.get(assignId)}"/>
     <div class="row">
         <div class="col-md-3">
             <h5>Contacts</h5>
-            <c:forEach var="accountId" items="${messageService.getAllAccountIdDialog(sessionId)}">
-                <c:set var="account" value="${accountService.get(accountId)}"/>
+            <c:forEach var="account" items="${contacts}">
                 <div class="row">
-                    <a href="accountMess.jsp?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
+                    <a href="AccountMessViewServlet?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
                 </div>
             </c:forEach>
         </div>
         <div class="col-md-9">
-            <c:if test="${assignId != null}">
+            <c:if test="${assignId != 0}">
                 <h5>New message</h5>
                 <div class="card mb-1 box-shadow">
                     <div class="card-header">
-                        To <a href="account.jsp?id=${newMessageAccount.id}">${newMessageAccount.firstName} ${newMessageAccount.lastName}</a>
+                        To <a
+                            href="AccountViewServlet?id=${newMessageAccount.id}">${newMessageAccount.firstName} ${newMessageAccount.lastName}</a>
                     </div>
                     <div class="card-body">
                         <form action="MessageServlet?action=new&type=account&assignId=${assignId}"
@@ -65,16 +52,14 @@
                     </div>
                 </div>
                 <h5>Messages</h5>
-                <c:forEach var="messageEntry" items="${messageService.getAllByCurrentIdAssignId(sessionId, assignId)}">
-                    <c:set var="message" value="${messageService.get(messageEntry.key)}"/>
-
-                    <c:set var="messageAccount" value="${accountService.get(message.userCreatorId)}"/>
+                <c:forEach var="message" items="${allMessages}">
+                    <c:set var="messageAccount" value="${allAccountsMessages[message.userCreatorId]}"/>
                     <div class="card mb-1 box-shadow">
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
                                     <p class="blog-post-meta">Posted ${message.createDate} by <a
-                                            href="account.jsp?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
+                                            href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                     </p>
                                 </div>
                                 <div class="float-right">

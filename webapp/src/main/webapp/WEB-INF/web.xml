@@ -138,6 +138,47 @@
         <servlet-class>com.getjavajob.training.web1803.webapp.servlets.GetImageMessageServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>AccountViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.AccountViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateAccountViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.UpdateAccountViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>GroupViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.GroupViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateGroupViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.UpdateGroupViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>GroupsViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.GroupsViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>AccountMessViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.AccountMessViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>FriendsViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.FriendsViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>SearchResultViewServlet</servlet-name>
+        <servlet-class>com.getjavajob.training.web1803.webapp.servlets.view.SearchResultViewServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
 
     <filter>
         <filter-name>LoginFilter</filter-name>
@@ -146,7 +187,7 @@
 
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
-        <url-pattern>*.jsp</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
 
@@ -255,6 +296,40 @@
         <servlet-name>GetImageMessageServlet</servlet-name>
         <url-pattern>/GetImageMessageServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AccountViewServlet</servlet-name>
+        <url-pattern>/AccountViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateAccountViewServlet</servlet-name>
+        <url-pattern>/UpdateAccountViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GroupViewServlet</servlet-name>
+        <url-pattern>/GroupViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateGroupViewServlet</servlet-name>
+        <url-pattern>/UpdateGroupViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GroupsViewServlet</servlet-name>
+        <url-pattern>/GroupsViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AccountMessViewServlet</servlet-name>
+        <url-pattern>/AccountMessViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FriendsViewServlet</servlet-name>
+        <url-pattern>/FriendsViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchResultViewServlet</servlet-name>
+        <url-pattern>/SearchResultViewServlet</url-pattern>
+    </servlet-mapping>
+
+
     <session-config>
         <session-timeout>10</session-timeout>
     </session-config>

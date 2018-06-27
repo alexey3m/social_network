@@ -26,10 +26,12 @@ public class UpdateGroupServlet extends HttpServlet {
             photoFileName = filePart.getName();
         }
         GroupService service = new GroupService();
-        if (service.update(name, photo, photoFileName, info)) {
-            response.sendRedirect("group.jsp?id=" + id + "&message=updateTrue");
+        boolean result = service.update(name, photo, photoFileName, info);
+        service.closeService();
+        if (result) {
+            response.sendRedirect("GroupViewServlet?id=" + id + "&infoMessage=updateTrue");
         } else {
-            response.sendRedirect("group.jsp?id=" + id + "&message=updateFalse");
+            response.sendRedirect("GroupViewServlet?id=" + id + "&infoMessage=updateFalse");
         }
     }
 }

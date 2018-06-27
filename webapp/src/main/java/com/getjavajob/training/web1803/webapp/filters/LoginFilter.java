@@ -25,18 +25,35 @@ public class LoginFilter implements Filter {
                 cookieMap.put(item.getName(), item);
             }
         }
-        boolean loggedIn = session != null && session.getAttribute("email") != null;
+
+        String uri = request.getRequestURI();
+        boolean loggedIn = session == null || session.getAttribute("email") == null;
         boolean cookieExists = cookieMap.get("email") != null;
-        if (request.getServletPath().equals("/login.jsp") || request.getServletPath().equals("/reg.jsp")) {
+        if (uri.endsWith("/login.jsp") || uri.endsWith("/reg.jsp") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegServlet") || uri.endsWith(".css")) {
             chain.doFilter(request, response);
-        } else if (!loggedIn && cookieExists) {
+        } else if (loggedIn && cookieExists) {
             RequestDispatcher dispatcher = request.getRequestDispatcher("LoginServlet?cookie=true");
             dispatcher.forward(request, response);
-        } else if (!loggedIn || request.getServletPath().equals("/index.jsp")) {
-            response.sendRedirect("login.jsp");
+        } else if (loggedIn || uri.endsWith("/index.jsp")) {
+            response.sendRedirect("/login.jsp");
         } else {
             chain.doFilter(request, response);
         }
+
+//        String uri = request.getRequestURI();
+//        boolean loggedIn = session == null || session.getAttribute("email") != null;
+//        System.out.println("uri " + uri + " loggedIn " + loggedIn);
+//        boolean cookieExists = cookieMap.get("email") != null;
+//        if (uri.endsWith("/login.jsp") || uri.endsWith("/reg.jsp") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegServlet") || uri.endsWith(".css")) {
+//            chain.doFilter(request, response);
+//        } else if (!loggedIn && cookieExists) {
+//            request.getRequestDispatcher("LoginServlet?cookie=true").forward(request, response);
+//        } else if (loggedIn) {
+////            request.getRequestDispatcher("/login.jsp").forward(req, resp);
+//            response.sendRedirect("/login.jsp");
+//        } else {
+//            chain.doFilter(request, response);
+//        }
     }
 
     public void init(FilterConfig config) {

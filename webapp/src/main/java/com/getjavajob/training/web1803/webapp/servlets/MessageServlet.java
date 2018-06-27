@@ -1,6 +1,6 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
-import com.getjavajob.training.web1803.common.MessageType;
+import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.service.MessageService;
 
 import javax.servlet.ServletException;
@@ -22,22 +22,22 @@ public class MessageServlet extends HttpServlet {
         int groupId = 0;
         int accountId = 0;
         MessageType type = null;
-        String location = null;
+        String location;
         switch (inputType) {
             case "accountWall":
                 type = MessageType.ACCOUNT_WALL;
                 accountId = assignId;
-                location = "account.jsp";
+                location = "AccountViewServlet";
                 break;
             case "account":
                 type = MessageType.ACCOUNT;
                 accountId = assignId;
-                location = "accountMess.jsp";
+                location = "AccountMessViewServlet";
                 break;
             case "groupWall":
                 type = MessageType.GROUP_WALL;
                 groupId = assignId;
-                location = "group.jsp";
+                location = "GroupViewServlet";
                 break;
             default:
                 location = "";
@@ -59,6 +59,7 @@ public class MessageServlet extends HttpServlet {
             int messageId = Integer.valueOf(request.getParameter("messageId"));
             service.remove(messageId);
         }
+        service.closeService();
         response.sendRedirect(location + "?id=" + assignId);
     }
 }

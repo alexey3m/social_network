@@ -30,12 +30,14 @@ public class CreateGroupServlet extends HttpServlet {
         try {
             boolean result = service.create(name, photo, photoFileName, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), info, idCreator);
             if (!result) {
-                response.sendRedirect("createGroup.jsp?message=smFalse");
+                response.sendRedirect("createGroup.jsp?infoMessage=smFalse");
             } else {
-                response.sendRedirect("group.jsp?id=" + service.getId(name) + "&message=reg");
+                response.sendRedirect("GroupViewServlet?id=" + service.getId(name) + "&infoMessage=reg");
             }
         } catch (DaoNameException e) {
-            response.sendRedirect("createGroup.jsp?message=nameFalse&name=" + name);
+            response.sendRedirect("createGroup.jsp?infoMessage=nameFalse&name=" + name);
+        } finally {
+            service.closeService();
         }
     }
 }

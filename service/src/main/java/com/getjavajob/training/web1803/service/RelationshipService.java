@@ -1,8 +1,9 @@
 package com.getjavajob.training.web1803.service;
 
 import com.getjavajob.training.web1803.common.Account;
-import com.getjavajob.training.web1803.common.Status;
+import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.AccountDAO;
+import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
@@ -12,54 +13,59 @@ import java.util.List;
 
 public class RelationshipService {
     private RelationshipDAO relationshipDAO;
-    AccountDAO accountDAO;
+    private AccountDAO accountDAO;
+    private ConnectionPool connectionPool;
+
 
     public RelationshipService() {
-        try {
-            relationshipDAO = new RelationshipDAO();
-            accountDAO = new AccountDAO();
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
+        connectionPool = ConnectionPool.getPool();
+        relationshipDAO = RelationshipDAO.getInstance();
+        accountDAO = AccountDAO.getInstance();
     }
 
-    //Constructor for tests
-    public RelationshipService(RelationshipDAO relationshipDAO, AccountDAO accountDAO) {
-        this.relationshipDAO = relationshipDAO;
-        this.accountDAO = accountDAO;
-    }
-
-    public boolean addQueryFriend(int idFrom, int idTo) {
+    public boolean addQueryFriend(int idFrom, int idTo) throws DaoException {
         try {
-            return idFrom < idTo ? relationshipDAO.createQueryFriend(idFrom, idTo, idFrom) : relationshipDAO.createQueryFriend(idTo, idFrom, idFrom);
+            boolean result = idFrom < idTo ? relationshipDAO.createQueryFriend(idFrom, idTo, idFrom) : relationshipDAO.createQueryFriend(idTo, idFrom, idFrom);
+            connectionPool.commit();
+            return result;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean acceptFriend(int idFrom, int idTo) {
+    public boolean acceptFriend(int idFrom, int idTo) throws DaoException {
         try {
-            return idFrom < idTo ? relationshipDAO.updateQueryFriend(idFrom, idTo, 1, idFrom) : relationshipDAO.updateQueryFriend(idTo, idFrom, 1, idFrom);
+            boolean result = idFrom < idTo ? relationshipDAO.updateQueryFriend(idFrom, idTo, 1, idFrom) : relationshipDAO.updateQueryFriend(idTo, idFrom, 1, idFrom);
+            connectionPool.commit();
+            return result;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean declineFriend(int idFrom, int idTo) {
+    public boolean declineFriend(int idFrom, int idTo) throws DaoException {
         try {
-            return idFrom < idTo ? relationshipDAO.updateQueryFriend(idFrom, idTo, 2, idFrom) : relationshipDAO.updateQueryFriend(idTo, idFrom, 2, idFrom);
+            boolean result = idFrom < idTo ? relationshipDAO.updateQueryFriend(idFrom, idTo, 2, idFrom) : relationshipDAO.updateQueryFriend(idTo, idFrom, 2, idFrom);
+            connectionPool.commit();
+            return result;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean removeFriend(int idFrom, int idTo) {
+    public boolean removeFriend(int idFrom, int idTo) throws DaoException {
         try {
-            return idFrom < idTo ? relationshipDAO.removeFriend(idFrom, idTo) : relationshipDAO.removeFriend(idTo, idFrom);
+            boolean result = idFrom < idTo ? relationshipDAO.removeFriend(idFrom, idTo) : relationshipDAO.removeFriend(idTo, idFrom);
+            connectionPool.commit();
+            return result;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -126,5 +132,9 @@ public class RelationshipService {
             return Collections.emptyList();
         }
         return friends;
+    }
+
+    public void closeService() {
+        connectionPool.returnConnection();
     }
 }

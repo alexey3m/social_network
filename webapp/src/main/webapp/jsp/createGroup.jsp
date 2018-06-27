@@ -15,14 +15,14 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <c:set var="message" scope="page" value="${param.message}"/>
+    <c:set var="infoMessage" scope="page" value="${param.infoMessage}"/>
     <c:set var="oldName" scope="page" value="${param.name}"/>
-    <c:if test="${message == 'nameFalse'}">
+    <c:if test="${infoMessage == 'nameFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Error!</strong> <br>Name "${oldName}" already used!
         </div>
     </c:if>
-    <c:if test="${message == 'smFalse'}">
+    <c:if test="${infoMessage == 'smFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Error!</strong> <br>Something went wrong!
         </div>
