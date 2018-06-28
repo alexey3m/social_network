@@ -1,5 +1,7 @@
 package com.getjavajob.training.web1803.common;
 
+import com.getjavajob.training.web1803.common.enums.MessageType;
+
 import java.util.Objects;
 
 public class Message {

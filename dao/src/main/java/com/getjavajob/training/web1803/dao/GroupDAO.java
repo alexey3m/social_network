@@ -1,8 +1,8 @@
 package com.getjavajob.training.web1803.dao;
 
 import com.getjavajob.training.web1803.common.Group;
-import com.getjavajob.training.web1803.common.GroupRole;
-import com.getjavajob.training.web1803.common.GroupStatus;
+import com.getjavajob.training.web1803.common.enums.GroupRole;
+import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 
@@ -39,25 +39,31 @@ public class GroupDAO {
     private static final String REMOVE_GROUP = "DELETE FROM soc_group WHERE group_id = ?";
     private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
 
-    private Connection connection;
-    private Pool connectionPool;
+    private Pool pool;
+    private static GroupDAO groupDAO;
 
-    public GroupDAO() throws DaoException {
-        connectionPool = ConnectionPool.getPool();
+    private GroupDAO() {
+        pool = ConnectionPool.getPool();
     }
 
-    // Constructor for tests
-    public GroupDAO(Pool connectionPool) {
-        this.connectionPool = connectionPool;
+    //Constructor for tests
+    public GroupDAO(Pool pool) {
+        this.pool = pool;
+    }
+
+    public static GroupDAO getInstance() {
+        if (groupDAO == null) {
+            groupDAO = new GroupDAO();
+        }
+        return groupDAO;
     }
 
     public boolean create(String name, InputStream photo, String photoFileName, String createDate, String info, int userCreatorId) throws DaoNameException, DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_GROUP_BY_NAME)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GROUP_BY_NAME)) {
             preparedStatement.setString(1, name);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
-//                    this.connection.commit();
                     return insertGroup(name, photo, photoFileName, createDate, info, userCreatorId);
                 } else {
                     throw new DaoNameException("Group name \"" + name + "\" is already used.");
@@ -65,15 +71,13 @@ public class GroupDAO {
             }
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public Group get(int groupId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SELECT_GROUP_BY_ID);
-             PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementGroup = connection.prepareStatement(SELECT_GROUP_BY_ID);
+             PreparedStatement preparedStatementMembers = connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
             preparedStatementGroup.setInt(1, groupId);
             preparedStatementMembers.setInt(1, groupId);
             try (ResultSet resultSetGroup = preparedStatementGroup.executeQuery();
@@ -85,17 +89,15 @@ public class GroupDAO {
             return null;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public List<Group> getAll() throws DaoException {
-        connection = connectionPool.getConnection();
-        try (ResultSet resultSetGroups = this.connection.createStatement().executeQuery(SELECT_ALL_GROUPS)) {
+        Connection connection = pool.getConnection();
+        try (ResultSet resultSetGroups = connection.createStatement().executeQuery(SELECT_ALL_GROUPS)) {
             List<Group> groups = new ArrayList<>();
             while (resultSetGroups.next()) {
-                try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
                     preparedStatement.setInt(1, resultSetGroups.getInt(COLUMN_GROUP_ID));
                     try (ResultSet resultSetMembers = preparedStatement.executeQuery()) {
                         groups.add(createGroupFromResult(resultSetGroups, resultSetMembers));
@@ -105,15 +107,13 @@ public class GroupDAO {
             return groups;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public List<Group> getAllById(int userId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SELECT_GROUPS_ID_BY_USER_MEMBER_ID);
-             PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementGroup = connection.prepareStatement(SELECT_GROUPS_ID_BY_USER_MEMBER_ID);
+             PreparedStatement preparedStatementMembers = connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
             preparedStatementGroup.setInt(1, userId);
             List<Group> groups = new ArrayList<>();
             try (ResultSet resultSetGroup = preparedStatementGroup.executeQuery()) {
@@ -127,15 +127,13 @@ public class GroupDAO {
             return groups;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public List<Group> searchByString(String search) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(SEARCH_GROUPS_BY_STRING);
-             PreparedStatement preparedStatementMembers = this.connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementGroup = connection.prepareStatement(SEARCH_GROUPS_BY_STRING);
+             PreparedStatement preparedStatementMembers = connection.prepareStatement(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP)) {
             preparedStatementGroup.setString(1, "%" + search.toLowerCase() + "%");
             List<Group> groups = new ArrayList<>();
             try (ResultSet resultSetGroup = preparedStatementGroup.executeQuery()) {
@@ -149,14 +147,12 @@ public class GroupDAO {
             return groups;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
-    public int getId(String name) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_GROUPS_ID_BY_NAME)) {
+    public int getId(String name) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementGroupID = connection.prepareStatement(SELECT_GROUPS_ID_BY_NAME)) {
             preparedStatementGroupID.setString(1, name);
             try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
                 if (resultSet.next()) {
@@ -165,15 +161,13 @@ public class GroupDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            connectionPool.returnConnection(connection);
         }
         return -1;
     }
 
-    public GroupRole getRoleMemberInGroup(int groupId, int memberId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_ROLE_MEMBER)) {
+    public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementGroupID = connection.prepareStatement(SELECT_ROLE_MEMBER)) {
             preparedStatementGroupID.setInt(1, groupId);
             preparedStatementGroupID.setInt(2, memberId);
             try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
@@ -181,15 +175,13 @@ public class GroupDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            connectionPool.returnConnection(connection);
         }
         return null;
     }
 
-    public GroupStatus getStatusMemberInGroup(int groupId, int memberId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementGroupID = this.connection.prepareStatement(SELECT_STATUS_MEMBER)) {
+    public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementGroupID = connection.prepareStatement(SELECT_STATUS_MEMBER)) {
             preparedStatementGroupID.setInt(1, groupId);
             preparedStatementGroupID.setInt(2, memberId);
             try (ResultSet resultSet = preparedStatementGroupID.executeQuery()) {
@@ -197,19 +189,17 @@ public class GroupDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            connectionPool.returnConnection(connection);
         }
         return null;
     }
 
     public boolean update(Group group) throws DaoException {
-        connection = connectionPool.getConnection();
+        Connection connection = pool.getConnection();
         int id = group.getId();
-        executePrepStatementUpdateString(id, group.getName(), this.connection, UPDATE_GROUP_SET_NAME);
+        executePrepStatementUpdateString(id, group.getName(), connection, UPDATE_GROUP_SET_NAME);
         byte[] photo = group.getPhoto();
         if (photo != null) {
-            try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_GROUP_SET_PHOTO)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_GROUP_SET_PHOTO)) {
                 preparedStatement.setBytes(1, photo);
                 preparedStatement.setInt(2, id);
                 preparedStatement.executeUpdate();
@@ -217,100 +207,81 @@ public class GroupDAO {
                 throw new DaoException(e);
             }
         }
-        executePrepStatementUpdateString(id, group.getPhotoFileName(), this.connection, UPDATE_GROUP_SET_PHOTO_FILE_NAME);
-        executePrepStatementUpdateString(id, group.getInfo(), this.connection, UPDATE_GROUP_SET_INFO);
-        try {
-//            this.connection.commit();
-            return true;
-        } finally {
-            connectionPool.returnConnection(connection);
-        }
+        executePrepStatementUpdateString(id, group.getPhotoFileName(), connection, UPDATE_GROUP_SET_PHOTO_FILE_NAME);
+        executePrepStatementUpdateString(id, group.getInfo(), connection, UPDATE_GROUP_SET_INFO);
+        return true;
     }
 
     public boolean addPendingMemberToGroup(int idGroup, int idNewMember) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_ACCOUNT_IN_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ACCOUNT_IN_GROUP)) {
             preparedStatement.setInt(1, idGroup);
             preparedStatement.setInt(2, idNewMember);
             preparedStatement.setInt(3, GroupRole.USER.getStatus());
             preparedStatement.setInt(4, GroupStatus.PENDING.getStatus());
             preparedStatement.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public boolean setStatusMemberInGroup(int idGroup, int member, GroupStatus status) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_STATUS_MEMBER)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STATUS_MEMBER)) {
             preparedStatement.setInt(1, status.getStatus());
             preparedStatement.setInt(2, idGroup);
             preparedStatement.setInt(3, member);
             preparedStatement.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public boolean setRoleMemberInGroup(int idGroup, int member, GroupRole role) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(UPDATE_ROLE_MEMBER)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ROLE_MEMBER)) {
             preparedStatement.setInt(1, role.getStatus());
             preparedStatement.setInt(2, idGroup);
             preparedStatement.setInt(3, member);
             preparedStatement.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(REMOVE_ACCOUNT_IN_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_ACCOUNT_IN_GROUP)) {
             preparedStatement.setInt(1, idMemberToDelete);
             preparedStatement.setInt(2, idGroup);
             preparedStatement.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public boolean remove(int idGroup) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatementMembers = this.connection.prepareStatement(REMOVE_ALL_ACCOUNTS_IN_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatementMembers = connection.prepareStatement(REMOVE_ALL_ACCOUNTS_IN_GROUP)) {
             preparedStatementMembers.setInt(1, idGroup);
             preparedStatementMembers.executeUpdate();
-            try (PreparedStatement preparedStatementGroup = this.connection.prepareStatement(REMOVE_GROUP)) {
+            try (PreparedStatement preparedStatementGroup = connection.prepareStatement(REMOVE_GROUP)) {
                 preparedStatementGroup.setInt(1, idGroup);
                 preparedStatementGroup.executeUpdate();
-//                this.connection.commit();
                 return true;
             }
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     private boolean insertGroup(String name, InputStream photo, String photoFileName, String createDate, String info, int userCreatorId) throws DaoException {
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_GROUP)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GROUP)) {
             preparedStatement.setString(1, name);
             preparedStatement.setBlob(2, photo);
             preparedStatement.setString(3, photoFileName);
@@ -319,7 +290,7 @@ public class GroupDAO {
             preparedStatement.setInt(6, userCreatorId);
             preparedStatement.executeUpdate();
             int groupId = getId(name);
-            try (PreparedStatement preparedStatementInsertAccountInGroup = this.connection.prepareStatement(INSERT_ACCOUNT_IN_GROUP)) {
+            try (PreparedStatement preparedStatementInsertAccountInGroup = connection.prepareStatement(INSERT_ACCOUNT_IN_GROUP)) {
                 preparedStatementInsertAccountInGroup.setInt(1, groupId);
                 preparedStatementInsertAccountInGroup.setInt(2, userCreatorId);
                 preparedStatementInsertAccountInGroup.setInt(3, GroupRole.ADMIN.getStatus());

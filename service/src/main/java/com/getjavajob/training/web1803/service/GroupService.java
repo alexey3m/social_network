@@ -1,7 +1,11 @@
 package com.getjavajob.training.web1803.service;
 
-import com.getjavajob.training.web1803.common.*;
+import com.getjavajob.training.web1803.common.Group;
+import com.getjavajob.training.web1803.common.enums.GroupRole;
+import com.getjavajob.training.web1803.common.enums.GroupStatus;
+import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.GroupDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.apache.commons.io.IOUtils;
@@ -13,25 +17,27 @@ import java.util.List;
 
 public class GroupService {
     private GroupDAO groupDAO;
+    private Pool connectionPool;
+
 
     public GroupService() {
-        try {
-            groupDAO = new GroupDAO();
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
+        connectionPool = ConnectionPool.getPool();
+        groupDAO = GroupDAO.getInstance();
     }
 
     //Constructor for tests
-    public GroupService(GroupDAO groupDAO) {
+    public GroupService(GroupDAO groupDAO, Pool connectionPool) {
         this.groupDAO = groupDAO;
+        this.connectionPool = connectionPool;
     }
-
 
     public boolean create(String name, InputStream photo, String photoFileName, String createDate, String info, int userCreatorId) throws DaoNameException {
         try {
-            return groupDAO.create(name, photo, photoFileName, createDate, info, userCreatorId);
+            groupDAO.create(name, photo, photoFileName, createDate, info, userCreatorId);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -74,27 +80,20 @@ public class GroupService {
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
-        try {
-            return groupDAO.getRoleMemberInGroup(groupId, memberId);
-        } catch (DaoException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return groupDAO.getRoleMemberInGroup(groupId, memberId);
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
-        try {
-            return groupDAO.getStatusMemberInGroup(groupId, memberId);
-        } catch (DaoException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return groupDAO.getStatusMemberInGroup(groupId, memberId);
     }
 
     public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
         try {
-            return groupDAO.addPendingMemberToGroup(idGroup, idNewMember);
+            groupDAO.addPendingMemberToGroup(idGroup, idNewMember);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -102,8 +101,11 @@ public class GroupService {
 
     public boolean setStatusMemberInGroup(int idGroup, int idMember, GroupStatus status) {
         try {
-            return groupDAO.setStatusMemberInGroup(idGroup, idMember, status);
+            groupDAO.setStatusMemberInGroup(idGroup, idMember, status);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -111,8 +113,11 @@ public class GroupService {
 
     public boolean setRoleMemberInGroup(int idGroup, int idMember, GroupRole role) {
         try {
-            return groupDAO.setRoleMemberInGroup(idGroup, idMember, role);
+            groupDAO.setRoleMemberInGroup(idGroup, idMember, role);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -120,34 +125,34 @@ public class GroupService {
 
     public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
         try {
-            return groupDAO.removeMemberFromGroup(idGroup, idMemberToDelete);
+            groupDAO.removeMemberFromGroup(idGroup, idMemberToDelete);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
     }
 
     public int getId(String name) {
-        try {
-            return groupDAO.getId(name);
-        } catch (DaoException e) {
-            e.printStackTrace();
-            return -1;
-        }
+        return groupDAO.getId(name);
     }
 
     public boolean update(String name, InputStream photo, String photoFileName, String info) {
         try {
             int id = groupDAO.getId(name);
-
             Group group = new Group();
             group.setId(id);
             group.setName(name);
             group.setPhoto(photo != null ? IOUtils.toByteArray(photo) : null);
             group.setPhotoFileName(photoFileName);
             group.setInfo(info);
-            return groupDAO.update(group);
+            groupDAO.update(group);
+            connectionPool.commit();
+            return true;
         } catch (DaoException | IOException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -155,10 +160,17 @@ public class GroupService {
 
     public boolean remove(int id) {
         try {
-            return groupDAO.remove(id);
+            groupDAO.remove(id);
+            connectionPool.commit();
+            return true;
         } catch (DaoException e) {
+            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void closeService() {
+        connectionPool.returnConnection();
     }
 }

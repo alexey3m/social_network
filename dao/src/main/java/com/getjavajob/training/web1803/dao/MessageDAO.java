@@ -1,7 +1,7 @@
 package com.getjavajob.training.web1803.dao;
 
 import com.getjavajob.training.web1803.common.Message;
-import com.getjavajob.training.web1803.common.MessageType;
+import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.io.InputStream;
@@ -18,28 +18,35 @@ public class MessageDAO {
             "UNION " +
             "SELECT user_creator_id FROM message WHERE type = ? AND assign_id = ?";
     private static final String SELECT_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() AS id";
-    private static final String SELECT_MESSAGE_ID_BY_CREATOR_ID = "SELECT message_id, user_creator_id FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ? " +
+    private static final String SELECT_MESSAGE_ID_BY_CREATOR_ID = "SELECT message_id, user_creator_id, date_create FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ? " +
             "UNION " +
-            "SELECT message_id, user_creator_id FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ?";
+            "SELECT message_id, user_creator_id, date_create FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ? ORDER BY date_create, message_id";
     private static final String SELECT_MESSAGE_BY_ID = SELECT_ALL_MESSAGES + " WHERE message_id = ?";
     private static final String SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE = SELECT_ALL_MESSAGES + " WHERE assign_id = ? AND type = ?";
     private static final String REMOVE_MESSAGE = "DELETE FROM message WHERE message_id = ?";
 
-    private Connection connection;
-    private Pool connectionPool;
+    private Pool pool;
+    private static MessageDAO messageDAO;
 
-    public MessageDAO() throws DaoException {
-        connectionPool = ConnectionPool.getPool();
+    private MessageDAO() {
+        pool = ConnectionPool.getPool();
     }
 
-    // Constructor for tests
-    public MessageDAO(Pool connectionPool) {
-        this.connectionPool = connectionPool;
+    //Constructor for tests
+    public MessageDAO(Pool pool) {
+        this.pool = pool;
+    }
+
+    public static MessageDAO getInstance() {
+        if (messageDAO == null) {
+            messageDAO = new MessageDAO();
+        }
+        return messageDAO;
     }
 
     public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName, String text, String createDate, int userCreatorId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_NEW_MESSAGE)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_MESSAGE)) {
             preparedStatement.setInt(1, groupId != 0 ? groupId : accountId);
             preparedStatement.setInt(2, type.getStatus());
             preparedStatement.setBlob(3, photo);
@@ -48,7 +55,7 @@ public class MessageDAO {
             preparedStatement.setString(6, createDate);
             preparedStatement.setInt(7, userCreatorId);
             preparedStatement.executeUpdate();
-            try (ResultSet resultSet = this.connection.createStatement().executeQuery(SELECT_LAST_INSERT_ID)) {
+            try (ResultSet resultSet = connection.createStatement().executeQuery(SELECT_LAST_INSERT_ID)) {
                 if (resultSet.next()) {
                     return resultSet.getInt("id");
                 }
@@ -56,31 +63,27 @@ public class MessageDAO {
             return 0;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public Message get(int id) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_MESSAGE_BY_ID)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_MESSAGE_BY_ID)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next() ) {
+                if (resultSet.next()) {
                     return createMessageFromResult(resultSet);
                 }
             }
             return null;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public List<Message> getAllByTypeAndAssignId(MessageType type, int assignId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement =  this.connection.prepareStatement(SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE)) {
             preparedStatement.setInt(1, assignId);
             preparedStatement.setInt(2, type.getStatus());
             List<Message> messages = new ArrayList<>();
@@ -92,14 +95,12 @@ public class MessageDAO {
             return messages;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public List<Integer> getAllAccountIdDialog(int currentId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement =  this.connection.prepareStatement(SELECT_ACCOUNT_ID_WITH_DIALOG)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_ID_WITH_DIALOG)) {
             preparedStatement.setInt(1, MessageType.ACCOUNT.getStatus());
             preparedStatement.setInt(2, currentId);
             preparedStatement.setInt(3, MessageType.ACCOUNT.getStatus());
@@ -113,14 +114,12 @@ public class MessageDAO {
             return accounts;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public Map<Integer, Integer> getAllByCurrentIdAssignId(int currentId, int assignId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement =  this.connection.prepareStatement(SELECT_MESSAGE_ID_BY_CREATOR_ID)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_MESSAGE_ID_BY_CREATOR_ID)) {
             preparedStatement.setInt(1, MessageType.ACCOUNT.getStatus());
             preparedStatement.setInt(2, currentId);
             preparedStatement.setInt(3, assignId);
@@ -136,21 +135,17 @@ public class MessageDAO {
             return messages;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     public boolean remove(int id) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement1 = this.connection.prepareStatement(REMOVE_MESSAGE)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement1 = connection.prepareStatement(REMOVE_MESSAGE)) {
             preparedStatement1.setInt(1, id);
             preparedStatement1.executeUpdate();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 

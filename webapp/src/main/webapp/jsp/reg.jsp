@@ -18,8 +18,8 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <c:set var="message" scope="page" value="${param.message}"/>
-    <c:if test="${message == 'emailFalse'}">
+    <c:set var="infoMessage" scope="page" value="${param.infoMessage}"/>
+    <c:if test="${infoMessage == 'emailFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Error!</strong> <br>This email is already registered!
         </div>
@@ -31,7 +31,8 @@
         <input type="text" id="inputEmail" name="inputEmail" class="form-control" placeholder="Email" required>
 
         <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Password" required>
+        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Password"
+               required>
 
         <label for="inputFirstName" class="sr-only">First Name</label>
         <input type="text" id="inputFirstName" name="inputFirstName" class="form-control" placeholder="First name">
@@ -46,7 +47,8 @@
         <input type="date" id="inputBirthday" name="inputBirthday" class="form-control" placeholder="Birthday date">
 
         <label for="inputPhonePers" class="sr-only">Phone personally</label>
-        <input type="text" id="inputPhonePers" name="inputPhonePers" class="form-control" placeholder="Phone personally">
+        <input type="text" id="inputPhonePers" name="inputPhonePers" class="form-control"
+               placeholder="Phone personally">
 
         <label for="inputPhoneWork" class="sr-only">Phone work</label>
         <input type="text" id="inputPhoneWork" name="inputPhoneWork" class="form-control" placeholder="Phone work">

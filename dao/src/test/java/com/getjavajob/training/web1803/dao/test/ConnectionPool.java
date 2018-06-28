@@ -25,11 +25,17 @@ public class ConnectionPool implements Pool {
         }
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
-    public void returnConnection(Connection connection) {
+    @Override
+    public void returnConnection() {}
 
-    }
+    @Override
+    public void commit() {}
+
+    @Override
+    public void rollback() {}
 }

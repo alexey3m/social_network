@@ -1,5 +1,3 @@
-<%@page import="com.getjavajob.training.web1803.service.AccountService" %>
-<%@page import="com.getjavajob.training.web1803.common.Account" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
@@ -24,25 +22,25 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="friends.jsp">My friends</a>
+                <a class="nav-link" href="FriendsViewServlet">My friends</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="groups.jsp">My groups</a>
+                <a class="nav-link" href="GroupsViewServlet">My groups</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="accountMess.jsp">My messages</a>
+                <a class="nav-link" href="AccountMessViewServlet">My messages</a>
             </li>
         </ul>
         <div class="col-md-4 navs">
-        <form class="form-inline my-2 my-lg-0" action="LogoutServlet">
-            <div class="text-login mr-sm-2">
-                Current user: <c:out value="${sessionScope.userName}"/>
-            </div>
-            <c:set var="email" scope="page" value="${sessionScope.email}"/>
-            <c:if test="${email != null}">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout!</button>
-            </c:if>
-        </form>
+            <form class="form-inline my-2 my-lg-0" action="LogoutServlet">
+                <div class="text-login mr-sm-2">
+                    Current user: <c:out value="${sessionScope.userName}"/>
+                </div>
+                <c:set var="email" scope="page" value="${sessionScope.email}"/>
+                <c:if test="${email != null}">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout!</button>
+                </c:if>
+            </form>
         </div>
         <jsp:include page="search.jsp"/>
     </div>

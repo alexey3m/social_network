@@ -1,9 +1,10 @@
 package com.getjavajob.training.web1803.service.test;
 
 import com.getjavajob.training.web1803.common.Account;
-import com.getjavajob.training.web1803.common.Role;
-import com.getjavajob.training.web1803.common.Status;
+import com.getjavajob.training.web1803.common.enums.Role;
+import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.AccountDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.service.RelationshipService;
@@ -22,9 +23,10 @@ import static org.mockito.Mockito.when;
 public class RelationshipServiceTest {
     private RelationshipDAO relationshipDAO = mock(RelationshipDAO.class);
     private AccountDAO accountDAO = mock(AccountDAO.class);
+    private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private RelationshipService phoneService = new RelationshipService(relationshipDAO, accountDAO);
+    private RelationshipService phoneService = new RelationshipService(relationshipDAO, accountDAO, connectionPool);
 
     @Test
     public void addQueryFriendTest() throws DaoException {

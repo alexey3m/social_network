@@ -1,15 +1,6 @@
-<%@page import="com.getjavajob.training.web1803.service.AccountService" %>
-<%@page import="com.getjavajob.training.web1803.service.PhoneService" %>
-<%@page import="com.getjavajob.training.web1803.service.MessageService" %>
-<%@page import="com.getjavajob.training.web1803.service.RelationshipService" %>
-<%@page import="com.getjavajob.training.web1803.common.Account" %>
-<%@page import="com.getjavajob.training.web1803.common.Message" %>
-<%@page import="com.getjavajob.training.web1803.common.Role" %>
-<%@page import="com.getjavajob.training.web1803.common.Status" %>
-<%@page import="com.getjavajob.training.web1803.common.PhoneType" %>
-<%@page import="com.getjavajob.training.web1803.common.MessageType" %>
-<%@page import="java.util.Map" %>
-<%@page import="java.lang.Integer" %>
+<%@ page import="com.getjavajob.training.web1803.common.enums.Status" %>
+<%@ page import="com.getjavajob.training.web1803.common.enums.Role" %>
+<%@ page import="com.getjavajob.training.web1803.common.enums.PhoneType" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
@@ -27,66 +18,59 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <c:set var="id" scope="page" value="${param.id}"/>
-    <c:set var="message" scope="page" value="${param.message}"/>
-    <c:if test="${message == 'updateTrue'}">
+    <c:if test="${infoMessage == 'updateTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Success!</strong> <br>You account has been updated!
         </div>
     </c:if>
-    <c:if test="${message == 'updateFalse'}">
+    <c:if test="${infoMessage == 'updateFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Error!</strong> <br>You account was not updated! Try again.
         </div>
     </c:if>
-    <jsp:useBean id="accountService" class="com.getjavajob.training.web1803.service.AccountService"/>
-    <c:set var="actionId" scope="page" value="${param.actionId}"/>
-    <c:set var="actionAccount" scope="page" value="${accountService.get(actionId)}"/>
-    <c:set var="account" scope="page" value="${accountService.get(id)}"/>
-    <c:set var="sessionId" scope="page" value="${sessionScope.id}"/>
     <c:if test="${account == null}">
-        <c:redirect url="account.jsp?id=${sessionId}"/>
+        <c:redirect url="AccountViewServlet?id=${sessionId}"/>
     </c:if>
-    <c:if test="${message == 'friendsAddQueryTrue'}">
+    <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Good!</strong> <br>Your friend request with ${actionAccount.firstName} ${actionAccount.lastName} was
             sent!
         </div>
     </c:if>
-    <c:if test="${message == 'friendsAcceptTrue'}">
+    <c:if test="${infoMessage == 'friendsAcceptTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Success!</strong> <br>You are now friends with ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
-    <c:if test="${message == 'friendsRemoveTrue'}">
+    <c:if test="${infoMessage == 'friendsRemoveTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>It's a pity!</strong> <br>Now you are not friends
             with ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
-    <c:if test="${message == 'removeRequestTrue'}">
+    <c:if test="${infoMessage == 'removeRequestTrue'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has
             been removed!
         </div>
     </c:if>
 
-    <c:if test="${message == 'friendsDeclineTrue'}">
+    <c:if test="${infoMessage == 'friendsDeclineTrue'}">
         <div class="alert alert-danger text-alert" role="alert">
             Request from ${actionAccount.firstName} ${actionAccount.lastName} has been declined!
         </div>
     </c:if>
-    <c:if test="${message == 'friendsFalse' || message == 'updateRoleFalse'}">
+    <c:if test="${infoMessage == 'friendsFalse' || infoMessage == 'updateRoleFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Oops!</strong> <br>Something went wrong..!
         </div>
     </c:if>
-    <c:if test="${message == 'updateRoleUser'}">
+    <c:if test="${infoMessage == 'updateRoleUser'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Success!</strong> <br>New role ${account.firstName} ${account.lastName} - "USER"!
         </div>
     </c:if>
-    <c:if test="${message == 'updateRoleAdmin'}">
+    <c:if test="${infoMessage == 'updateRoleAdmin'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Success!</strong> <br>New role ${account.firstName} ${account.lastName} - "ADMIN"!
         </div>
@@ -100,15 +84,14 @@
                 <div class="control-panel">
                     Control panel<br>
                 </div>
-                <c:if test="${sessionScope.role == Role.ADMIN || sessionId == id}">
+                <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
                     <div class="control-panel">
-                        <a href="updateAccount.jsp?id=${id}">
+                        <a href="UpdateAccountViewServlet?id=${id}">
                             <button type="button" class="btn btn-sm btn-primary">Update account</button>
                         </a>
                     </div>
                 </c:if>
-                <c:if test="${sessionScope.role == Role.ADMIN && sessionId != id}">
-                    <c:set var="role" scope="page" value="${accountService.getRole(id)}"/>
+                <c:if test="${sessionRole == Role.ADMIN && sessionId != id}">
                     <div class="control-panel">
                         <c:if test="${role == Role.ADMIN}">
                             <form method="post" action="UpdateRoleServlet?action=toUser&actionId=${id}">
@@ -122,10 +105,6 @@
                         </c:if>
                     </div>
                 </c:if>
-                <jsp:useBean id="relService" class="com.getjavajob.training.web1803.service.RelationshipService"/>
-
-                <c:set var="status" scope="page" value="${relService.getStatus(sessionId, id)}"/>
-                <c:set var="pendingStatus" scope="page" value="${relService.getPendingRequestToMe(id, sessionId)}"/>
                 <c:if test="${sessionId != id && status == Status.UNKNOWN}">
                     <div class="control-panel">
                         <form method="post" action="FriendsServlet?action=add&actionId=${id}">
@@ -140,7 +119,7 @@
                         </form>
                     </div>
                 </c:if>
-                <c:if test="${sessionId != id && status == Status.DECLINE}">
+                <c:if test="${sessionId == id && status == Status.DECLINE}">
                     <div class="control-panel">
                         <button type="submit" class="btn btn-danger" disabled>Yor request has been declined!</button>
                     </div>
@@ -171,7 +150,7 @@
                 </c:if>
                 <c:if test="${sessionId != id}">
                     <div class="control-panel">
-                        <a href="accountMess.jsp?assignId=${id}">
+                        <a href="AccountMessViewServlet?assignId=${id}">
                             <button type="submit" class="btn btn-primary">Send message!</button>
                         </a>
                     </div>
@@ -186,8 +165,7 @@
                 <div class="col-5">Birthday:</div>
                 <div class="col-5">${account.birthday}</div>
             </div>
-            <jsp:useBean id="phoneService" class="com.getjavajob.training.web1803.service.PhoneService"/>
-            <c:forEach var="phone" items="${phoneService.getAll(id)}">
+            <c:forEach var="phone" items="${account.phones}">
                 <div class="row">
                     <div class="col-5">
                         <c:if test="${phone.value == PhoneType.HOME}">Phone personally:</c:if>
@@ -237,20 +215,18 @@
                     </form>
                 </div>
             </div>
-            <jsp:useBean id="messageService" class="com.getjavajob.training.web1803.service.MessageService"/>
-            <c:forEach var="message"
-                       items="${messageService.getAllByTypeAndAssignId(MessageType.ACCOUNT_WALL, account.id)}">
-                <c:set var="messageAccount" value="${accountService.get(message.userCreatorId)}"/>
+            <c:forEach var="message" items="${messages}">
+                <c:set var="messageAccount" value="${messagesAccounts[message.userCreatorId]}"/>
                 <div class="card mb-1 box-shadow">
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
                                 <p class="blog-post-meta">Posted ${message.createDate} by <a
-                                        href="account.jsp?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
+                                        href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                 </p>
                             </div>
                             <div class="float-right">
-                                <c:if test="${sessionScope.role == Role.ADMIN || sessionId == id}">
+                                <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
                                     <form action="MessageServlet?action=remove&type=accountWall&assignId=${account.id}&messageId=${message.id}"
                                           method="post">
                                         <button type="submit" class="btn btn-outline-primary">Remove</button>

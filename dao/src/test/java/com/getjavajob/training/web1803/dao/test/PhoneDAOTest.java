@@ -1,6 +1,6 @@
 package com.getjavajob.training.web1803.dao.test;
 
-import com.getjavajob.training.web1803.common.PhoneType;
+import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.dao.PhoneDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import org.junit.After;

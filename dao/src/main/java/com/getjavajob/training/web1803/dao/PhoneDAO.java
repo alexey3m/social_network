@@ -1,6 +1,6 @@
 package com.getjavajob.training.web1803.dao;
 
-import com.getjavajob.training.web1803.common.PhoneType;
+import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.sql.Connection;
@@ -16,38 +16,43 @@ public class PhoneDAO {
     private static final String INSERT_PHONE = "INSERT INTO phone (account_id, phone_number, phone_type) VALUES (?, ?, ?)";
     private static final String REMOVE_PHONES = "DELETE FROM phone WHERE account_id = ?";
 
-    private Connection connection;
-    private Pool connectionPool;
+    private Pool pool;
+    private static PhoneDAO phoneDAO;
 
-    public PhoneDAO() throws DaoException {
-        connectionPool = ConnectionPool.getPool();
+    private PhoneDAO() {
+        pool = ConnectionPool.getPool();
     }
 
-    // Constructor for tests
-    public PhoneDAO(Pool connectionPool) {
-        this.connectionPool = connectionPool;
+    //Constructor for tests
+    public PhoneDAO(Pool pool) {
+        this.pool = pool;
+    }
+
+    public static PhoneDAO getInstance() {
+        if (phoneDAO == null) {
+            phoneDAO = new PhoneDAO();
+        }
+        return phoneDAO;
     }
 
     public boolean create(int accountId, String number, PhoneType type) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(INSERT_PHONE)) {
+        Connection connection = pool.getConnection();
+        System.out.println("PhoneDao.create: " + connection);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PHONE)) {
             preparedStatement.setInt(1, accountId);
             preparedStatement.setString(2, number);
             preparedStatement.setInt(3, type.getStatus());
             preparedStatement.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     // Map<PhoneNumber, PhoneType>
     public Map<String, PhoneType> getAll(int accountId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(SELECT_PHONES_BY_ACCOUNT_ID)) {
+        Connection connection = pool.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PHONES_BY_ACCOUNT_ID)) {
             preparedStatement.setInt(1, accountId);
             ResultSet resultSet = preparedStatement.executeQuery();
             Map<String, PhoneType> phones = new HashMap<>();
@@ -57,36 +62,29 @@ public class PhoneDAO {
             return phones;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 
     // Map<PhoneNumber, PhoneType>
     public boolean update(int accountId, Map<String, PhoneType> phones) throws DaoException {
+        Connection connection = pool.getConnection();
+        System.out.println("PhoneDao.update: " + connection);
         remove(accountId);
-        connection = connectionPool.getConnection();
-        try {
-            for (Entry<String, PhoneType> phone : phones.entrySet()) {
-                create(accountId, phone.getKey(), phone.getValue());
-            }
-            return true;
-        } finally {
-            connectionPool.returnConnection(connection);
+        for (Entry<String, PhoneType> phone : phones.entrySet()) {
+            create(accountId, phone.getKey(), phone.getValue());
         }
+        return true;
     }
 
     public boolean remove(int accountId) throws DaoException {
-        connection = connectionPool.getConnection();
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(REMOVE_PHONES)) {
+        Connection connection = pool.getConnection();
+        System.out.println("PhoneDao.remove: " + connection);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_PHONES)) {
             preparedStatement.setInt(1, accountId);
             preparedStatement.executeUpdate();
-//            this.connection.commit();
             return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            connectionPool.returnConnection(connection);
         }
     }
 }

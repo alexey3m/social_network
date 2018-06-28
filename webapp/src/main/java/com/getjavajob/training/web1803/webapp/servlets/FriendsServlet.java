@@ -1,5 +1,6 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
+import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.service.RelationshipService;
 
 import javax.servlet.http.HttpServlet;
@@ -15,40 +16,46 @@ public class FriendsServlet extends HttpServlet {
         HttpSession session = request.getSession();
         int currentId = (Integer) session.getAttribute("id");
         RelationshipService service = new RelationshipService();
-        String message = "friendsFalse";
-        switch (action) {
-            case "add":
-                if (service.addQueryFriend(currentId, actionId)) {
-                    message = "friendsAddQueryTrue";
-                }
-                break;
-            case "accept":
-                if (service.acceptFriend(currentId, actionId)) {
-                    message = "friendsAcceptTrue";
-                }
-                break;
-            case "decline":
-                if (service.declineFriend(currentId, actionId)) {
-                    message = "friendsDeclineTrue";
-                }
-                break;
-            case "remove":
-                if (service.removeFriend(currentId, actionId)) {
-                    message = "friendsRemoveTrue";
-                }
-                break;
-            case "removeRequest":
-                if (service.removeFriend(currentId, actionId)) {
-                    message = "removeRequestTrue";
-                }
-                break;
-            default:
-                throw new UnsupportedOperationException("action: \"" + action + "\" do not recognized");
+        String infoMessage = "friendsFalse";
+        try {
+            switch (action) {
+                case "add":
+                    if (service.addQueryFriend(currentId, actionId)) {
+                        infoMessage = "friendsAddQueryTrue";
+                    }
+                    break;
+                case "accept":
+                    if (service.acceptFriend(currentId, actionId)) {
+                        infoMessage = "friendsAcceptTrue";
+                    }
+                    break;
+                case "decline":
+                    if (service.declineFriend(currentId, actionId)) {
+                        infoMessage = "friendsDeclineTrue";
+                    }
+                    break;
+                case "remove":
+                    if (service.removeFriend(currentId, actionId)) {
+                        infoMessage = "friendsRemoveTrue";
+                    }
+                    break;
+                case "removeRequest":
+                    if (service.removeFriend(currentId, actionId)) {
+                        infoMessage = "removeRequestTrue";
+                    }
+                    break;
+                default:
+                    throw new UnsupportedOperationException("action: \"" + action + "\" do not recognized");
+            }
+        } catch (DaoException e) {
+            e.printStackTrace();
+        } finally {
+            service.closeService();
         }
         if (request.getServletPath().equals("/account.jsp")) {
-            response.sendRedirect("account.jsp?id=" + currentId + "&message=" + message + "&actionId=" + actionId);
+            response.sendRedirect("AccountViewServlet?id=" + currentId + "&infoMessage=" + infoMessage + "&actionId=" + actionId);
         } else {
-            response.sendRedirect("friends.jsp?message=" + message + "&actionId=" + actionId);
+            response.sendRedirect("FriendsViewServlet?infoMessage=" + infoMessage + "&actionId=" + actionId);
         }
     }
 }

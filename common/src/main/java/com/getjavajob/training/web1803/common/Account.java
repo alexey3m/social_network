@@ -1,5 +1,8 @@
 package com.getjavajob.training.web1803.common;
 
+import com.getjavajob.training.web1803.common.enums.PhoneType;
+import com.getjavajob.training.web1803.common.enums.Role;
+
 import java.util.Map;
 import java.util.Objects;
 

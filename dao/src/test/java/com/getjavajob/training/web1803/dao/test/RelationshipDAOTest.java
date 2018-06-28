@@ -1,6 +1,6 @@
 package com.getjavajob.training.web1803.dao.test;
 
-import com.getjavajob.training.web1803.common.Status;
+import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import org.junit.After;

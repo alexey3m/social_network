@@ -1,6 +1,8 @@
 package com.getjavajob.training.web1803.dao.test;
 
-import com.getjavajob.training.web1803.common.*;
+import com.getjavajob.training.web1803.common.Group;
+import com.getjavajob.training.web1803.common.enums.GroupRole;
+import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.GroupDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
@@ -16,7 +18,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class GroupDAOTest {
     private ConnectionPool connectionPool;
@@ -142,13 +146,13 @@ public class GroupDAOTest {
     }
 
     @Test
-    public void getIdTest() throws DaoException {
+    public void getIdTest() {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(2, groupDAO.getId("Group 2"));
     }
 
     @Test
-    public void getRoleMemberInGroupTest() throws DaoException {
+    public void getRoleMemberInGroupTest() {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(GroupRole.ADMIN, groupDAO.getRoleMemberInGroup(1, 1));
         assertEquals(GroupRole.USER, groupDAO.getRoleMemberInGroup(1, 3));
@@ -156,7 +160,7 @@ public class GroupDAOTest {
     }
 
     @Test
-    public void getStatusMemberInGroupTest() throws DaoException {
+    public void getStatusMemberInGroupTest() {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(GroupStatus.ACCEPTED, groupDAO.getStatusMemberInGroup(1, 1));
     }

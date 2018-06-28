@@ -1,7 +1,7 @@
 package com.getjavajob.training.web1803.dao.test;
 
 import com.getjavajob.training.web1803.common.Message;
-import com.getjavajob.training.web1803.common.MessageType;
+import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.dao.MessageDAO;
 import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
@@ -48,7 +48,7 @@ public class MessageDAOTest {
     @Test
     public void createAccountMessageTest() throws DaoException {
         MessageDAO messageDAO = new MessageDAO(connectionPool);
-        messageDAO.create(0, 1, MessageType.ACCOUNT,null, null, "Text 1",
+        messageDAO.create(0, 1, MessageType.ACCOUNT, null, null, "Text 1",
                 "2018-06-17", 1);
         Message expected = new Message(9, 1, MessageType.ACCOUNT, null, null, "Text 1",
                 "2018-06-17", 1);

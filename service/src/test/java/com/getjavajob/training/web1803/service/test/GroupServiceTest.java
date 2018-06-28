@@ -1,9 +1,10 @@
 package com.getjavajob.training.web1803.service.test;
 
 import com.getjavajob.training.web1803.common.Group;
-import com.getjavajob.training.web1803.common.GroupRole;
-import com.getjavajob.training.web1803.common.GroupStatus;
+import com.getjavajob.training.web1803.common.enums.GroupRole;
+import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.GroupDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.GroupService;
@@ -21,9 +22,10 @@ import static org.mockito.Mockito.when;
 public class GroupServiceTest {
 
     private GroupDAO groupDAO = mock(GroupDAO.class);
+    private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private GroupService groupService = new GroupService(groupDAO);
+    private GroupService groupService = new GroupService(groupDAO, connectionPool);
 
     @Test
     public void createTest() throws DaoException, DaoNameException {

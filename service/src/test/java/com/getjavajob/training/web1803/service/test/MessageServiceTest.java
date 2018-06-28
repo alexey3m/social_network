@@ -1,8 +1,9 @@
 package com.getjavajob.training.web1803.service.test;
 
 import com.getjavajob.training.web1803.common.Message;
-import com.getjavajob.training.web1803.common.MessageType;
+import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.dao.MessageDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.service.MessageService;
 import org.junit.Test;
@@ -21,9 +22,10 @@ import static org.mockito.Mockito.when;
 public class MessageServiceTest {
 
     private MessageDAO messageDAO = mock(MessageDAO.class);
+    private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private MessageService messageService = new MessageService(messageDAO);
+    private MessageService messageService = new MessageService(messageDAO, connectionPool);
 
     @Test
     public void createTest() throws DaoException {

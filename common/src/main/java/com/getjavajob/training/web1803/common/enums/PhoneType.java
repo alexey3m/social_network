@@ -1,4 +1,4 @@
-package com.getjavajob.training.web1803.common;
+package com.getjavajob.training.web1803.common.enums;
 
 public enum PhoneType {
     HOME(0),

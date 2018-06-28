@@ -17,6 +17,7 @@ public class GetPhotoGroupServlet extends HttpServlet {
         int id = Integer.valueOf(request.getParameter("id"));
         GroupService service = new GroupService();
         Group currentGroup = service.get(id);
+        service.closeService();
         byte[] photo = currentGroup != null ? currentGroup.getPhoto() : null;
         if (photo == null) {
             response.sendError(SC_NOT_FOUND);
