@@ -26,7 +26,12 @@ public class AccountMessViewServlet extends HttpServlet {
         int sessionId = (Integer) session.getAttribute("id");
         String assignIdString = req.getParameter("assignId");
         String idString = req.getParameter("id");
-        int assignId = assignIdString != null ? Integer.valueOf(assignIdString) : idString != null ? Integer.valueOf(idString) : 0;
+        int assignId;
+        if (assignIdString != null) {
+            assignId = Integer.valueOf(assignIdString);
+        } else {
+            assignId = idString != null ? Integer.valueOf(idString) : 0;
+        }
         Account newMessageAccount = null;
         List<Account> contacts = new ArrayList<>();
         Map<Integer, Integer> allMessagesByAssignId;

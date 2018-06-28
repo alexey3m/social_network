@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute(EMAIL, email);
             session.setAttribute("id", id);
-            session.setAttribute("email", email);
+            session.setAttribute(EMAIL, email);
             session.setAttribute("userName", currentAccount.getFirstName() + " " + currentAccount.getLastName());
             session.setAttribute("role", currentAccount.getRole());
             String rememberMeActive = request.getParameter("rememberMe");
@@ -52,8 +52,9 @@ public class LoginServlet extends HttpServlet {
             response.sendRedirect("AccountViewServlet?id=" + id);
         } catch (DaoNameException e) {
             response.sendRedirect("login.jsp?infoMessage=alert");
+        } finally {
+            service.closeService();
         }
-        service.closeService();
     }
 
     @Override
