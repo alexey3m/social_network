@@ -53,7 +53,9 @@ public class LoginServlet extends HttpServlet {
         } catch (DaoNameException e) {
             response.sendRedirect("login.jsp?infoMessage=alert");
         } finally {
-            service.closeService();
+            if (service != null) {
+                service.closeService();
+            }
         }
     }
 
