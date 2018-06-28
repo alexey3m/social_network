@@ -9,7 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
-public class ConnectionPool {
+public class ConnectionPool implements Pool {
     private static ConnectionPool pool;
     private static Queue<Connection> freeConnections;
     private static Properties properties;
@@ -20,7 +20,7 @@ public class ConnectionPool {
         if (properties == null) {
             properties = new Properties();
             try {
-                properties.load(this.getClass().getClassLoader().getResourceAsStream("DBconnect.properties"));
+                properties.load(this.getClass().getClassLoader().getResourceAsStream("DBconnectLocal.properties"));
             } catch (IOException e) {
                 e.printStackTrace();
             }

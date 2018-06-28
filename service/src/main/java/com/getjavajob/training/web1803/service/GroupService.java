@@ -5,6 +5,7 @@ import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.GroupDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.apache.commons.io.IOUtils;
@@ -16,12 +17,18 @@ import java.util.List;
 
 public class GroupService {
     private GroupDAO groupDAO;
-    private ConnectionPool connectionPool;
+    private Pool connectionPool;
 
 
     public GroupService() {
         connectionPool = ConnectionPool.getPool();
         groupDAO = GroupDAO.getInstance();
+    }
+
+    //Constructor for tests
+    public GroupService(GroupDAO groupDAO, Pool connectionPool) {
+        this.groupDAO = groupDAO;
+        this.connectionPool = connectionPool;
     }
 
     public boolean create(String name, InputStream photo, String photoFileName, String createDate, String info, int userCreatorId) throws DaoNameException {

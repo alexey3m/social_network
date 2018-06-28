@@ -4,6 +4,7 @@ import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.MessageDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.io.InputStream;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class MessageService {
     private MessageDAO messageDAO;
-    private ConnectionPool connectionPool;
+    private Pool connectionPool;
 
 
     public MessageService() {
@@ -21,8 +22,14 @@ public class MessageService {
         messageDAO = MessageDAO.getInstance();
     }
 
+    //Constructor for tests
+    public MessageService(MessageDAO messageDAO, Pool connectionPool) {
+        this.messageDAO = messageDAO;
+        this.connectionPool = connectionPool;
+    }
+
     public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName,
-                          String text, String createDate, int userCreatorId) {
+                      String text, String createDate, int userCreatorId) {
         try {
             int id = messageDAO.create(groupId, accountId, type, photo, photoFileName, text, createDate, userCreatorId);
             connectionPool.commit();

@@ -28,11 +28,16 @@ public class RelationshipDAO {
             "UNION " +
             "SELECT user_two_id FROM relationship WHERE user_one_id = ? AND status = ? AND action_user_id = ?";
 
-    private ConnectionPool pool;
+    private Pool pool;
     private static RelationshipDAO relationshipDAO;
 
     public RelationshipDAO() {
         pool = ConnectionPool.getPool();
+    }
+
+    //Constructor for tests
+    public RelationshipDAO(Pool pool) {
+        this.pool = pool;
     }
 
     public static RelationshipDAO getInstance() {

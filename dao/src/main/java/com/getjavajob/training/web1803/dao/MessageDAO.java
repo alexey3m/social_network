@@ -25,11 +25,16 @@ public class MessageDAO {
     private static final String SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE = SELECT_ALL_MESSAGES + " WHERE assign_id = ? AND type = ?";
     private static final String REMOVE_MESSAGE = "DELETE FROM message WHERE message_id = ?";
 
-    private ConnectionPool pool;
+    private Pool pool;
     private static MessageDAO messageDAO;
 
-    public MessageDAO() {
+    private MessageDAO() {
         pool = ConnectionPool.getPool();
+    }
+
+    //Constructor for tests
+    public MessageDAO(Pool pool) {
+        this.pool = pool;
     }
 
     public static MessageDAO getInstance() {

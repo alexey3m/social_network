@@ -39,11 +39,16 @@ public class GroupDAO {
     private static final String REMOVE_GROUP = "DELETE FROM soc_group WHERE group_id = ?";
     private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
 
-    private ConnectionPool pool;
+    private Pool pool;
     private static GroupDAO groupDAO;
 
-    public GroupDAO() {
+    private GroupDAO() {
         pool = ConnectionPool.getPool();
+    }
+
+    //Constructor for tests
+    public GroupDAO(Pool pool) {
+        this.pool = pool;
     }
 
     public static GroupDAO getInstance() {

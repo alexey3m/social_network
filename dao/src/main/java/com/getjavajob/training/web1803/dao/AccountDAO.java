@@ -37,11 +37,16 @@ public class AccountDAO {
     private static final String REMOVE_ACCOUNT = "DELETE FROM account WHERE account_id = ?";
     private static final String SELECT_ROLE = "SELECT role FROM account WHERE account_id = ?";
 
-    private ConnectionPool pool;
+    private Pool pool;
     private static AccountDAO accountDAO;
 
     private AccountDAO() {
         pool = ConnectionPool.getPool();
+    }
+
+    //Constructor for tests
+    public AccountDAO(Pool pool) {
+        this.pool = pool;
     }
 
     public static AccountDAO getInstance() {

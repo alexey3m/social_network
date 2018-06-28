@@ -4,6 +4,7 @@ import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.AccountDAO;
 import com.getjavajob.training.web1803.dao.ConnectionPool;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
@@ -14,13 +15,20 @@ import java.util.List;
 public class RelationshipService {
     private RelationshipDAO relationshipDAO;
     private AccountDAO accountDAO;
-    private ConnectionPool connectionPool;
+    private Pool connectionPool;
 
 
     public RelationshipService() {
         connectionPool = ConnectionPool.getPool();
         relationshipDAO = RelationshipDAO.getInstance();
         accountDAO = AccountDAO.getInstance();
+    }
+
+    //Constructor for tests
+    public RelationshipService(RelationshipDAO relationshipDAO, AccountDAO accountDAO, Pool connectionPool) {
+        this.relationshipDAO = relationshipDAO;
+        this.accountDAO = accountDAO;
+        this.connectionPool = connectionPool;
     }
 
     public boolean addQueryFriend(int idFrom, int idTo) throws DaoException {

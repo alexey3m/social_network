@@ -16,11 +16,16 @@ public class PhoneDAO {
     private static final String INSERT_PHONE = "INSERT INTO phone (account_id, phone_number, phone_type) VALUES (?, ?, ?)";
     private static final String REMOVE_PHONES = "DELETE FROM phone WHERE account_id = ?";
 
-    private ConnectionPool pool;
+    private Pool pool;
     private static PhoneDAO phoneDAO;
 
     private PhoneDAO() {
         pool = ConnectionPool.getPool();
+    }
+
+    //Constructor for tests
+    public PhoneDAO(Pool pool) {
+        this.pool = pool;
     }
 
     public static PhoneDAO getInstance() {

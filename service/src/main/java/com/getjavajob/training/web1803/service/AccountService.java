@@ -6,6 +6,7 @@ import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.AccountDAO;
 import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.PhoneDAO;
+import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.apache.commons.io.IOUtils;
@@ -19,12 +20,19 @@ import java.util.Map;
 public class AccountService {
     private AccountDAO accountDAO;
     private PhoneDAO phoneDAO;
-    private ConnectionPool connectionPool;
+    private Pool connectionPool;
 
     public AccountService() {
         connectionPool = ConnectionPool.getPool();
         accountDAO = AccountDAO.getInstance();
         phoneDAO = PhoneDAO.getInstance();
+    }
+
+    //Constructor for tests
+    public AccountService(AccountDAO accountDAO, PhoneDAO phoneDAO, Pool connectionPool) {
+        this.accountDAO = accountDAO;
+        this.phoneDAO = phoneDAO;
+        this.connectionPool = connectionPool;
     }
 
     public boolean create(String email, String password, String firstName, String lastName, String middleName,

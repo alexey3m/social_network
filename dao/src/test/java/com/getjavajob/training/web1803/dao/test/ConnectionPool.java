@@ -1,12 +1,14 @@
 package com.getjavajob.training.web1803.dao.test;
 
+import com.getjavajob.training.web1803.dao.Pool;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class ConnectionPool {
+public class ConnectionPool implements Pool {
     private Connection connection;
 
     public ConnectionPool() {
@@ -23,11 +25,17 @@ public class ConnectionPool {
         }
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
-    public void returnConnection(Connection connection) {
+    @Override
+    public void returnConnection() {}
 
-    }
+    @Override
+    public void commit() {}
+
+    @Override
+    public void rollback() {}
 }
