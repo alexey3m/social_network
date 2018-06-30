@@ -17,7 +17,6 @@ public class GetImageMessageServlet extends HttpServlet {
         int id = Integer.valueOf(request.getParameter("id"));
         MessageService service = new MessageService();
         Message message = service.get(id);
-        service.closeService();
         byte[] photo = message != null ? message.getPhoto() : null;
         if (photo == null) {
             response.sendError(SC_NOT_FOUND);

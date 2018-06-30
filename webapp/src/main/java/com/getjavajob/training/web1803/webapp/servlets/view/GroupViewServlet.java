@@ -57,10 +57,6 @@ public class GroupViewServlet extends HttpServlet {
             int accountId = item.getUserCreatorId();
             messagesAccounts.put(accountId, accountService.get(accountId));
         }
-        accountService.closeService();
-        groupService.closeService();
-        messageService.closeService();
-
         req.setAttribute("groupId", groupId);
         req.setAttribute("infoMessage", infoMessage);
         req.setAttribute("actionId", actionId);

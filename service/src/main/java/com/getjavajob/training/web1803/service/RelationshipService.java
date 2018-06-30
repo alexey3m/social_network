@@ -31,7 +31,7 @@ public class RelationshipService {
         this.connectionPool = connectionPool;
     }
 
-    public boolean addQueryFriend(int idFrom, int idTo) throws DaoException {
+    public boolean addQueryFriend(int idFrom, int idTo) {
         try {
             boolean result = idFrom < idTo ? relationshipDAO.createQueryFriend(idFrom, idTo, idFrom) : relationshipDAO.createQueryFriend(idTo, idFrom, idFrom);
             connectionPool.commit();
@@ -43,7 +43,7 @@ public class RelationshipService {
         }
     }
 
-    public boolean acceptFriend(int idFrom, int idTo) throws DaoException {
+    public boolean acceptFriend(int idFrom, int idTo) {
         try {
             boolean result = idFrom < idTo ? relationshipDAO.updateQueryFriend(idFrom, idTo, 1, idFrom) : relationshipDAO.updateQueryFriend(idTo, idFrom, 1, idFrom);
             connectionPool.commit();
@@ -55,7 +55,7 @@ public class RelationshipService {
         }
     }
 
-    public boolean declineFriend(int idFrom, int idTo) throws DaoException {
+    public boolean declineFriend(int idFrom, int idTo) {
         try {
             boolean result = idFrom < idTo ? relationshipDAO.updateQueryFriend(idFrom, idTo, 2, idFrom) : relationshipDAO.updateQueryFriend(idTo, idFrom, 2, idFrom);
             connectionPool.commit();
@@ -67,7 +67,7 @@ public class RelationshipService {
         }
     }
 
-    public boolean removeFriend(int idFrom, int idTo) throws DaoException {
+    public boolean removeFriend(int idFrom, int idTo) {
         try {
             boolean result = idFrom < idTo ? relationshipDAO.removeFriend(idFrom, idTo) : relationshipDAO.removeFriend(idTo, idFrom);
             connectionPool.commit();
@@ -142,7 +142,7 @@ public class RelationshipService {
         return friends;
     }
 
-    public void closeService() {
-        connectionPool.returnConnection();
-    }
+//    public void closeService() {
+//        connectionPool.returnConnection();
+//    }
 }

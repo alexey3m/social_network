@@ -27,7 +27,6 @@ public class UpdateGroupServlet extends HttpServlet {
         }
         GroupService service = new GroupService();
         boolean result = service.update(name, photo, photoFileName, info);
-        service.closeService();
         if (result) {
             response.sendRedirect("GroupViewServlet?id=" + id + "&infoMessage=updateTrue");
         } else {

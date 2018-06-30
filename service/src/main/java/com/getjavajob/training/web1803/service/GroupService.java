@@ -80,11 +80,21 @@ public class GroupService {
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
-        return groupDAO.getRoleMemberInGroup(groupId, memberId);
+        try {
+            return groupDAO.getRoleMemberInGroup(groupId, memberId);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
-        return groupDAO.getStatusMemberInGroup(groupId, memberId);
+        try {
+            return groupDAO.getStatusMemberInGroup(groupId, memberId);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
@@ -136,7 +146,12 @@ public class GroupService {
     }
 
     public int getId(String name) {
-        return groupDAO.getId(name);
+        try {
+            return groupDAO.getId(name);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public boolean update(String name, InputStream photo, String photoFileName, String info) {
@@ -170,7 +185,7 @@ public class GroupService {
         }
     }
 
-    public void closeService() {
-        connectionPool.returnConnection();
-    }
+//    public void closeService() {
+//        connectionPool.returnConnection();
+//    }
 }

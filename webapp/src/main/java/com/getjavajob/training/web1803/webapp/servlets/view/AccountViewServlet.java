@@ -45,10 +45,6 @@ public class AccountViewServlet extends HttpServlet {
             int accountId = item.getUserCreatorId();
             messagesAccounts.put(accountId, accountService.get(accountId));
         }
-        accountService.closeService();
-        relationshipService.closeService();
-        messageService.closeService();
-
         req.setAttribute("id", id);
         req.setAttribute("account", account);
         req.setAttribute("actionAccount", actionAccount);

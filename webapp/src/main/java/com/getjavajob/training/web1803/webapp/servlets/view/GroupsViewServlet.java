@@ -20,7 +20,6 @@ public class GroupsViewServlet extends HttpServlet {
         GroupService groupService = new GroupService();
         List<Group> myGroups = groupService.getAllById(sessionId);
         List<Group> allGroups = groupService.getAll();
-        groupService.closeService();
         req.setAttribute("myGroups", myGroups);
         req.setAttribute("allGroups", allGroups);
         req.getRequestDispatcher("groups.jsp").forward(req, resp);

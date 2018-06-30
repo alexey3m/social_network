@@ -50,8 +50,6 @@ public class AccountMessViewServlet extends HttpServlet {
                 allAccountsMessages.put(id, accountService.get(id));
             }
         }
-        accountService.closeService();
-        messageService.closeService();
         req.setAttribute("sessionId", sessionId);
         req.setAttribute("assignId", assignId);
         req.setAttribute("newMessageAccount", newMessageAccount);

@@ -48,146 +48,154 @@ public class RelationshipDAO {
     }
 
     public boolean createQueryFriend(int idFrom, int idTo, int actionId) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_QUERY_FRIEND)) {
-            preparedStatement.setInt(1, idFrom);
-            preparedStatement.setInt(2, idTo);
-            preparedStatement.setInt(3, Status.PENDING.getStatus());
-            preparedStatement.setInt(4, actionId);
-            preparedStatement.executeUpdate();
-            return true;
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_QUERY_FRIEND)) {
+                preparedStatement.setInt(1, idFrom);
+                preparedStatement.setInt(2, idTo);
+                preparedStatement.setInt(3, Status.PENDING.getStatus());
+                preparedStatement.setInt(4, actionId);
+                preparedStatement.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public boolean updateQueryFriend(int idFrom, int idTo, int status, int actionId) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_QUERY_FRIEND)) {
-            preparedStatement.setInt(1, status);
-            preparedStatement.setInt(2, actionId);
-            preparedStatement.setInt(3, idFrom);
-            preparedStatement.setInt(4, idTo);
-            preparedStatement.executeUpdate();
-            return true;
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_QUERY_FRIEND)) {
+                preparedStatement.setInt(1, status);
+                preparedStatement.setInt(2, actionId);
+                preparedStatement.setInt(3, idFrom);
+                preparedStatement.setInt(4, idTo);
+                preparedStatement.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public boolean removeFriend(int idFrom, int idTo) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_FRIEND)) {
-            preparedStatement.setInt(1, idFrom);
-            preparedStatement.setInt(2, idTo);
-            preparedStatement.executeUpdate();
-            return true;
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_FRIEND)) {
+                preparedStatement.setInt(1, idFrom);
+                preparedStatement.setInt(2, idTo);
+                preparedStatement.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public Status getStatus(int idFrom, int idTo) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_STATUS)) {
-            preparedStatement.setInt(1, idFrom);
-            preparedStatement.setInt(2, idTo);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int status = resultSet.getInt("status");
-                    return status > 2 ? Status.DECLINE : Status.values()[status + 1];
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_STATUS)) {
+                preparedStatement.setInt(1, idFrom);
+                preparedStatement.setInt(2, idTo);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int status = resultSet.getInt("status");
+                        return status > 2 ? Status.DECLINE : Status.values()[status + 1];
+                    }
                 }
+                return Status.UNKNOWN;
             }
-            return Status.UNKNOWN;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public Status getPendingRequestToMe(int idFrom, int idTo, int actionId) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_STATUS_TO_ME)) {
-            preparedStatement.setInt(1, idFrom);
-            preparedStatement.setInt(2, idTo);
-            preparedStatement.setInt(3, actionId);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int status = resultSet.getInt("status");
-                    return status > 2 ? Status.DECLINE : Status.values()[status + 1];
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_STATUS_TO_ME)) {
+                preparedStatement.setInt(1, idFrom);
+                preparedStatement.setInt(2, idTo);
+                preparedStatement.setInt(3, actionId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int status = resultSet.getInt("status");
+                        return status > 2 ? Status.DECLINE : Status.values()[status + 1];
+                    }
                 }
+                return Status.UNKNOWN;
             }
-            return Status.UNKNOWN;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public List<Integer> getFriendsIdList(int id) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_FRIENDS)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setInt(2, id);
-            preparedStatement.setInt(3, Status.ACCEPTED.getStatus());
-            preparedStatement.setInt(4, id);
-            preparedStatement.setInt(5, id);
-            preparedStatement.setInt(6, Status.ACCEPTED.getStatus());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<Integer> friends = new ArrayList<>();
-            while (resultSet.next()) {
-                int friendId = resultSet.getInt("id");
-                if (friendId != id) {
-                    friends.add(friendId);
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_FRIENDS)) {
+                preparedStatement.setInt(1, id);
+                preparedStatement.setInt(2, id);
+                preparedStatement.setInt(3, Status.ACCEPTED.getStatus());
+                preparedStatement.setInt(4, id);
+                preparedStatement.setInt(5, id);
+                preparedStatement.setInt(6, Status.ACCEPTED.getStatus());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                List<Integer> friends = new ArrayList<>();
+                while (resultSet.next()) {
+                    int friendId = resultSet.getInt("id");
+                    if (friendId != id) {
+                        friends.add(friendId);
+                    }
                 }
+                return friends;
             }
-            return friends;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public List<Integer> getPendingRequestToId(int id) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_PENDING_REQUEST_TO_ID)) {
-            preparedStatement.setInt(1, Status.PENDING.getStatus());
-            preparedStatement.setInt(2, id);
-            preparedStatement.setInt(3, id);
-            preparedStatement.setInt(4, id);
-            preparedStatement.setInt(5, Status.PENDING.getStatus());
-            preparedStatement.setInt(6, id);
-            preparedStatement.setInt(7, id);
-            preparedStatement.setInt(8, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<Integer> friends = new ArrayList<>();
-            while (resultSet.next()) {
-                int friendId = resultSet.getInt("id");
-                if (friendId != id) {
-                    friends.add(friendId);
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_PENDING_REQUEST_TO_ID)) {
+                preparedStatement.setInt(1, Status.PENDING.getStatus());
+                preparedStatement.setInt(2, id);
+                preparedStatement.setInt(3, id);
+                preparedStatement.setInt(4, id);
+                preparedStatement.setInt(5, Status.PENDING.getStatus());
+                preparedStatement.setInt(6, id);
+                preparedStatement.setInt(7, id);
+                preparedStatement.setInt(8, id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                List<Integer> friends = new ArrayList<>();
+                while (resultSet.next()) {
+                    int friendId = resultSet.getInt("id");
+                    if (friendId != id) {
+                        friends.add(friendId);
+                    }
                 }
+                return friends;
             }
-            return friends;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
     public List<Integer> getFriendRequestsFromId(int id) throws DaoException {
-        Connection connection = pool.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_REQUESTS_FROM_ID)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setInt(2, Status.PENDING.getStatus());
-            preparedStatement.setInt(3, id);
-            preparedStatement.setInt(4, id);
-            preparedStatement.setInt(5, Status.PENDING.getStatus());
-            preparedStatement.setInt(6, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<Integer> friends = new ArrayList<>();
-            while (resultSet.next()) {
-                int friendId = resultSet.getInt("id");
-                if (friendId != id) {
-                    friends.add(friendId);
+        try (Connection connection = pool.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_REQUESTS_FROM_ID)) {
+                preparedStatement.setInt(1, id);
+                preparedStatement.setInt(2, Status.PENDING.getStatus());
+                preparedStatement.setInt(3, id);
+                preparedStatement.setInt(4, id);
+                preparedStatement.setInt(5, Status.PENDING.getStatus());
+                preparedStatement.setInt(6, id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                List<Integer> friends = new ArrayList<>();
+                while (resultSet.next()) {
+                    int friendId = resultSet.getInt("id");
+                    if (friendId != id) {
+                        friends.add(friendId);
+                    }
                 }
+                return friends;
             }
-            return friends;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

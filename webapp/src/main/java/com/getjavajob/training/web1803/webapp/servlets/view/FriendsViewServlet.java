@@ -29,9 +29,6 @@ public class FriendsViewServlet extends HttpServlet {
         List<Account> myRequest = relationshipService.getFriendRequestsFromId(id);
         List<Account> pendingRequest = relationshipService.getPendingRequestsToId(id);
         List<Account> friends = relationshipService.getAcceptedFriendsList(id);
-        accountService.closeService();
-        relationshipService.closeService();
-
         req.setAttribute("id", id);
         req.setAttribute("infoMessage", infoMessage);
         req.setAttribute("actionId", actionId);

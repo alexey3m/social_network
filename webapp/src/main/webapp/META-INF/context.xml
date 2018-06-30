@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context>
+    <Resource name="jdbc/socnet" auth="Container" type="javax.sql.DataSource"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+              username="bbb5523adc7727" password="c669d157" driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://us-cdbr-iron-east-04.cleardb.net:3306/heroku_e005d7733619d8f?reconnect=true"/>
+</Context>

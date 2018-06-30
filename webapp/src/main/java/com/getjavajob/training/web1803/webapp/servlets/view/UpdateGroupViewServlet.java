@@ -16,7 +16,6 @@ public class UpdateGroupViewServlet extends HttpServlet {
         int id = Integer.valueOf(req.getParameter("id"));
         GroupService groupService = new GroupService();
         Group group = groupService.get(id);
-        groupService.closeService();
         req.setAttribute("group", group);
         req.getRequestDispatcher("updateGroup.jsp").forward(req, resp);
     }

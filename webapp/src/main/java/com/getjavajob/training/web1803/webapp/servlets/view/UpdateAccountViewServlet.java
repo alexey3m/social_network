@@ -16,7 +16,6 @@ public class UpdateAccountViewServlet extends HttpServlet {
         int id = Integer.valueOf(req.getParameter("id"));
         AccountService accountService = new AccountService();
         Account account = accountService.get(id);
-        accountService.closeService();
         req.setAttribute("account", account);
         req.getRequestDispatcher("updateAccount.jsp").forward(req, resp);
     }

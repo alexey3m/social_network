@@ -21,8 +21,6 @@ public class SearchResultViewServlet extends HttpServlet {
         GroupService groupService = new GroupService();
         List<Account> findAccounts = accountService.searchByString(searchString);
         List<Group> findGroups = groupService.searchByString(searchString);
-        accountService.closeService();
-        groupService.closeService();
         req.setAttribute("searchString", searchString);
         req.setAttribute("findAccounts", findAccounts);
         req.setAttribute("findGroups", findGroups);

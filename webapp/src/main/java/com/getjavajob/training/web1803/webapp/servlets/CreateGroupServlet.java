@@ -36,8 +36,6 @@ public class CreateGroupServlet extends HttpServlet {
             }
         } catch (DaoNameException e) {
             response.sendRedirect("createGroup.jsp?infoMessage=nameFalse&name=" + name);
-        } finally {
-            service.closeService();
         }
     }
 }

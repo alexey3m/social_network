@@ -90,7 +90,7 @@ public class MessageService {
         }
     }
 
-    public void closeService() {
-        connectionPool.returnConnection();
-    }
+//    public void closeService() {
+//        connectionPool.returnConnection();
+//    }
 }
