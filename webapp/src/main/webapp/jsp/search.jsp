@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/search.css" rel="stylesheet" type="text/css"/>
-    <title>Search in Social net!</title>
+    <title>Поиск Social net!</title>
 </head>
 <body>
 <main role="main" class="container">
     <form class="form-inline my-2 my-lg-0 navs" action="SearchResultViewServlet">
-        <input class="form-control mr-sm-2" type="search" name="inputSearch" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <input class="form-control mr-sm-2" type="search" name="inputSearch" placeholder="Поиск" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
     </form>
 </main><!-- /.container -->
 <!-- Optional JavaScript -->

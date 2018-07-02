@@ -92,7 +92,63 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
                 </plugin>
-            </plugins>
+                </plugins>
         </pluginManagement>
     </build>
+
+    <!--<build>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<version>3.0.2</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>copy</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<artifactItems>-->
+                                <!--<artifactItem>-->
+                                    <!--<groupId>com.github.jsimone</groupId>-->
+                                    <!--<artifactId>webapp-runner-main</artifactId>-->
+                                    <!--<version>8.5.29.0</version>-->
+                                    <!--<destFileName>webapp-runner.jar</destFileName>-->
+                                <!--</artifactItem>-->
+                                <!--<artifactItem>-->
+                                    <!--<groupId>org.apache.tomcat</groupId>-->
+                                    <!--<artifactId>tomcat-dbcp</artifactId>-->
+                                    <!--<version>8.5.29</version>-->
+                                <!--</artifactItem>-->
+                            <!--</artifactItems>-->
+                            <!--<stripVersion>true</stripVersion>-->
+                            <!--<webResources>-->
+                                <!--<resource>-->
+                                    <!--&lt;!&ndash; this is relative to the pom.xml directory &ndash;&gt;-->
+                                    <!--<directory>${project.basedir}/src/main/webapp-->
+                                    <!--</directory>-->
+
+                                <!--</resource>-->
+                            <!--</webResources>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>com.heroku.sdk</groupId>-->
+                <!--<artifactId>heroku-maven-plugin</artifactId>-->
+                <!--<version>2.0.3</version>-->
+                <!--<configuration>-->
+                    <!--<processTypes>-->
+                        <!--<web>java $JAVA_OPTS -cp target/dependency/webapp-runner.jar:target/dependency/tomcat-dbcp.jar webapp.runner.launch.Main &#45;&#45;enable-naming &#45;&#45;context-xml target/webapp-1.0-SNAPSHOT/META-INF/context.xml $WEBAPP_RUNNER_OPTS &#45;&#45;port $PORT target/webapp-1.0-SNAPSHOT.war</web>-->
+                    <!--</processTypes>-->
+                    <!--<appName>socnetershov</appName>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
+
+
 </project>

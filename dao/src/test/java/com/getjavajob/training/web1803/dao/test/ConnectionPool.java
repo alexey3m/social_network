@@ -9,33 +9,42 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnectionPool implements Pool {
-    private Connection connection;
+    private String url;
+    private String user;
+    private String password;
 
     public ConnectionPool() {
         try {
             Properties properties = new Properties();
             properties.load(this.getClass().getClassLoader().getResourceAsStream("H2connect.properties"));
-            String url = properties.getProperty("database.url");
-            String user = properties.getProperty("database.user");
-            String password = properties.getProperty("database.password");
-            this.connection = DriverManager.getConnection(url, user, password);
-            this.connection.setAutoCommit(false);
-        } catch (IOException | SQLException e) {
+            url = properties.getProperty("database.url");
+            user = properties.getProperty("database.user");
+            password = properties.getProperty("database.password");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public Connection getConnection() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return connection;
     }
 
     @Override
-    public void returnConnection() {}
+    public void returnConnection() {
+    }
 
     @Override
-    public void commit() {}
+    public void commit() {
+    }
 
     @Override
-    public void rollback() {}
+    public void rollback() {
+    }
 }

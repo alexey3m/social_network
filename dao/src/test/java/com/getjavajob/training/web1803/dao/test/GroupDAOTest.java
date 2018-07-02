@@ -23,11 +23,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class GroupDAOTest {
-    private ConnectionPool connectionPool;
+    private ConnectionPool connectionPool = new ConnectionPool();
 
     @Before
     public void initDB() throws IOException, SQLException {
-        connectionPool = new ConnectionPool();
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
         runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/create-data-model.sql")));
@@ -146,13 +145,13 @@ public class GroupDAOTest {
     }
 
     @Test
-    public void getIdTest() {
+    public void getIdTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(2, groupDAO.getId("Group 2"));
     }
 
     @Test
-    public void getRoleMemberInGroupTest() {
+    public void getRoleMemberInGroupTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(GroupRole.ADMIN, groupDAO.getRoleMemberInGroup(1, 1));
         assertEquals(GroupRole.USER, groupDAO.getRoleMemberInGroup(1, 3));
@@ -160,7 +159,7 @@ public class GroupDAOTest {
     }
 
     @Test
-    public void getStatusMemberInGroupTest() {
+    public void getStatusMemberInGroupTest() throws DaoException {
         GroupDAO groupDAO = new GroupDAO(connectionPool);
         assertEquals(GroupStatus.ACCEPTED, groupDAO.getStatusMemberInGroup(1, 1));
     }

@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/groups.css" rel="stylesheet" type="text/css"/>
-    <title>You friends list Social net!</title>
+    <title>Мои группы Social net!</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
     <div>
-        <h5>My groups</h5>
+        <h5>Мои группы</h5>
     </div>
     <c:forEach var="group" items="${myGroups}">
         <div class="row row-groups">
@@ -26,7 +26,7 @@
         </div>
     </c:forEach>
     <div>
-        <h5>All groups</h5>
+        <h5>Все группы Социальной сети</h5>
     </div>
     <c:forEach var="group" items="${allGroups}">
         <div class="row row-groups">

@@ -16,6 +16,7 @@ public class FriendsViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession(false);
         int id = (Integer) session.getAttribute("id");
         String infoMessage = req.getParameter("infoMessage");
@@ -29,9 +30,6 @@ public class FriendsViewServlet extends HttpServlet {
         List<Account> myRequest = relationshipService.getFriendRequestsFromId(id);
         List<Account> pendingRequest = relationshipService.getPendingRequestsToId(id);
         List<Account> friends = relationshipService.getAcceptedFriendsList(id);
-        accountService.closeService();
-        relationshipService.closeService();
-
         req.setAttribute("id", id);
         req.setAttribute("infoMessage", infoMessage);
         req.setAttribute("actionId", actionId);

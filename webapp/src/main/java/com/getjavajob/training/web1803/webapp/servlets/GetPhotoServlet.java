@@ -14,7 +14,6 @@ public class GetPhotoServlet extends HttpServlet {
         int id = Integer.valueOf(request.getParameter("id"));
         AccountService service = new AccountService();
         Account currentAccount = service.get(id);
-        service.closeService();
         byte[] photo = currentAccount.getPhoto();
         if (photo == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

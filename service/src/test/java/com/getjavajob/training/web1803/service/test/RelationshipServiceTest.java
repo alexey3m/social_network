@@ -26,7 +26,7 @@ public class RelationshipServiceTest {
     private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private RelationshipService phoneService = new RelationshipService(relationshipDAO, accountDAO, connectionPool);
+    private RelationshipService phoneService = new RelationshipService(relationshipDAO, accountDAO);
 
     @Test
     public void addQueryFriendTest() throws DaoException {

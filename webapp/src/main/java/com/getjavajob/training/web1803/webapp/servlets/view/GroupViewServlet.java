@@ -24,6 +24,7 @@ public class GroupViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         int groupId = Integer.valueOf(req.getParameter("id"));
         String infoMessage = req.getParameter("infoMessage");
         String actionIdString = req.getParameter("actionId");
@@ -57,10 +58,6 @@ public class GroupViewServlet extends HttpServlet {
             int accountId = item.getUserCreatorId();
             messagesAccounts.put(accountId, accountService.get(accountId));
         }
-        accountService.closeService();
-        groupService.closeService();
-        messageService.closeService();
-
         req.setAttribute("groupId", groupId);
         req.setAttribute("infoMessage", infoMessage);
         req.setAttribute("actionId", actionId);

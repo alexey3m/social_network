@@ -13,10 +13,10 @@ public class UpdateAccountViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         int id = Integer.valueOf(req.getParameter("id"));
         AccountService accountService = new AccountService();
         Account account = accountService.get(id);
-        accountService.closeService();
         req.setAttribute("account", account);
         req.getRequestDispatcher("updateAccount.jsp").forward(req, resp);
     }

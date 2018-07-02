@@ -10,18 +10,18 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/search-result.css" rel="stylesheet" type="text/css"/>
-    <title>You friends list Social net!</title>
+    <title>Результаты поиска Social net!</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
     <div>
-        <h5>Search result for string "${searchString}"</h5>
+        <h5>Результаты поиска по "${searchString}"</h5>
     </div>
     <table class="table table-hover">
         <thead>
         <tr>
-            <th>Accounts</th>
+            <th>Аккаунты</th>
         </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@
     <table class="table table-hover">
         <thead>
         <tr>
-            <th>Groups</th>
+            <th>Группы</th>
         </tr>
         </thead>
         <tbody>

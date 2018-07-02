@@ -19,11 +19,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RelationshipDAOTest {
-    private ConnectionPool connectionPool;
+    private ConnectionPool connectionPool = new ConnectionPool();
 
     @Before
     public void initDB() throws IOException, SQLException {
-        connectionPool = new ConnectionPool();
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
         runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/create-data-model.sql")));

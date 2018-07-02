@@ -17,7 +17,6 @@ public class GroupActionServlet extends HttpServlet {
         GroupService service = new GroupService();
         String infoMessage = "groupActionFalse";
         infoMessage = doAction(action, actionId, groupId, service, infoMessage);
-        service.closeService();
         response.sendRedirect("GroupViewServlet?id=" + groupId + "&infoMessage=" + infoMessage + "&actionId=" + actionId);
     }
 

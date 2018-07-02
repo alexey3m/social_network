@@ -15,12 +15,12 @@ public class GroupsViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession(false);
         int sessionId = (Integer) session.getAttribute("id");
         GroupService groupService = new GroupService();
         List<Group> myGroups = groupService.getAllById(sessionId);
         List<Group> allGroups = groupService.getAll();
-        groupService.closeService();
         req.setAttribute("myGroups", myGroups);
         req.setAttribute("allGroups", allGroups);
         req.getRequestDispatcher("groups.jsp").forward(req, resp);

@@ -20,6 +20,7 @@ public class AccountMessViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         AccountService accountService = new AccountService();
         MessageService messageService = new MessageService();
         HttpSession session = req.getSession(false);
@@ -50,8 +51,6 @@ public class AccountMessViewServlet extends HttpServlet {
                 allAccountsMessages.put(id, accountService.get(id));
             }
         }
-        accountService.closeService();
-        messageService.closeService();
         req.setAttribute("sessionId", sessionId);
         req.setAttribute("assignId", assignId);
         req.setAttribute("newMessageAccount", newMessageAccount);

@@ -21,7 +21,6 @@ public class UpdateRoleServlet extends HttpServlet {
             service.updateRole(actionId, Role.ADMIN);
             message = "updateRoleAdmin";
         }
-        service.closeService();
         response.sendRedirect("AccountViewServlet?id=" + actionId + "&infoMessage=" + message);
     }
 }

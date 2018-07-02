@@ -59,7 +59,6 @@ public class MessageServlet extends HttpServlet {
             int messageId = Integer.valueOf(request.getParameter("messageId"));
             service.remove(messageId);
         }
-        service.closeService();
         response.sendRedirect(location + "?id=" + assignId);
     }
 }

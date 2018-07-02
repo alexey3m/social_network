@@ -14,7 +14,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="./">Social-Network</a>
+    <a class="navbar-brand" href="./">Социальная сеть</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -22,23 +22,23 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="FriendsViewServlet">My friends</a>
+                <a class="nav-link" href="FriendsViewServlet">Мои друзья</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="GroupsViewServlet">My groups</a>
+                <a class="nav-link" href="GroupsViewServlet">Мои группы</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="AccountMessViewServlet">My messages</a>
+                <a class="nav-link" href="AccountMessViewServlet">Мои сообщения</a>
             </li>
         </ul>
         <div class="col-md-4 navs">
             <form class="form-inline my-2 my-lg-0" action="LogoutServlet">
                 <div class="text-login mr-sm-2">
-                    Current user: <c:out value="${sessionScope.userName}"/>
+                    Текущий пользователь: <c:out value="${sessionScope.userName}"/>
                 </div>
                 <c:set var="email" scope="page" value="${sessionScope.email}"/>
                 <c:if test="${email != null}">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout!</button>
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Выйти!</button>
                 </c:if>
             </form>
         </div>

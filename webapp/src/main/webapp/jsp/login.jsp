@@ -11,7 +11,7 @@
     <!-- Custom styles for this template -->
     <link href="resources/css/login.css" rel="stylesheet" type="text/css"/>
 
-    <title>Login to Social net!</title>
+    <title>Вход в Social net!</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
@@ -23,30 +23,30 @@
         <c:set var="infoMessage" scope="session" value="${param.infoMessage}"/>
         <c:if test="${infoMessage == 'alert'}">
             <div class="alert alert-danger form-signin-alert" role="alert">
-                <strong>Error!</strong> <br>You login or password do not recognized!
+                <strong>Ошибка!</strong> <br>Ваш логин/пароль не совпадает!
             </div>
         </c:if>
         <c:if test="${infoMessage == 'reg'}">
             <div class="alert alert-success text-alert" role="alert">
-                <strong>Congratulations!</strong> <br>Are you registered! You can login.
+                <strong>Поздравляем!</strong> <br>Вы зарегистрированы! Можете войти.
             </div>
         </c:if>
-        <h2 class="form-signin-heading">Social network</h2>
+        <h2 class="form-signin-heading">Социальная сеть</h2>
         <label for="inputEmail" class="sr-only">Email</label>
         <input type="email" id="inputEmail" name="inputEmail" class="form-control" placeholder="Email" autofocus>
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Password">
+        <label for="inputPassword" class="sr-only">Пароль</label>
+        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Пароль">
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="rememberMe" value="active"> Remember me
+                <input type="checkbox" name="rememberMe" value="active"> Запомнить меня
             </label>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
     </form>
     <div class="form-signin-alert">
-        or<br>
+        или<br>
         <a href="reg.jsp">
-            <button type="button" class="btn btn-lg btn-link">Registration</button>
+            <button type="button" class="btn btn-lg btn-link">Зарегистрироваться!</button>
         </a>
     </div>
 </main><!-- /.container -->

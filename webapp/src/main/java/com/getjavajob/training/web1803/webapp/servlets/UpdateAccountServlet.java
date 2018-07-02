@@ -51,7 +51,6 @@ public class UpdateAccountServlet extends HttpServlet {
         AccountService accountService = new AccountService();
         boolean result = accountService.update(email, password, firstName, lastName, middleName, birthday, photo,
                 photoFileName, skype, icq, phones);
-        accountService.closeService();
         if (result) {
             response.sendRedirect("AccountViewServlet?id=" + id + "&infoMessage=updateTrue");
         } else {

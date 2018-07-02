@@ -10,11 +10,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
 public class ConnectionPool implements Pool {
-    private static ConnectionPool pool;
+    private static final ConnectionPool INSTANCE = new ConnectionPool();
     private static Queue<Connection> freeConnections;
     private static Properties properties;
     private static Semaphore semaphore;
-    private static ThreadLocal<Connection> threadLocal;
+    private ThreadLocal<Connection> threadLocal;
 
     private ConnectionPool() {
         if (properties == null) {
@@ -34,11 +34,8 @@ public class ConnectionPool implements Pool {
         }
     }
 
-    public static ConnectionPool getPool() {
-        if (pool == null) {
-            pool = new ConnectionPool();
-        }
-        return pool;
+    public static ConnectionPool getInstance() {
+        return INSTANCE;
     }
 
     private static Connection getConnectionToThread() {
@@ -46,11 +43,9 @@ public class ConnectionPool implements Pool {
         try {
             semaphore.acquire();
             connection = freeConnections.poll();
-            if (connection != null) {
-                if (!connection.isValid(0)) {
-                    connection.close();
-                    connection = newConnection();
-                }
+            if (connection != null && !connection.isValid(0)) {
+                connection.close();
+                connection = newConnection();
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -11,6 +11,7 @@ public class LoginServlet extends HttpServlet {
     private static final String EMAIL = "email";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding("UTF-8");
         String email = null;
         String password = null;
         boolean useCookies = Boolean.parseBoolean(request.getParameter("cookie"));
@@ -52,10 +53,6 @@ public class LoginServlet extends HttpServlet {
             response.sendRedirect("AccountViewServlet?id=" + id);
         } catch (DaoNameException e) {
             response.sendRedirect("login.jsp?infoMessage=alert");
-        } finally {
-            if (service != null) {
-                service.closeService();
-            }
         }
     }
 
