@@ -23,11 +23,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class GroupDAOTest {
-    private ConnectionPool connectionPool;
+    private ConnectionPool connectionPool = new ConnectionPool();
 
     @Before
     public void initDB() throws IOException, SQLException {
-        connectionPool = new ConnectionPool();
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
         runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/" +
                 "dao/src/test/resources/create-data-model.sql")));

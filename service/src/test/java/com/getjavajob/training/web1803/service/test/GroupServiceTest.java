@@ -25,7 +25,7 @@ public class GroupServiceTest {
     private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private GroupService groupService = new GroupService(groupDAO, connectionPool);
+    private GroupService groupService = new GroupService(groupDAO);
 
     @Test
     public void createTest() throws DaoException, DaoNameException {

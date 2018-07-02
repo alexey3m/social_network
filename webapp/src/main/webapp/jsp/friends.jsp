@@ -10,46 +10,45 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/friends.css" rel="stylesheet" type="text/css"/>
-    <title>You friends list Social net!</title>
+    <title>Мои друзья Social net!</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Good!</strong> <br>Your friend request with ${actionAccount.firstName} ${actionAccount.lastName} was
-            sent!
+            <strong>Отлично!</strong> <br>Ваш запрос в друзья с ${actionAccount.firstName} ${actionAccount.lastName} был
+            отправлен!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsAcceptTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Success!</strong> <br>You are now friends with ${actionAccount.firstName} ${actionAccount.lastName}!
+            <strong>Успешно!</strong> <br>Теперь вы друзья с ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsRemoveTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>It's a pity!</strong> <br>Now you are not friends
-            with ${actionAccount.firstName} ${actionAccount.lastName}!
+            <strong>Очень жаль!</strong> <br>Теперь вы не друзья с ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsDeclineTrue'}">
         <div class="alert alert-danger text-alert" role="alert">
-            Request from ${actionAccount.firstName} ${actionAccount.lastName} has been declined!
+            Запрос от ${actionAccount.firstName} ${actionAccount.lastName} был отклонен!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'removeRequestTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has
-            been removed!
+            <strong>Очень жаль!</strong> <br>Ваш запрос в друзья с ${actionAccount.firstName} ${actionAccount.lastName}
+            был удален!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
-            <strong>Oops!</strong> <br>Oops! Something went wrong..!
+            <strong>Упс!</strong> <br>Что-то пошло не так..
         </div>
     </c:if>
     <div>
-        <h5>My requests</h5>
+        <h5>Мои запросы</h5>
     </div>
     <c:forEach var="account" items="${myRequest}">
         <div class="row row-friends">
@@ -60,13 +59,13 @@
             </div>
             <div class="col-3">
                 <form method="post" action="FriendsServlet?action=removeRequest&actionId=${account.id}">
-                    <button type="submit" class="btn btn-secondary">Remove my request!</button>
+                    <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
                 </form>
             </div>
         </div>
     </c:forEach>
     <div>
-        <h5>Pending requests to me</h5>
+        <h5>Ожидающие запросы ко мне</h5>
     </div>
     <c:forEach var="account" items="${pendingRequest}">
         <div class="row row-friends">
@@ -77,16 +76,16 @@
             </div>
             <div class="col-3">
                 <form class="d-inline" method="post" action="FriendsServlet?action=accept&actionId=${account.id}">
-                    <button type="submit" class="btn btn-sm btn-success">Add to friend!</button>
+                    <button type="submit" class="btn btn-sm btn-success">Принять в друзья!</button>
                 </form>
                 <form class="d-inline" method="post" action="FriendsServlet?action=decline&actionId=${account.id}">
-                    <button type="submit" class="btn btn-sm btn-danger">Decline request!</button>
+                    <button type="submit" class="btn btn-sm btn-danger">Отклонить запрос!</button>
                 </form>
             </div>
         </div>
     </c:forEach>
     <div>
-        <h5>Friends</h5>
+        <h5>Друзья</h5>
     </div>
     <c:forEach var="account" items="${friends}">
         <div class="row row-friends">
@@ -97,7 +96,7 @@
             </div>
             <div class="col-3">
                 <form method="post" action="FriendsServlet?action=remove&actionId=${account.id}">
-                    <button type="submit" class="btn btn-sm btn-warning">Remove from friend!</button>
+                    <button type="submit" class="btn btn-sm btn-warning">Удалить из друзей!</button>
                 </form>
             </div>
         </div>

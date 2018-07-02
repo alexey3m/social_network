@@ -20,6 +20,7 @@ public class AccountMessViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         AccountService accountService = new AccountService();
         MessageService messageService = new MessageService();
         HttpSession session = req.getSession(false);

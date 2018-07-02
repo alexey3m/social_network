@@ -22,6 +22,7 @@ public class AccountViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         int id = Integer.valueOf(req.getParameter("id"));
         String actionIdString = req.getParameter("actionId");
         int actionId = actionIdString != null ? Integer.valueOf(actionIdString) : 0;

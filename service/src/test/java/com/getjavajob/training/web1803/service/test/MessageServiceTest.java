@@ -25,7 +25,7 @@ public class MessageServiceTest {
     private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private MessageService messageService = new MessageService(messageDAO, connectionPool);
+    private MessageService messageService = new MessageService(messageDAO);
 
     @Test
     public void createTest() throws DaoException {
@@ -71,7 +71,7 @@ public class MessageServiceTest {
     public void getAllByCurrentIdAssignIdTest() throws DaoException {
         Map<Integer, Integer> messMap = new HashMap<>();
         messMap.put(3, 1);
-        when(messageDAO.getAllByCurrentIdAssignId(1,2)).thenReturn(messMap);
+        when(messageDAO.getAllByCurrentIdAssignId(1, 2)).thenReturn(messMap);
         assertEquals(messMap, messageService.getAllByCurrentIdAssignId(1, 2));
     }
 

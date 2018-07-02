@@ -20,11 +20,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class MessageDAOTest {
-    private Pool connectionPool;
+    private Pool connectionPool = new ConnectionPool();
 
     @Before
     public void initDB() throws IOException, SQLException, DaoException {
-        connectionPool = new ConnectionPool();
         ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
         runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
         runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));

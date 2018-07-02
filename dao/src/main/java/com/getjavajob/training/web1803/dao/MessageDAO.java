@@ -29,22 +29,14 @@ public class MessageDAO {
     private static final String REMOVE_MESSAGE = "DELETE FROM message WHERE message_id = ?";
 
     private Pool pool;
-    private static MessageDAO messageDAO;
 
-    private MessageDAO() {
-        pool = ConnectionPool.getPool();
+    public MessageDAO() {
+        pool = JNDIPool.getInstance();
     }
 
     //Constructor for tests
     public MessageDAO(Pool pool) {
         this.pool = pool;
-    }
-
-    public static MessageDAO getInstance() {
-        if (messageDAO == null) {
-            messageDAO = new MessageDAO();
-        }
-        return messageDAO;
     }
 
     public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName, String text, String createDate, int userCreatorId) throws DaoException {

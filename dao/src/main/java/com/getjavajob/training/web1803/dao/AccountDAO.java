@@ -38,10 +38,9 @@ public class AccountDAO {
     private static final String SELECT_ROLE = "SELECT role FROM account WHERE account_id = ?";
 
     private Pool pool;
-    private static AccountDAO accountDAO;
 
-    private AccountDAO() {
-        pool = ConnectionPool.getPool();
+    public AccountDAO() {
+        pool = JNDIPool.getInstance();
     }
 
     //Constructor for tests
@@ -49,18 +48,10 @@ public class AccountDAO {
         this.pool = pool;
     }
 
-    public static AccountDAO getInstance() {
-        if (accountDAO == null) {
-            accountDAO = new AccountDAO();
-        }
-        return accountDAO;
-    }
-
     public boolean create(String email, String password, String firstName, String lastName, String middleName,
                           String birthday, InputStream photo, String photoFileName, String skype, int icq, String regDate,
                           Role role) throws DaoException, DaoNameException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("AccountDao.create: " + connection);
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_EMAIL)) {
                 preparedStatement.setString(1, email);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -166,7 +157,6 @@ public class AccountDAO {
 
     public boolean update(Account account) throws DaoException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("AccountDao.update: " + connection);
             int id = account.getId();
             executePrepStatementUpdateString(id, account.getPassword(), connection, UPDATE_ACCOUNT_SET_PASSWORD);
             executePrepStatementUpdateString(id, account.getFirstName(), connection, UPDATE_ACCOUNT_SET_FIRST_NAME);
@@ -195,7 +185,6 @@ public class AccountDAO {
 
     public boolean updateRole(int accountId, Role newRole) throws DaoException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("AccountDao.updateRole: " + connection);
             executePrepStatementUpdateInt(accountId, newRole.getStatus(), connection, UPDATE_ACCOUNT_SET_ROLE);
             return true;
         } catch (SQLException e) {
@@ -205,7 +194,6 @@ public class AccountDAO {
 
     public boolean remove(int id) throws DaoException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("AccountDao.remove: " + connection);
             try (PreparedStatement preparedStatement1 = connection.prepareStatement(REMOVE_ACCOUNT)) {
                 preparedStatement1.setInt(1, id);
                 preparedStatement1.executeUpdate();

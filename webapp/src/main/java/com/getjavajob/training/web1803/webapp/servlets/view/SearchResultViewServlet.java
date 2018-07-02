@@ -16,6 +16,7 @@ public class SearchResultViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         String searchString = req.getParameter("inputSearch");
         AccountService accountService = new AccountService();
         GroupService groupService = new GroupService();

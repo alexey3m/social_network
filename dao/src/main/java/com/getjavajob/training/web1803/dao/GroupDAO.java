@@ -40,22 +40,14 @@ public class GroupDAO {
     private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
 
     private Pool pool;
-    private static GroupDAO groupDAO;
 
-    private GroupDAO() {
-        pool = ConnectionPool.getPool();
+    public GroupDAO() {
+        pool = JNDIPool.getInstance();
     }
 
     //Constructor for tests
     public GroupDAO(Pool pool) {
         this.pool = pool;
-    }
-
-    public static GroupDAO getInstance() {
-        if (groupDAO == null) {
-            groupDAO = new GroupDAO();
-        }
-        return groupDAO;
     }
 
     public boolean create(String name, InputStream photo, String photoFileName, String createDate, String info, int userCreatorId) throws DaoNameException, DaoException {

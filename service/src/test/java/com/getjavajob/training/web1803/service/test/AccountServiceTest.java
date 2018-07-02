@@ -29,7 +29,7 @@ public class AccountServiceTest {
     private Pool connectionPool = mock(Pool.class);
 
     @InjectMocks
-    private AccountService accountService = new AccountService(accountDAO, phoneDAO, connectionPool);
+    private AccountService accountService = new AccountService(accountDAO, phoneDAO);
 
     @Test
     public void createTest() throws DaoException, DaoNameException {

@@ -10,14 +10,14 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/accountMess.css" rel="stylesheet" type="text/css"/>
-    <title>You messages Social net!</title>
+    <title>Ваши сообщения Social net!</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
     <div class="row">
         <div class="col-md-3">
-            <h5>Contacts</h5>
+            <h5>Контакты</h5>
             <c:forEach var="account" items="${contacts}">
                 <div class="row">
                     <a href="AccountMessViewServlet?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
@@ -26,46 +26,46 @@
         </div>
         <div class="col-md-9">
             <c:if test="${assignId != 0}">
-                <h5>New message</h5>
+                <h5>Новое сообщение</h5>
                 <div class="card mb-1 box-shadow">
                     <div class="card-header">
-                        To <a
+                        Новое сообщение для <a
                             href="AccountViewServlet?id=${newMessageAccount.id}">${newMessageAccount.firstName} ${newMessageAccount.lastName}</a>
                     </div>
                     <div class="card-body">
                         <form action="MessageServlet?action=new&type=account&assignId=${assignId}"
                               method="post" enctype="multipart/form-data">
                             <div class="row">
-                                <label for="inputNewMessage" class="sr-only">New message</label>
+                                <label for="inputNewMessage" class="sr-only">Новое сообщение</label>
                                 <textarea class="form-control" id="inputNewMessage" name="inputNewMessage" rows="3"
-                                          placeholder="New message"></textarea>
+                                          placeholder="Сообщение"></textarea>
                             </div>
                             <div class="row blog-post">
                                 <div class="col">
                                     <input type="file" id="uploadImage" name="uploadImage" class="form-control-file">
                                 </div>
                                 <div class="float-right">
-                                    <button type="submit" class="btn btn-outline-primary">Send message</button>
+                                    <button type="submit" class="btn btn-outline-primary">Отправить</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-                <h5>Messages</h5>
+                <h5>Все сообщения</h5>
                 <c:forEach var="message" items="${allMessages}">
                     <c:set var="messageAccount" value="${allAccountsMessages[message.userCreatorId]}"/>
                     <div class="card mb-1 box-shadow">
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <p class="blog-post-meta">Posted ${message.createDate} by <a
+                                    <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
                                             href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                     </p>
                                 </div>
                                 <div class="float-right">
                                     <form action="MessageServlet?action=remove&type=account&assignId=${assignId}&messageId=${message.id}"
                                           method="post">
-                                        <button type="submit" class="btn btn-outline-primary">Remove</button>
+                                        <button type="submit" class="btn btn-outline-primary">Удалить</button>
                                     </form>
                                 </div>
                             </div>

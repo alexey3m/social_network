@@ -336,6 +336,10 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
+    <listener>
+        <listener-class>com.getjavajob.training.web1803.webapp.listeners.StartAppListener</listener-class>
+    </listener>
+
     <session-config>
         <session-timeout>10</session-timeout>
     </session-config>

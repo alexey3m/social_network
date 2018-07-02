@@ -2,9 +2,7 @@ package com.getjavajob.training.web1803.service;
 
 import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
-import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.MessageDAO;
-import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 
 import java.io.InputStream;
@@ -14,28 +12,22 @@ import java.util.Map;
 
 public class MessageService {
     private MessageDAO messageDAO;
-    private Pool connectionPool;
 
 
     public MessageService() {
-        connectionPool = ConnectionPool.getPool();
-        messageDAO = MessageDAO.getInstance();
+        messageDAO = new MessageDAO();
     }
 
     //Constructor for tests
-    public MessageService(MessageDAO messageDAO, Pool connectionPool) {
+    public MessageService(MessageDAO messageDAO) {
         this.messageDAO = messageDAO;
-        this.connectionPool = connectionPool;
     }
 
     public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName,
                       String text, String createDate, int userCreatorId) {
         try {
-            int id = messageDAO.create(groupId, accountId, type, photo, photoFileName, text, createDate, userCreatorId);
-            connectionPool.commit();
-            return id;
+            return messageDAO.create(groupId, accountId, type, photo, photoFileName, text, createDate, userCreatorId);
         } catch (DaoException e) {
-            connectionPool.rollback();
             e.printStackTrace();
             return 0;
         }
@@ -81,10 +73,8 @@ public class MessageService {
     public boolean remove(int id) {
         try {
             messageDAO.remove(id);
-            connectionPool.commit();
             return true;
         } catch (DaoException e) {
-            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/createGroup.css" rel="stylesheet" type="text/css"/>
-    <title>Create new group Social-Network</title>
+    <title>Создание новой группы Social-Network</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
@@ -19,23 +19,23 @@
     <c:set var="oldName" scope="page" value="${param.name}"/>
     <c:if test="${infoMessage == 'nameFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
-            <strong>Error!</strong> <br>Name "${oldName}" already used!
+            <strong>Ошибка!</strong> <br>Имя группы "${oldName}" уже используется!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'smFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
-            <strong>Error!</strong> <br>Something went wrong!
+            <strong>Ошибка!</strong> <br>Что-то пошло не так..
         </div>
     </c:if>
     <form class="form-reg" method="post" action="CreateGroupServlet" enctype="multipart/form-data">
-        <h2 class="form-reg-heading">Create group form</h2>
-        <label for="inputName" class="sr-only">Email</label>
-        <input type="text" id="inputName" name="inputName" class="form-control" placeholder="Name" required>
-        <label for="inputInfo" class="sr-only">Information</label>
-        <input type="text" id="inputInfo" name="inputInfo" class="form-control" placeholder="Info">
-        <label for="uploadPhoto" class="sr-only">Group photo</label>
+        <h2 class="form-reg-heading">Создание новой группы</h2>
+        <label for="inputName" class="sr-only">Имя группы</label>
+        <input type="text" id="inputName" name="inputName" class="form-control" placeholder="Имя группы" required>
+        <label for="inputInfo" class="sr-only">Информация</label>
+        <input type="text" id="inputInfo" name="inputInfo" class="form-control" placeholder="Информация">
+        <label for="uploadPhoto" class="sr-only">Аватар группы</label>
         <input type="file" id="uploadPhoto" name="uploadPhoto" class="form-control"><br>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Create group!</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Создать группу!</button>
     </form>
 </main><!-- /.container -->
 

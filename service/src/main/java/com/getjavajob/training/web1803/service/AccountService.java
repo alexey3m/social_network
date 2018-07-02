@@ -4,9 +4,7 @@ import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.AccountDAO;
-import com.getjavajob.training.web1803.dao.ConnectionPool;
 import com.getjavajob.training.web1803.dao.PhoneDAO;
-import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.apache.commons.io.IOUtils;
@@ -20,19 +18,16 @@ import java.util.Map;
 public class AccountService {
     private AccountDAO accountDAO;
     private PhoneDAO phoneDAO;
-    private Pool connectionPool;
 
     public AccountService() {
-        connectionPool = ConnectionPool.getPool();
-        accountDAO = AccountDAO.getInstance();
-        phoneDAO = PhoneDAO.getInstance();
+        accountDAO = new AccountDAO();
+        phoneDAO = new PhoneDAO();
     }
 
     //Constructor for tests
-    public AccountService(AccountDAO accountDAO, PhoneDAO phoneDAO, Pool connectionPool) {
+    public AccountService(AccountDAO accountDAO, PhoneDAO phoneDAO) {
         this.accountDAO = accountDAO;
         this.phoneDAO = phoneDAO;
-        this.connectionPool = connectionPool;
     }
 
     public boolean create(String email, String password, String firstName, String lastName, String middleName,
@@ -45,10 +40,8 @@ public class AccountService {
             for (Map.Entry<String, PhoneType> phone : phones.entrySet()) {
                 phoneDAO.create(id, phone.getKey(), phone.getValue());
             }
-            connectionPool.commit();
             return true;
         } catch (DaoException e) {
-            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -123,10 +116,8 @@ public class AccountService {
             account.setIcq(icq);
             accountDAO.update(account);
             phoneDAO.update(id, phones);
-            connectionPool.commit();
             return true;
         } catch (DaoException | IOException e) {
-            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -135,10 +126,8 @@ public class AccountService {
     public boolean updateRole(int id, Role role) {
         try {
             accountDAO.updateRole(id, role);
-            connectionPool.commit();
             return true;
         } catch (DaoException e) {
-            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
@@ -147,16 +136,10 @@ public class AccountService {
     public boolean remove(int id) {
         try {
             accountDAO.remove(id);
-            connectionPool.commit();
             return true;
         } catch (DaoException e) {
-            connectionPool.rollback();
             e.printStackTrace();
             return false;
         }
     }
-
-//    public void closeService() {
-//        connectionPool.returnConnection();
-//    }
 }

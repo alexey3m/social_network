@@ -13,19 +13,19 @@
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="resources/css/account.css" rel="stylesheet" type="text/css"/>
-    <title>Account Social net!</title>
+    <title>Аккаунт Social net!</title>
 </head>
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'updateTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Success!</strong> <br>You account has been updated!
+            <strong>Успешно!</strong> <br>Ваш аккаунт был обновлен!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'updateFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
-            <strong>Error!</strong> <br>You account was not updated! Try again.
+            <strong>Ошибка!</strong> <br>Ваш аккаунт не был обновлен! Попробуйте еще раз.
         </div>
     </c:if>
     <c:if test="${account == null}">
@@ -33,46 +33,45 @@
     </c:if>
     <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Good!</strong> <br>Your friend request with ${actionAccount.firstName} ${actionAccount.lastName} was
-            sent!
+            <strong>Отлично!</strong> <br>Ваш запрос в друзья с ${actionAccount.firstName} ${actionAccount.lastName} был
+            отправлен!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsAcceptTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Success!</strong> <br>You are now friends with ${actionAccount.firstName} ${actionAccount.lastName}!
+            <strong>Успешно!</strong> <br>Теперь вы друзья с ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsRemoveTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>It's a pity!</strong> <br>Now you are not friends
-            with ${actionAccount.firstName} ${actionAccount.lastName}!
+            <strong>Очень жаль!</strong> <br>Теперь вы не друзья с ${actionAccount.firstName} ${actionAccount.lastName}!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'removeRequestTrue'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>It's a pity!</strong> <br>You request to ${actionAccount.firstName} ${actionAccount.lastName} has
-            been removed!
+            <strong>Очень жаль!</strong> <br>Ваш запрос в друзья с ${actionAccount.firstName} ${actionAccount.lastName}
+            был удален!
         </div>
     </c:if>
 
     <c:if test="${infoMessage == 'friendsDeclineTrue'}">
         <div class="alert alert-danger text-alert" role="alert">
-            Request from ${actionAccount.firstName} ${actionAccount.lastName} has been declined!
+            Запрос от ${actionAccount.firstName} ${actionAccount.lastName} был отклонен!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'friendsFalse' || infoMessage == 'updateRoleFalse'}">
         <div class="alert alert-danger text-alert" role="alert">
-            <strong>Oops!</strong> <br>Something went wrong..!
+            <strong>Упс!</strong> <br>Что-то пошло не так..
         </div>
     </c:if>
     <c:if test="${infoMessage == 'updateRoleUser'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Success!</strong> <br>New role ${account.firstName} ${account.lastName} - "USER"!
+            <strong>Успешно!</strong> <br>Новая роль ${account.firstName} ${account.lastName} - "Пользователь"!
         </div>
     </c:if>
     <c:if test="${infoMessage == 'updateRoleAdmin'}">
         <div class="alert alert-success text-alert" role="alert">
-            <strong>Success!</strong> <br>New role ${account.firstName} ${account.lastName} - "ADMIN"!
+            <strong>Успешно!</strong> <br>Новая роль ${account.firstName} ${account.lastName} - "Администратор"!
         </div>
     </c:if>
 
@@ -82,12 +81,12 @@
                 <img src="getPhoto?id=${id}" onerror="this.src='resources/img/noPhotoAvailable.jpg'" class="img-fluid"
                      alt="Responsive image">
                 <div class="control-panel">
-                    Control panel<br>
+                    Панель управления<br>
                 </div>
                 <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
                     <div class="control-panel">
                         <a href="UpdateAccountViewServlet?id=${id}">
-                            <button type="button" class="btn btn-sm btn-primary">Update account</button>
+                            <button type="button" class="btn btn-sm btn-primary">Обновить аккаунт</button>
                         </a>
                     </div>
                 </c:if>
@@ -95,12 +94,14 @@
                     <div class="control-panel">
                         <c:if test="${role == Role.ADMIN}">
                             <form method="post" action="UpdateRoleServlet?action=toUser&actionId=${id}">
-                                <button type="submit" class="btn btn-sm btn-primary">Change role to "USER"</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Пользователь"
+                                </button>
                             </form>
                         </c:if>
                         <c:if test="${role == Role.USER}">
                             <form method="post" action="UpdateRoleServlet?action=toAdmin&actionId=${id}">
-                                <button type="submit" class="btn btn-sm btn-primary">Change role to "ADMIN"</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Администратор"
+                                </button>
                             </form>
                         </c:if>
                     </div>
@@ -108,50 +109,50 @@
                 <c:if test="${sessionId != id && status == Status.UNKNOWN}">
                     <div class="control-panel">
                         <form method="post" action="FriendsServlet?action=add&actionId=${id}">
-                            <button type="submit" class="btn btn-primary">Add to friend!</button>
+                            <button type="submit" class="btn btn-primary">Добавить в друзья!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.PENDING && pendingStatus != Status.PENDING}">
                     <div class="control-panel">
                         <form method="post" action="FriendsServlet?action=removeRequest&actionId=${id}">
-                            <button type="submit" class="btn btn-secondary">Remove my request!</button>
+                            <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId == id && status == Status.DECLINE}">
                     <div class="control-panel">
-                        <button type="submit" class="btn btn-danger" disabled>Yor request has been declined!</button>
+                        <button type="submit" class="btn btn-danger" disabled>Ваш запрос был отклонен!</button>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.ACCEPTED}">
                     <div class="control-panel">
                         <form method="post" action="FriendsServlet?action=remove&actionId=${id}">
-                            <button type="submit" class="btn btn-warning">Remove from friends!</button>
+                            <button type="submit" class="btn btn-warning">Удалить из друзей!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && pendingStatus == Status.PENDING}">
                     <div class="control-panel">
                         <form method="post" action="FriendsServlet?action=accept&actionId=${id}">
-                            <button type="submit" class="btn btn-success">Add to friend!</button>
+                            <button type="submit" class="btn btn-success">Принять в друзья!</button>
                         </form>
                         <form method="post" action="FriendsServlet?action=decline&actionId=${id}">
-                            <button type="submit" class="btn btn-danger">Decline request!</button>
+                            <button type="submit" class="btn btn-danger">Отклонить запрос!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId == id}">
                     <div class="control-panel">
                         <form method="post" action="createGroup.jsp">
-                            <button type="submit" class="btn btn-primary">Create group!</button>
+                            <button type="submit" class="btn btn-primary">Создать группу!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id}">
                     <div class="control-panel">
                         <a href="AccountMessViewServlet?assignId=${id}">
-                            <button type="submit" class="btn btn-primary">Send message!</button>
+                            <button type="submit" class="btn btn-primary">Отправить сообщение!</button>
                         </a>
                     </div>
                 </c:if>
@@ -162,15 +163,15 @@
                 <h5>${account.firstName} ${account.middleName} ${account.lastName}</h5>
             </div>
             <div class="row">
-                <div class="col-5">Birthday:</div>
+                <div class="col-5">День рождения:</div>
                 <div class="col-5">${account.birthday}</div>
             </div>
             <c:forEach var="phone" items="${account.phones}">
                 <div class="row">
                     <div class="col-5">
-                        <c:if test="${phone.value == PhoneType.HOME}">Phone personally:</c:if>
-                        <c:if test="${phone.value == PhoneType.WORK}">Phone work:</c:if>
-                        <c:if test="${phone.value == PhoneType.ADDITIONAL}">Phone additional:</c:if></div>
+                        <c:if test="${phone.value == PhoneType.HOME}">Телефон личный:</c:if>
+                        <c:if test="${phone.value == PhoneType.WORK}">Телефон рабочий:</c:if>
+                        <c:if test="${phone.value == PhoneType.ADDITIONAL}">Телефон дополнительный:</c:if></div>
                     <div class="col-5"><c:out value="${phone.key}"/></div>
                 </div>
             </c:forEach>
@@ -183,16 +184,16 @@
                 <div class="col-5">${account.skype}</div>
             </div>
             <div class="row">
-                <div class="col-5">Registration date:</div>
+                <div class="col-5">Дата регистрации:</div>
                 <div class="col-5">${account.regDate}</div>
             </div>
             <div class="row">
-                <div class="col-5">Role:</div>
+                <div class="col-5">Роль:</div>
                 <div class="col-5">${account.role}</div>
             </div>
             <div class="row">
                 <hr/>
-                <h5>Wall</h5>
+                <h5>Стена аккаунта</h5>
                 <hr>
             </div>
             <div class="card mb-1 box-shadow">
@@ -200,16 +201,16 @@
                     <form action="MessageServlet?action=new&type=accountWall&assignId=${account.id}"
                           method="post" enctype="multipart/form-data">
                         <div class="row">
-                            <label for="inputNewMessage" class="sr-only">New message</label>
+                            <label for="inputNewMessage" class="sr-only">Новое сообщение</label>
                             <textarea class="form-control" id="inputNewMessage" name="inputNewMessage" rows="3"
-                                      placeholder="New message"></textarea>
+                                      placeholder="Сообщение"></textarea>
                         </div>
                         <div class="row blog-post">
                             <div class="col">
                                 <input type="file" id="uploadImage" name="uploadImage" class="form-control-file">
                             </div>
                             <div class="float-right">
-                                <button type="submit" class="btn btn-outline-primary">Send message</button>
+                                <button type="submit" class="btn btn-outline-primary">Отправить</button>
                             </div>
                         </div>
                     </form>
@@ -221,7 +222,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
-                                <p class="blog-post-meta">Posted ${message.createDate} by <a
+                                <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
                                         href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                 </p>
                             </div>
@@ -229,7 +230,7 @@
                                 <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
                                     <form action="MessageServlet?action=remove&type=accountWall&assignId=${account.id}&messageId=${message.id}"
                                           method="post">
-                                        <button type="submit" class="btn btn-outline-primary">Remove</button>
+                                        <button type="submit" class="btn btn-outline-primary">Удалить</button>
                                     </form>
                                 </c:if>
                             </div>

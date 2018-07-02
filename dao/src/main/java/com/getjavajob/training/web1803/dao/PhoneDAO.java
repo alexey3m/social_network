@@ -17,10 +17,9 @@ public class PhoneDAO {
     private static final String REMOVE_PHONES = "DELETE FROM phone WHERE account_id = ?";
 
     private Pool pool;
-    private static PhoneDAO phoneDAO;
 
-    private PhoneDAO() {
-        pool = ConnectionPool.getPool();
+    public PhoneDAO() {
+        pool = JNDIPool.getInstance();
     }
 
     //Constructor for tests
@@ -28,16 +27,8 @@ public class PhoneDAO {
         this.pool = pool;
     }
 
-    public static PhoneDAO getInstance() {
-        if (phoneDAO == null) {
-            phoneDAO = new PhoneDAO();
-        }
-        return phoneDAO;
-    }
-
     public boolean create(int accountId, String number, PhoneType type) throws DaoException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("PhoneDao.create: " + connection);
             try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PHONE)) {
                 preparedStatement.setInt(1, accountId);
                 preparedStatement.setString(2, number);
@@ -70,7 +61,6 @@ public class PhoneDAO {
     // Map<PhoneNumber, PhoneType>
     public boolean update(int accountId, Map<String, PhoneType> phones) throws DaoException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("PhoneDao.update: " + connection);
             remove(accountId);
             for (Entry<String, PhoneType> phone : phones.entrySet()) {
                 create(accountId, phone.getKey(), phone.getValue());
@@ -83,7 +73,6 @@ public class PhoneDAO {
 
     public boolean remove(int accountId) throws DaoException {
         try (Connection connection = pool.getConnection()) {
-            System.out.println("PhoneDao.remove: " + connection);
             try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_PHONES)) {
                 preparedStatement.setInt(1, accountId);
                 preparedStatement.executeUpdate();
