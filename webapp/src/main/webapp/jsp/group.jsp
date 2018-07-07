@@ -18,7 +18,7 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <main role="main" class="container">
-    <c:if test="${infoMessage == 'reg'}">
+    <c:if test="${infoMessage == 'regGroup'}">
         <div class="alert alert-success text-alert" role="alert">
             <strong>Успешно!</strong> <br>Ваша группа создана!
         </div>

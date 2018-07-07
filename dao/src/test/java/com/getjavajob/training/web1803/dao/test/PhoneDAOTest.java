@@ -2,67 +2,62 @@ package com.getjavajob.training.web1803.dao.test;
 
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.dao.PhoneDAO;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:socnet-context-test.xml")
+@SqlGroup({
+        @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:create-data-model.sql", "classpath:fillDB.sql"}),
+        @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:remove.sql")
+})
 public class PhoneDAOTest {
-    private ConnectionPool connectionPool = new ConnectionPool();
 
-    @Before
-    public void initDB() throws IOException, SQLException {
-        ScriptRunnerUtil runner = new ScriptRunnerUtil(connectionPool.getConnection(), true, true);
-        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/create-data-model.sql")));
-        runner.runScript(new BufferedReader(new FileReader("e:/test/dev/projects/getjavajob/social-network-app/dao/src/test/resources/fillDB.sql")));
-
-    }
-
-    @After
-    public void terminateTables() {
-        try (Statement statement = connectionPool.getConnection().createStatement()) {
-            statement.execute("DROP TABLE message, account_in_group, soc_group, relationship, phone, account");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    @Autowired
+    private PhoneDAO phoneDAO;
 
     @Test
-    public void createTest() throws DaoException {
+    public void createTest() {
         Map<String, PhoneType> expected = new HashMap<>();
         expected.put("800", PhoneType.HOME);
-        PhoneDAO phoneDAO = new PhoneDAO(connectionPool);
         boolean result = phoneDAO.create(2, "800", PhoneType.HOME);
         assertTrue(result);
         assertEquals(expected, phoneDAO.getAll(2));
     }
 
     @Test
-    public void getAllTest() throws DaoException {
+    public void getAllTest() {
         Map<String, PhoneType> expected = new HashMap<>();
         expected.put("900", PhoneType.HOME);
         expected.put("901", PhoneType.WORK);
-        PhoneDAO phoneDAO = new PhoneDAO(connectionPool);
         assertEquals(expected, phoneDAO.getAll(1));
     }
 
     @Test
-    public void updateTest() throws DaoException {
+    public void updateTest() {
         Map<String, PhoneType> newPhones = new HashMap<>();
         newPhones.put("800", PhoneType.WORK);
         newPhones.put("801", PhoneType.ADDITIONAL);
-        PhoneDAO phoneDAO = new PhoneDAO(connectionPool);
         boolean result = phoneDAO.update(1, newPhones);
         Map<String, PhoneType> expected = new HashMap<>();
         expected.put("800", PhoneType.WORK);
@@ -72,10 +67,31 @@ public class PhoneDAOTest {
     }
 
     @Test
-    public void removeTest() throws DaoException {
+    public void removeTest() {
         Map<String, PhoneType> expected = new HashMap<>();
-        PhoneDAO phoneDAO = new PhoneDAO(connectionPool);
         phoneDAO.remove(1);
         assertEquals(expected, phoneDAO.getAll(1));
+    }
+
+    @Configuration
+    @PropertySource("classpath:H2Connect.properties")
+    static class Config {
+
+        @Autowired
+        private Environment env;
+
+        @Bean
+        public DataSource dataSource() {
+            BasicDataSource dataSource = new BasicDataSource();
+            dataSource.setUrl(env.getProperty("database.url"));
+            dataSource.setUsername(env.getProperty("database.user"));
+            dataSource.setPassword(env.getProperty("database.password"));
+            return dataSource;
+        }
+
+        @Bean
+        public JdbcTemplate jdbcTemplate() {
+            return new JdbcTemplate(dataSource());
+        }
     }
 }

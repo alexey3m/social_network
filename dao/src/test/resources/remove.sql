@@ -1,0 +1,1 @@
+DROP TABLE message, account_in_group, soc_group, relationship, phone, account;

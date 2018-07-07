@@ -1,15 +1,13 @@
 package com.getjavajob.training.web1803.webapp.servlets.view;
 
-import com.getjavajob.training.web1803.common.*;
+import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.common.enums.Status;
-import com.getjavajob.training.web1803.service.AccountService;
-import com.getjavajob.training.web1803.service.MessageService;
-import com.getjavajob.training.web1803.service.RelationshipService;
+import com.getjavajob.training.web1803.webapp.servlets.ContextHttpServlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -18,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AccountViewServlet extends HttpServlet {
+public class AccountViewServlet extends ContextHttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -30,11 +28,6 @@ public class AccountViewServlet extends HttpServlet {
         HttpSession session = req.getSession(true);
         int sessionId = (Integer) session.getAttribute("id");
         Role sessionRole = (Role) session.getAttribute("role");
-
-        AccountService accountService = new AccountService();
-        RelationshipService relationshipService = new RelationshipService();
-        MessageService messageService = new MessageService();
-
         Map<Integer, Account> messagesAccounts = new HashMap<>();
         Account account = accountService.get(id);
         Account actionAccount = actionId == 0 ? null : accountService.get(actionId);

@@ -1,13 +1,12 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
 import com.getjavajob.training.web1803.common.enums.PhoneType;
-import com.getjavajob.training.web1803.service.AccountService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @MultipartConfig
-public class UpdateAccountServlet extends HttpServlet {
+public class UpdateAccountServlet extends ContextHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         int id = Integer.valueOf(request.getParameter("inputId"));
@@ -48,10 +47,11 @@ public class UpdateAccountServlet extends HttpServlet {
             photo = filePart.getInputStream();
             photoFileName = filePart.getName();
         }
-        AccountService accountService = new AccountService();
         boolean result = accountService.update(email, password, firstName, lastName, middleName, birthday, photo,
                 photoFileName, skype, icq, phones);
         if (result) {
+            HttpSession session = request.getSession();
+            session.setAttribute("userName", firstName + " " + lastName);
             response.sendRedirect("AccountViewServlet?id=" + id + "&infoMessage=updateTrue");
         } else {
             response.sendRedirect("AccountViewServlet?id=" + id + "&infoMessage=updateFalse");

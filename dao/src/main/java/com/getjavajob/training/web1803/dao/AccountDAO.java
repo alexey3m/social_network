@@ -2,265 +2,117 @@ package com.getjavajob.training.web1803.dao;
 
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.Role;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class AccountDAO {
     private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM account";
     private static final String SEARCH_ACCOUNTS_BY_STRING = "SELECT * FROM account WHERE LOWER(first_name) LIKE ? " +
             "UNION SELECT * FROM account WHERE LOWER(last_name) LIKE ? " +
-            "UNION SELECT * FROM account WHERE LOWER(middle_name) LIKE ? ORDER BY account_id";
-    private static final String SELECT_ACCOUNT_BY_ID = SELECT_ALL_ACCOUNTS + " WHERE account_id = ?";
+            "UNION SELECT * FROM account WHERE LOWER(middle_name) LIKE ? ORDER BY id";
+    private static final String SELECT_ACCOUNT_BY_ID = SELECT_ALL_ACCOUNTS + " WHERE id = ?";
     private static final String SELECT_ACCOUNT_BY_EMAIL = SELECT_ALL_ACCOUNTS + " WHERE email = ?";
     private static final String CHECK_EMAIL_AND_PASSWORD = SELECT_ACCOUNT_BY_EMAIL + " AND password = ?";
     private static final String INSERT_NEW_ACCOUNT = "INSERT INTO account (email, password, first_name, last_name, middle_name, " +
             "birthday, photo, photo_file_name, skype, icq, reg_date, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_ACCOUNT_SET_PASSWORD = "UPDATE account SET password = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_FIRST_NAME = "UPDATE account SET first_name = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_LAST_NAME = "UPDATE account SET last_name = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_MIDDLE_NAME = "UPDATE account SET middle_name = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_BIRTHDAY = "UPDATE account SET birthday = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_PHOTO = "UPDATE account SET photo = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_PHOTO_FILE_NAME = "UPDATE account SET photo_file_name = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_SKYPE = "UPDATE account SET skype = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_ICQ = "UPDATE account SET icq = ? WHERE account_id = ?";
-    private static final String UPDATE_ACCOUNT_SET_ROLE = "UPDATE account SET role = ? WHERE account_id = ?";
-    private static final String COLUMN_ACCOUNT_ID = "account_id";
-    private static final String REMOVE_ACCOUNT = "DELETE FROM account WHERE account_id = ?";
-    private static final String SELECT_ROLE = "SELECT role FROM account WHERE account_id = ?";
+    private static final String UPDATE_ACCOUNT = "UPDATE account SET password = ?, first_name = ?, last_name = ?, middle_name = ?, " +
+            "birthday = ?, photo = ?, photo_file_name = ?, skype = ?, icq = ? WHERE id = ?";
+    private static final String UPDATE_ACCOUNT_SET_ROLE = "UPDATE account SET role = ? WHERE id = ?";
+    private static final String COLUMN_ACCOUNT_ID = "id";
+    private static final String REMOVE_ACCOUNT = "DELETE FROM account WHERE id = ?";
+    private static final String SELECT_ROLE = "SELECT role FROM account WHERE id = ?";
 
-    private Pool pool;
+    private JdbcTemplate jdbcTemplate;
 
-    public AccountDAO() {
-        pool = JNDIPool.getInstance();
+    @Autowired
+    public AccountDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    //Constructor for tests
-    public AccountDAO(Pool pool) {
-        this.pool = pool;
-    }
-
+    @Transactional
     public boolean create(String email, String password, String firstName, String lastName, String middleName,
                           String birthday, InputStream photo, String photoFileName, String skype, int icq, String regDate,
-                          Role role) throws DaoException, DaoNameException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_EMAIL)) {
-                preparedStatement.setString(1, email);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (!resultSet.next()) {
-                        return insertRowInAccount(email, password, firstName, lastName, middleName, birthday, photo,
-                                photoFileName, skype, icq, regDate, role);
-                    } else {
-                        throw new DaoNameException("Email \"" + email + "\" is already used.");
-                    }
-                }
+                          Role role) throws DaoNameException {
+        boolean emailExist = this.jdbcTemplate.query(SELECT_ACCOUNT_BY_EMAIL, new Object[]{email}, ResultSet::next);
+        if (!emailExist) {
+            int result = this.jdbcTemplate.update(INSERT_NEW_ACCOUNT, email, password, firstName, lastName, middleName,
+                    birthday, photo, photoFileName, skype, icq, regDate, role.getStatus());
+            return result != 0;
+        } else {
+            throw new DaoNameException("Email \"" + email + "\" is already used.");
+        }
+    }
+
+    public Account get(int id) {
+        return this.jdbcTemplate.queryForObject(SELECT_ACCOUNT_BY_ID, new Object[]{id},
+                (rs, rowNum) -> createAccountFromResult(rs));
+    }
+
+    public int getId(String email) {
+        return this.jdbcTemplate.queryForObject(SELECT_ACCOUNT_BY_EMAIL, new Object[]{email},
+                (rs, rowNum) -> rs.getInt(COLUMN_ACCOUNT_ID));
+    }
+
+    public int loginAndGetId(String email, String password) throws DaoNameException {
+        int result = this.jdbcTemplate.query(CHECK_EMAIL_AND_PASSWORD, new Object[]{email, password},
+                rs -> rs.next() ? rs.getInt("id") : 0);
+        if (result == 0) {
+            throw new DaoNameException("Email: \"" + email + "\" and password: " + password + " not found in database.");
+        } else {
+            return result;
+        }
+    }
+
+    public Role getRole(int accountId) {
+        return this.jdbcTemplate.queryForObject(SELECT_ROLE, new Object[]{accountId},
+                (rs, rowNum) -> Role.values()[rs.getInt("role")]);
+    }
+
+    public List<Account> searchByString(String search) {
+        String lowerSearch = search.toLowerCase();
+        return this.jdbcTemplate.query(SEARCH_ACCOUNTS_BY_STRING, new Object[]{"%" + lowerSearch + "%", "%" + lowerSearch + "%",
+                "%" + lowerSearch + "%"}, rs -> {
+            List<Account> result = new ArrayList<>();
+            while (rs.next()) {
+                result.add(createAccountFromResult(rs));
             }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-
+            return result;
+        });
     }
 
-    public Account get(int id) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_ID)) {
-                preparedStatement.setInt(1, id);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return createAccountFromResult(resultSet);
-                    }
-                }
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    @Transactional
+    public boolean update(Account account) {
+        int result = this.jdbcTemplate.update(UPDATE_ACCOUNT, account.getPassword(), account.getFirstName(),
+                account.getLastName(), account.getMiddleName(), account.getBirthday(), account.getPhoto(),
+                account.getPhotoFileName(), account.getSkype(), account.getIcq(), account.getId());
+        return result != 0;
     }
 
-    public int getId(String email) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_EMAIL)) {
-                preparedStatement.setString(1, email);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt(COLUMN_ACCOUNT_ID);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-        return 0;
+    @Transactional
+    public boolean updateRole(int accountId, Role newRole) {
+        int result = this.jdbcTemplate.update(UPDATE_ACCOUNT_SET_ROLE, newRole.getStatus(), accountId);
+        return result != 0;
     }
 
-    public int loginAndGetId(String email, String password) throws DaoException, DaoNameException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(CHECK_EMAIL_AND_PASSWORD)) {
-                preparedStatement.setString(1, email);
-                preparedStatement.setString(2, password);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt(COLUMN_ACCOUNT_ID);
-                    } else {
-                        throw new DaoNameException("Email: \"" + email + "\" and password: " + password + " not found in database.");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    @Transactional
+    public boolean remove(int id) {
+        int result = this.jdbcTemplate.update(REMOVE_ACCOUNT, id);
+        return result != 0;
     }
 
-    public Role getRole(int accountId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ROLE)) {
-                preparedStatement.setInt(1, accountId);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return Role.values()[resultSet.getInt("role")];
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-        return null;
-    }
-
-    public List<Account> searchByString(String search) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SEARCH_ACCOUNTS_BY_STRING)) {
-                String lowerSearch = search.toLowerCase();
-                preparedStatement.setString(1, "%" + lowerSearch + "%");
-                preparedStatement.setString(2, "%" + lowerSearch + "%");
-                preparedStatement.setString(3, "%" + lowerSearch + "%");
-                List<Account> accounts = new ArrayList<>();
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        accounts.add(createAccountFromResult(resultSet));
-                    }
-                }
-                return accounts;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public boolean update(Account account) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            int id = account.getId();
-            executePrepStatementUpdateString(id, account.getPassword(), connection, UPDATE_ACCOUNT_SET_PASSWORD);
-            executePrepStatementUpdateString(id, account.getFirstName(), connection, UPDATE_ACCOUNT_SET_FIRST_NAME);
-            executePrepStatementUpdateString(id, account.getLastName(), connection, UPDATE_ACCOUNT_SET_LAST_NAME);
-            executePrepStatementUpdateString(id, account.getMiddleName(), connection, UPDATE_ACCOUNT_SET_MIDDLE_NAME);
-            executePrepStatementUpdateString(id, account.getBirthday(), connection, UPDATE_ACCOUNT_SET_BIRTHDAY);
-            byte[] photo = account.getPhoto();
-            if (photo != null) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ACCOUNT_SET_PHOTO)) {
-                    preparedStatement.setBytes(1, photo);
-                    preparedStatement.setInt(2, id);
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    throw new DaoException(e);
-                }
-            }
-            executePrepStatementUpdateString(id, account.getPhotoFileName(), connection, UPDATE_ACCOUNT_SET_PHOTO_FILE_NAME);
-            executePrepStatementUpdateString(id, account.getSkype(), connection, UPDATE_ACCOUNT_SET_SKYPE);
-            executePrepStatementUpdateInt(id, account.getIcq(), connection, UPDATE_ACCOUNT_SET_ICQ);
-
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public boolean updateRole(int accountId, Role newRole) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            executePrepStatementUpdateInt(accountId, newRole.getStatus(), connection, UPDATE_ACCOUNT_SET_ROLE);
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public boolean remove(int id) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement1 = connection.prepareStatement(REMOVE_ACCOUNT)) {
-                preparedStatement1.setInt(1, id);
-                preparedStatement1.executeUpdate();
-                return true;
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    private static void executePrepStatementUpdateInt(int id, int field, Connection
-            connection, String query) throws DaoException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, field);
-            preparedStatement.setInt(2, id);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    private static void executePrepStatementUpdateString(int id, String field, Connection
-            connection, String query) throws DaoException {
-        if (field != null) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, field);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DaoException(e);
-            }
-        }
-    }
-
-    private boolean insertRowInAccount(String email, String password, String firstName, String
-            lastName, String middleName,
-                                       String birthday, InputStream photo, String photoFileName, String skype, int icq,
-                                       String regDate, Role role) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_ACCOUNT)) {
-                preparedStatement.setString(1, email);
-                preparedStatement.setString(2, password);
-                preparedStatement.setString(3, firstName);
-                preparedStatement.setString(4, lastName);
-                preparedStatement.setString(5, middleName);
-                preparedStatement.setString(6, birthday);
-                preparedStatement.setBlob(7, photo);
-                preparedStatement.setString(8, photoFileName);
-                preparedStatement.setString(9, skype);
-                preparedStatement.setInt(10, icq);
-                preparedStatement.setString(11, regDate);
-                preparedStatement.setInt(12, role.getStatus());
-                preparedStatement.executeUpdate();
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    private Account createAccountFromResult(ResultSet resultSet) throws
-            SQLException, DaoException {
+    private Account createAccountFromResult(ResultSet resultSet) throws SQLException {
         Account account = new Account();
-        int accountId = resultSet.getInt(COLUMN_ACCOUNT_ID);
-        account.setId(accountId);
+        account.setId(resultSet.getInt(COLUMN_ACCOUNT_ID));
         account.setEmail(resultSet.getString("email"));
         account.setPassword(resultSet.getString("password"));
         account.setFirstName(resultSet.getString("first_name"));

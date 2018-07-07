@@ -3,11 +3,12 @@ package com.getjavajob.training.web1803.service.test;
 import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.dao.MessageDAO;
-import com.getjavajob.training.web1803.dao.Pool;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.service.MessageService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,19 +17,19 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MessageServiceTest {
 
-    private MessageDAO messageDAO = mock(MessageDAO.class);
-    private Pool connectionPool = mock(Pool.class);
+    @Mock
+    private MessageDAO messageDAO;
 
     @InjectMocks
-    private MessageService messageService = new MessageService(messageDAO);
+    private MessageService messageService;
 
     @Test
-    public void createTest() throws DaoException {
+    public void createTest() {
         when(messageDAO.create(0, 1, MessageType.ACCOUNT, null, null,
                 "Text account 1", "2018-06-17", 1)).thenReturn(1);
         assertEquals(1, messageService.create(0, 1, MessageType.ACCOUNT, null, null,
@@ -36,7 +37,7 @@ public class MessageServiceTest {
     }
 
     @Test
-    public void getTest() throws DaoException {
+    public void getTest() {
         Message message = new Message(1, 1, MessageType.ACCOUNT, null, null, "Text account 1",
                 "2018-06-17", 1);
 
@@ -45,7 +46,7 @@ public class MessageServiceTest {
     }
 
     @Test
-    public void getAllByTypeAndAssignIdTest() throws DaoException {
+    public void getAllByTypeAndAssignIdTest() {
         Message message1 = new Message(1, 1, MessageType.ACCOUNT, null, null, "Text account 1",
                 "2018-06-17", 1);
         Message message2 = new Message(2, 1, MessageType.ACCOUNT, null, null, "Text account 1-2",
@@ -58,7 +59,7 @@ public class MessageServiceTest {
     }
 
     @Test
-    public void getAllAccountIdDialogTest() throws DaoException {
+    public void getAllAccountIdDialogTest() {
         List<Integer> accountsId = new ArrayList<>();
         accountsId.add(1);
         accountsId.add(2);
@@ -68,7 +69,7 @@ public class MessageServiceTest {
     }
 
     @Test
-    public void getAllByCurrentIdAssignIdTest() throws DaoException {
+    public void getAllByCurrentIdAssignIdTest() {
         Map<Integer, Integer> messMap = new HashMap<>();
         messMap.put(3, 1);
         when(messageDAO.getAllByCurrentIdAssignId(1, 2)).thenReturn(messMap);
@@ -76,7 +77,7 @@ public class MessageServiceTest {
     }
 
     @Test
-    public void removeTest() throws DaoException {
+    public void removeTest() {
         when(messageDAO.remove(1)).thenReturn(true);
         assertTrue(messageDAO.remove(1));
     }

@@ -3,11 +3,9 @@ package com.getjavajob.training.web1803.webapp.servlets;
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
-import com.getjavajob.training.web1803.service.AccountService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -19,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @MultipartConfig
-public class RegServlet extends HttpServlet {
+public class RegServlet extends ContextHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String email = request.getParameter("inputEmail");
@@ -51,7 +49,6 @@ public class RegServlet extends HttpServlet {
             photo = filePart.getInputStream();
             photoFileName = filePart.getName();
         }
-        AccountService accountService = new AccountService();
         try {
             accountService.create(email, password, firstName, lastName, middleName, birthday, photo, photoFileName, skype,
                     icq, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), Role.USER, phones);
