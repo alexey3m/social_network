@@ -2,12 +2,14 @@ package com.getjavajob.training.web1803.webapp.servlets;
 
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
-import com.getjavajob.training.web1803.service.AccountService;
 
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public class LoginServlet extends HttpServlet {
+public class LoginServlet extends ContextHttpServlet {
     private static final String EMAIL = "email";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -30,11 +32,9 @@ public class LoginServlet extends HttpServlet {
             email = request.getParameter("inputEmail");
             password = request.getParameter("inputPassword");
         }
-        AccountService service = null;
         try {
-            service = new AccountService();
-            int id = service.loginAndGetId(email, password);
-            Account currentAccount = service.get(id);
+            int id = accountService.loginAndGetId(email, password);
+            Account currentAccount = accountService.get(id);
             HttpSession session = request.getSession(true);
             session.setAttribute(EMAIL, email);
             session.setAttribute("id", id);

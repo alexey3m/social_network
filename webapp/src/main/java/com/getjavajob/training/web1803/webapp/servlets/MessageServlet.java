@@ -1,24 +1,25 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
 import com.getjavajob.training.web1803.common.enums.MessageType;
-import com.getjavajob.training.web1803.service.MessageService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @MultipartConfig
-public class MessageServlet extends HttpServlet {
+public class MessageServlet extends ContextHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         int assignId = Integer.valueOf(request.getParameter("assignId"));
         String inputType = request.getParameter("type");
         String action = request.getParameter("action");
-        MessageService service = new MessageService();
         int groupId = 0;
         int accountId = 0;
         MessageType type = null;
@@ -54,10 +55,10 @@ public class MessageServlet extends HttpServlet {
             }
             HttpSession session = request.getSession();
             int currentId = (Integer) session.getAttribute("id");
-            service.create(groupId, accountId, type, photo, photoFileName, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId);
+            messageService.create(groupId, accountId, type, photo, photoFileName, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId);
         } else if (action.equals("remove")) {
             int messageId = Integer.valueOf(request.getParameter("messageId"));
-            service.remove(messageId);
+            messageService.remove(messageId);
         }
         response.sendRedirect(location + "?id=" + assignId);
     }

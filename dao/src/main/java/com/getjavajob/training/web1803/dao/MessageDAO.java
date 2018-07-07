@@ -2,155 +2,82 @@ package com.getjavajob.training.web1803.dao;
 
 import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public class MessageDAO {
-    private static final String INSERT_NEW_MESSAGE = "INSERT INTO message (assign_id, type, photo, photo_file_name, text, date_create, user_creator_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_NEW_MESSAGE = "INSERT INTO message (assign_id, type, photo, photo_file_name, text, " +
+            "date_create, user_creator_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_ALL_MESSAGES = "SELECT * FROM message";
     private static final String SELECT_ACCOUNT_ID_WITH_DIALOG = "SELECT assign_id as id FROM message WHERE type = ? AND user_creator_id = ? " +
             "UNION " +
             "SELECT user_creator_id FROM message WHERE type = ? AND assign_id = ?";
     private static final String SELECT_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() AS id";
-    private static final String SELECT_MESSAGE_ID_BY_CREATOR_ID = "SELECT message_id, user_creator_id, date_create FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ? " +
+    private static final String SELECT_MESSAGE_ID_BY_CREATOR_ID = "SELECT message_id, user_creator_id, date_create FROM message " +
+            "WHERE type = ? AND user_creator_id = ? AND assign_id = ? " +
             "UNION " +
-            "SELECT message_id, user_creator_id, date_create FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ? ORDER BY date_create, message_id";
+            "SELECT message_id, user_creator_id, date_create FROM message WHERE type = ? AND user_creator_id = ? AND assign_id = ? " +
+            "ORDER BY date_create, message_id";
     private static final String SELECT_MESSAGE_BY_ID = SELECT_ALL_MESSAGES + " WHERE message_id = ?";
     private static final String SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE = SELECT_ALL_MESSAGES + " WHERE assign_id = ? AND type = ?";
     private static final String REMOVE_MESSAGE = "DELETE FROM message WHERE message_id = ?";
 
-    private Pool pool;
+    private JdbcTemplate jdbcTemplate;
 
-    public MessageDAO() {
-        pool = JNDIPool.getInstance();
+    @Autowired
+    public MessageDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    //Constructor for tests
-    public MessageDAO(Pool pool) {
-        this.pool = pool;
+    @Transactional
+    public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName, String text,
+                      String createDate, int userCreatorId) {
+        int assignId = groupId != 0 ? groupId : accountId;
+        int result = this.jdbcTemplate.update(INSERT_NEW_MESSAGE, assignId, type.getStatus(), photo, photoFileName, text,
+                createDate, userCreatorId);
+        return result == 0 ? 0 : this.jdbcTemplate.queryForObject(SELECT_LAST_INSERT_ID, (rs, rowNum) -> rs.getInt("id"));
     }
 
-    public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName, String text, String createDate, int userCreatorId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NEW_MESSAGE)) {
-                preparedStatement.setInt(1, groupId != 0 ? groupId : accountId);
-                preparedStatement.setInt(2, type.getStatus());
-                preparedStatement.setBlob(3, photo);
-                preparedStatement.setString(4, photoFileName);
-                preparedStatement.setString(5, text);
-                preparedStatement.setString(6, createDate);
-                preparedStatement.setInt(7, userCreatorId);
-                preparedStatement.executeUpdate();
-                try (ResultSet resultSet = connection.createStatement().executeQuery(SELECT_LAST_INSERT_ID)) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt("id");
-                    }
-                }
-                return 0;
-            } catch (SQLException e) {
-                throw new DaoException(e);
+    public Message get(int id) {
+        return this.jdbcTemplate.queryForObject(SELECT_MESSAGE_BY_ID, new Object[]{id},
+                (rs, rowNum) -> createMessageFromResult(rs));
+    }
+
+    public List<Message> getAllByTypeAndAssignId(MessageType type, int assignId) {
+        return this.jdbcTemplate.query(SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE, new Object[]{assignId, type.getStatus()},
+                (rs, rowNum) -> createMessageFromResult(rs));
+    }
+
+    public List<Integer> getAllAccountIdDialog(int currentId) {
+        return this.jdbcTemplate.query(SELECT_ACCOUNT_ID_WITH_DIALOG, new Object[]{MessageType.ACCOUNT.getStatus(),
+                currentId, MessageType.ACCOUNT.getStatus(), currentId}, (rs, rowNum) -> rs.getInt("id"));
+    }
+
+    public Map<Integer, Integer> getAllByCurrentIdAssignId(int currentId, int assignId) {
+        return this.jdbcTemplate.query(SELECT_MESSAGE_ID_BY_CREATOR_ID, new Object[]{MessageType.ACCOUNT.getStatus(),
+                currentId, assignId, MessageType.ACCOUNT.getStatus(), assignId, currentId}, rs -> {
+            Map<Integer, Integer> messages = new HashMap<>();
+            while (rs.next()) {
+                messages.put(rs.getInt("message_id"), rs.getInt("user_creator_id"));
             }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-
+            return messages;
+        });
     }
 
-    public Message get(int id) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_MESSAGE_BY_ID)) {
-                preparedStatement.setInt(1, id);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return createMessageFromResult(resultSet);
-                    }
-                }
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public List<Message> getAllByTypeAndAssignId(MessageType type, int assignId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE)) {
-                preparedStatement.setInt(1, assignId);
-                preparedStatement.setInt(2, type.getStatus());
-                List<Message> messages = new ArrayList<>();
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        messages.add(createMessageFromResult(resultSet));
-                    }
-                }
-                return messages;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public List<Integer> getAllAccountIdDialog(int currentId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_ID_WITH_DIALOG)) {
-                preparedStatement.setInt(1, MessageType.ACCOUNT.getStatus());
-                preparedStatement.setInt(2, currentId);
-                preparedStatement.setInt(3, MessageType.ACCOUNT.getStatus());
-                preparedStatement.setInt(4, currentId);
-                List<Integer> accounts = new ArrayList<>();
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        accounts.add(resultSet.getInt("id"));
-                    }
-                }
-                return accounts;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public Map<Integer, Integer> getAllByCurrentIdAssignId(int currentId, int assignId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_MESSAGE_ID_BY_CREATOR_ID)) {
-                preparedStatement.setInt(1, MessageType.ACCOUNT.getStatus());
-                preparedStatement.setInt(2, currentId);
-                preparedStatement.setInt(3, assignId);
-                preparedStatement.setInt(4, MessageType.ACCOUNT.getStatus());
-                preparedStatement.setInt(5, assignId);
-                preparedStatement.setInt(6, currentId);
-                Map<Integer, Integer> messages = new HashMap<>();
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        messages.put(resultSet.getInt("message_id"), resultSet.getInt("user_creator_id"));
-                    }
-                }
-                return messages;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    public boolean remove(int id) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement1 = connection.prepareStatement(REMOVE_MESSAGE)) {
-                preparedStatement1.setInt(1, id);
-                preparedStatement1.executeUpdate();
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    @Transactional
+    public boolean remove(int id) {
+        int result = this.jdbcTemplate.update(REMOVE_MESSAGE, id);
+        return result != 0;
     }
 
     private Message createMessageFromResult(ResultSet resultSet) throws SQLException {

@@ -1,85 +1,59 @@
 package com.getjavajob.training.web1803.dao;
 
 import com.getjavajob.training.web1803.common.enums.PhoneType;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+@Repository
 public class PhoneDAO {
     private static final String SELECT_PHONES_BY_ACCOUNT_ID = "SELECT * FROM phone WHERE account_id = ?";
     private static final String INSERT_PHONE = "INSERT INTO phone (account_id, phone_number, phone_type) VALUES (?, ?, ?)";
     private static final String REMOVE_PHONES = "DELETE FROM phone WHERE account_id = ?";
 
-    private Pool pool;
+    private JdbcTemplate jdbcTemplate;
 
-    public PhoneDAO() {
-        pool = JNDIPool.getInstance();
+    @Autowired
+    public PhoneDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    //Constructor for tests
-    public PhoneDAO(Pool pool) {
-        this.pool = pool;
-    }
-
-    public boolean create(int accountId, String number, PhoneType type) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PHONE)) {
-                preparedStatement.setInt(1, accountId);
-                preparedStatement.setString(2, number);
-                preparedStatement.setInt(3, type.getStatus());
-                preparedStatement.executeUpdate();
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    @Transactional
+    public boolean create(int accountId, String number, PhoneType type) {
+        int result = this.jdbcTemplate.update(INSERT_PHONE, accountId, number, type.getStatus());
+        return result != 0;
     }
 
     // Map<PhoneNumber, PhoneType>
-    public Map<String, PhoneType> getAll(int accountId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PHONES_BY_ACCOUNT_ID)) {
-                preparedStatement.setInt(1, accountId);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                Map<String, PhoneType> phones = new HashMap<>();
-                while (resultSet.next()) {
-                    phones.put(resultSet.getString("phone_number"), PhoneType.values()[resultSet.getInt("phone_type")]);
-                }
-                return phones;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    public Map<String, PhoneType> getAll(int accountId) {
+        return this.jdbcTemplate.query(SELECT_PHONES_BY_ACCOUNT_ID, new Object[]{accountId},
+                rs -> {
+                    Map<String, PhoneType> result = new HashMap<>();
+                    while (rs.next()) {
+                        result.put(rs.getString("phone_number"), PhoneType.values()[rs.getInt("phone_type")]);
+                    }
+                    return result;
+                });
     }
 
     // Map<PhoneNumber, PhoneType>
-    public boolean update(int accountId, Map<String, PhoneType> phones) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            remove(accountId);
-            for (Entry<String, PhoneType> phone : phones.entrySet()) {
-                create(accountId, phone.getKey(), phone.getValue());
-            }
-            return true;
-        } catch (SQLException e) {
-            throw new DaoException(e);
+    public boolean update(int accountId, Map<String, PhoneType> phones) {
+        remove(accountId);
+        boolean result = false;
+        for (Entry<String, PhoneType> phone : phones.entrySet()) {
+            result = create(accountId, phone.getKey(), phone.getValue());
         }
+        return result;
     }
 
-    public boolean remove(int accountId) throws DaoException {
-        try (Connection connection = pool.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_PHONES)) {
-                preparedStatement.setInt(1, accountId);
-                preparedStatement.executeUpdate();
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    @Transactional
+    public boolean remove(int accountId) {
+        int result = this.jdbcTemplate.update(REMOVE_PHONES, accountId);
+        return result != 0;
     }
 }

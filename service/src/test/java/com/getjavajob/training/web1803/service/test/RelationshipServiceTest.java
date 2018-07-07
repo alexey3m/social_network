@@ -4,12 +4,13 @@ import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.AccountDAO;
-import com.getjavajob.training.web1803.dao.Pool;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.service.RelationshipService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,55 +18,57 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RelationshipServiceTest {
-    private RelationshipDAO relationshipDAO = mock(RelationshipDAO.class);
-    private AccountDAO accountDAO = mock(AccountDAO.class);
-    private Pool connectionPool = mock(Pool.class);
+
+    @Mock
+    private RelationshipDAO relationshipDAO;
+    @Mock
+    private AccountDAO accountDAO;
 
     @InjectMocks
-    private RelationshipService phoneService = new RelationshipService(relationshipDAO, accountDAO);
+    private RelationshipService phoneService;
 
     @Test
-    public void addQueryFriendTest() throws DaoException {
+    public void addQueryFriendTest() {
         when(relationshipDAO.createQueryFriend(1, 2, 1)).thenReturn(true);
         assertTrue(phoneService.addQueryFriend(1, 2));
     }
 
     @Test
-    public void acceptFriendTest() throws DaoException {
+    public void acceptFriendTest() {
         when(relationshipDAO.updateQueryFriend(1, 2, 1, 1)).thenReturn(true);
         assertTrue(phoneService.acceptFriend(1, 2));
     }
 
     @Test
-    public void declineFriendTest() throws DaoException {
+    public void declineFriendTest() {
         when(relationshipDAO.updateQueryFriend(1, 2, 2, 1)).thenReturn(true);
         assertTrue(phoneService.declineFriend(1, 2));
     }
 
     @Test
-    public void removeFriendTest() throws DaoException {
+    public void removeFriendTest() {
         when(relationshipDAO.removeFriend(1, 2)).thenReturn(true);
         assertTrue(phoneService.removeFriend(1, 2));
     }
 
     @Test
-    public void getStatusTest() throws DaoException {
+    public void getStatusTest() {
         when(relationshipDAO.getStatus(1, 2)).thenReturn(Status.ACCEPTED);
         assertEquals(Status.ACCEPTED, phoneService.getStatus(1, 2));
     }
 
     @Test
-    public void getPendingRequestToMeTest() throws DaoException {
+    public void getPendingRequestToMeTest() {
         when(relationshipDAO.getPendingRequestToMe(1, 2, 1)).thenReturn(Status.PENDING);
         assertEquals(Status.PENDING, phoneService.getPendingRequestToMe(1, 2));
     }
 
     @Test
-    public void getAcceptedFriendsListTest() throws DaoException {
+    public void getAcceptedFriendsListTest() {
         List<Integer> friendsId = new ArrayList<>();
         friendsId.add(2);
         friendsId.add(3);
@@ -85,7 +88,7 @@ public class RelationshipServiceTest {
     }
 
     @Test
-    public void getPendingRequestsToIdTest() throws DaoException {
+    public void getPendingRequestsToIdTest() {
         List<Integer> friendsId = new ArrayList<>();
         List<Account> expected = new ArrayList<>();
         when(relationshipDAO.getPendingRequestToId(1)).thenReturn(friendsId);
@@ -93,7 +96,7 @@ public class RelationshipServiceTest {
     }
 
     @Test
-    public void getFriendRequestsFromIdTest() throws DaoException {
+    public void getFriendRequestsFromIdTest() {
         List<Integer> friendsId = new ArrayList<>();
         List<Account> expected = new ArrayList<>();
         when(relationshipDAO.getFriendRequestsFromId(1)).thenReturn(friendsId);

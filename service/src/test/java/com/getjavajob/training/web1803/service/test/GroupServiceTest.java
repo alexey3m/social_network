@@ -4,37 +4,38 @@ import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.GroupDAO;
-import com.getjavajob.training.web1803.dao.Pool;
-import com.getjavajob.training.web1803.dao.exceptions.DaoException;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.GroupService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GroupServiceTest {
 
-    private GroupDAO groupDAO = mock(GroupDAO.class);
-    private Pool connectionPool = mock(Pool.class);
+    @Mock
+    private GroupDAO groupDAO;
 
     @InjectMocks
-    private GroupService groupService = new GroupService(groupDAO);
+    private GroupService groupService;
 
     @Test
-    public void createTest() throws DaoException, DaoNameException {
+    public void createTest() throws DaoNameException {
         when(groupDAO.create("Group", null, null, "2018-06-07", "Info 1", 1)).thenReturn(true);
         assertTrue(groupService.create("Group", null, null, "2018-06-07", "Info 1", 1));
     }
 
     @Test
-    public void getTest() throws DaoException {
+    public void getTest() {
         List<Integer> acceptedMembersId1 = new ArrayList<>();
         acceptedMembersId1.add(1);
         acceptedMembersId1.add(3);
@@ -48,7 +49,7 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void getAllTest() throws DaoException {
+    public void getAllTest() {
         List<Integer> acceptedMembersId1 = new ArrayList<>();
         acceptedMembersId1.add(1);
         acceptedMembersId1.add(3);
@@ -72,7 +73,7 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void searchByStringTest() throws DaoException {
+    public void searchByStringTest() {
         List<Integer> acceptedMembersId1 = new ArrayList<>();
         acceptedMembersId1.add(1);
         acceptedMembersId1.add(3);
@@ -88,7 +89,7 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void getAllById() throws DaoException {
+    public void getAllById() {
         List<Integer> acceptedMembersId1 = new ArrayList<>();
         acceptedMembersId1.add(1);
         acceptedMembersId1.add(3);
@@ -104,25 +105,25 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void getRoleMemberInGroupTest() throws DaoException {
+    public void getRoleMemberInGroupTest() {
         when(groupDAO.getRoleMemberInGroup(1, 1)).thenReturn(GroupRole.ADMIN);
         assertEquals(GroupRole.ADMIN, groupService.getRoleMemberInGroup(1, 1));
     }
 
     @Test
-    public void getStatusMemberInGroupTest() throws DaoException {
+    public void getStatusMemberInGroupTest() {
         when(groupDAO.getStatusMemberInGroup(1, 1)).thenReturn(GroupStatus.ACCEPTED);
         assertEquals(GroupStatus.ACCEPTED, groupService.getStatusMemberInGroup(1, 1));
     }
 
     @Test
-    public void addPendingMemberToGroupTest() throws DaoException {
+    public void addPendingMemberToGroupTest() {
         when(groupDAO.addPendingMemberToGroup(1, 1)).thenReturn(true);
         assertTrue(groupService.addPendingMemberToGroup(1, 1));
     }
 
     @Test
-    public void setRoleMemberInGroupTest() throws DaoException {
+    public void setRoleMemberInGroupTest() {
         when(groupDAO.setRoleMemberInGroup(1, 1, GroupRole.USER)).thenReturn(true);
         assertTrue(groupService.setRoleMemberInGroup(1, 1, GroupRole.USER));
         when(groupDAO.getRoleMemberInGroup(1, 1)).thenReturn(GroupRole.USER);
@@ -130,19 +131,19 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void removeMemberFromGroupTest() throws DaoException {
+    public void removeMemberFromGroupTest() {
         when(groupDAO.removeMemberFromGroup(1, 1)).thenReturn(true);
         assertTrue(groupService.removeMemberFromGroup(1, 1));
     }
 
     @Test
-    public void getIdTest() throws DaoException {
+    public void getIdTest() {
         when(groupDAO.getId("Group 1")).thenReturn(1);
         assertEquals(1, groupService.getId("Group 1"));
     }
 
     @Test
-    public void updateTest() throws DaoException {
+    public void updateTest() {
         Group group = new Group(1, "Group 1", null, null, null,
                 "new info", 0, null, null, null);
         when(groupDAO.update(group)).thenReturn(true);
@@ -151,7 +152,7 @@ public class GroupServiceTest {
     }
 
     @Test
-    public void removeTest() throws DaoException {
+    public void removeTest() {
         when(groupDAO.remove(1)).thenReturn(true);
         assertTrue(groupService.remove(1));
     }

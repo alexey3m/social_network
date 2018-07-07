@@ -1,19 +1,16 @@
 package com.getjavajob.training.web1803.webapp.servlets;
 
 import com.getjavajob.training.web1803.common.Account;
-import com.getjavajob.training.web1803.service.AccountService;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class GetPhotoServlet extends HttpServlet {
+public class GetPhotoServlet extends ContextHttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int id = Integer.valueOf(request.getParameter("id"));
-        AccountService service = new AccountService();
-        Account currentAccount = service.get(id);
+        Account currentAccount = accountService.get(id);
         byte[] photo = currentAccount.getPhoto();
         if (photo == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

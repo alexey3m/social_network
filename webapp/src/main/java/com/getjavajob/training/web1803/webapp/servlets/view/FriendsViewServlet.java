@@ -1,18 +1,16 @@
 package com.getjavajob.training.web1803.webapp.servlets.view;
 
 import com.getjavajob.training.web1803.common.Account;
-import com.getjavajob.training.web1803.service.AccountService;
-import com.getjavajob.training.web1803.service.RelationshipService;
+import com.getjavajob.training.web1803.webapp.servlets.ContextHttpServlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-public class FriendsViewServlet extends HttpServlet {
+public class FriendsViewServlet extends ContextHttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -22,10 +20,6 @@ public class FriendsViewServlet extends HttpServlet {
         String infoMessage = req.getParameter("infoMessage");
         String actionIdString = req.getParameter("actionId");
         int actionId = actionIdString != null ? Integer.valueOf(actionIdString) : 0;
-
-        RelationshipService relationshipService = new RelationshipService();
-        AccountService accountService = new AccountService();
-
         Account actionAccount = actionId == 0 ? null : accountService.get(actionId);
         List<Account> myRequest = relationshipService.getFriendRequestsFromId(id);
         List<Account> pendingRequest = relationshipService.getPendingRequestsToId(id);

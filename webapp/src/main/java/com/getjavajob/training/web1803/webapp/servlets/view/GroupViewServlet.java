@@ -1,16 +1,15 @@
 package com.getjavajob.training.web1803.webapp.servlets.view;
 
-import com.getjavajob.training.web1803.common.*;
+import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.Group;
+import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.common.enums.Role;
-import com.getjavajob.training.web1803.service.AccountService;
-import com.getjavajob.training.web1803.service.GroupService;
-import com.getjavajob.training.web1803.service.MessageService;
+import com.getjavajob.training.web1803.webapp.servlets.ContextHttpServlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GroupViewServlet extends HttpServlet {
+public class GroupViewServlet extends ContextHttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -31,11 +30,6 @@ public class GroupViewServlet extends HttpServlet {
         int actionId = actionIdString != null ? Integer.valueOf(actionIdString) : 0;
         HttpSession session = req.getSession(true);
         int sessionId = (Integer) session.getAttribute("id");
-
-        AccountService accountService = new AccountService();
-        GroupService groupService = new GroupService();
-        MessageService messageService = new MessageService();
-
         List<Account> pendingMembers = new ArrayList<>();
         List<Account> acceptedMembers = new ArrayList<>();
         Map<Integer, GroupRole> acceptedMembersRole = new HashMap<>();

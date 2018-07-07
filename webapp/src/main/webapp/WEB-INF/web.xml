@@ -336,8 +336,13 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>resources/xml/socnet-context.xml</param-value>
+    </context-param>
+
     <listener>
-        <listener-class>com.getjavajob.training.web1803.webapp.listeners.StartAppListener</listener-class>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
     <session-config>
