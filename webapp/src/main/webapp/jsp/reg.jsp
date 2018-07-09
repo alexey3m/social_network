@@ -46,16 +46,23 @@
         <label for="inputBirthday" class="sr-only">Дата рождения</label>
         <input type="date" id="inputBirthday" name="inputBirthday" class="form-control" placeholder="Дата рождения">
 
-        <label for="inputPhonePers" class="sr-only">Телефон личный</label>
-        <input type="text" id="inputPhonePers" name="inputPhonePers" class="form-control"
-               placeholder="Телефон личный">
-
-        <label for="inputPhoneWork" class="sr-only">Телефон рабочий</label>
-        <input type="text" id="inputPhoneWork" name="inputPhoneWork" class="form-control" placeholder="Телефон рабочий">
-
-        <label for="inputPhoneAdd" class="sr-only">Телефон дополнительный</label>
-        <input type="text" id="inputPhoneAdd" name="inputPhoneAdd" class="form-control"
-               placeholder="Телефон дополнительный">
+        <div id="phone" class="input-group mb-2">
+            <div class="input-group-append">
+                <input type="number" id="inputPhone" name="inputPhone" class="form-control" placeholder="Телефон">
+            </div>
+            <div class="form-control">
+                <label for="phoneSel" class="sr-only">Тип телефона</label>
+                <select class="custom-select" id="phoneSel" name="phoneSel">
+                    <option value="0">Мобильный</option>
+                    <option value="1">Рабочий</option>
+                    <option value="2">Домашний</option>
+                </select>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-danger" type="button" onclick="removeRow(this)">Удалить</button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-success mb-2" id="addRowBtn" onclick="addRow()">Добавить телефон</button>
 
         <label for="inputSkype" class="sr-only">Skype</label>
         <input type="text" id="inputSkype" name="inputSkype" class="form-control" placeholder="Skype">
@@ -76,5 +83,6 @@
 <script src="resources/js/jquery-3.3.1.slim.min.js"></script>
 <script src="resources/js/popper.min.js"></script>
 <script src="resources/js/bootstrap.min.js"></script>
+<script src="../resources/js/socnet-custom.js"></script>
 </body>
 </html>

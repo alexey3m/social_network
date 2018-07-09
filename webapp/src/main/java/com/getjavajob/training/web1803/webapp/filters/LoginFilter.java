@@ -28,7 +28,7 @@ public class LoginFilter implements Filter {
         String uri = request.getRequestURI();
         boolean loggedIn = session == null || session.getAttribute("email") == null;
         boolean cookieExists = cookieMap.get("email") != null;
-        if (uri.endsWith("/login.jsp") || uri.endsWith("/reg.jsp") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegServlet") || uri.endsWith(".css")) {
+        if (uri.endsWith("/login.jsp") || uri.endsWith("/reg.jsp") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegServlet") || uri.endsWith(".css") || uri.endsWith(".js")) {
             chain.doFilter(request, response);
         } else if (loggedIn && cookieExists) {
             RequestDispatcher dispatcher = request.getRequestDispatcher("LoginServlet?cookie=true");

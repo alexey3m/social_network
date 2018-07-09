@@ -39,8 +39,8 @@ public class PhoneDAOTest {
     @Test
     public void createTest() {
         Map<String, PhoneType> expected = new HashMap<>();
-        expected.put("800", PhoneType.HOME);
-        boolean result = phoneDAO.create(2, "800", PhoneType.HOME);
+        expected.put("800", PhoneType.MOBILE);
+        boolean result = phoneDAO.create(2, "800", PhoneType.MOBILE);
         assertTrue(result);
         assertEquals(expected, phoneDAO.getAll(2));
     }
@@ -48,7 +48,7 @@ public class PhoneDAOTest {
     @Test
     public void getAllTest() {
         Map<String, PhoneType> expected = new HashMap<>();
-        expected.put("900", PhoneType.HOME);
+        expected.put("900", PhoneType.MOBILE);
         expected.put("901", PhoneType.WORK);
         assertEquals(expected, phoneDAO.getAll(1));
     }
@@ -57,11 +57,11 @@ public class PhoneDAOTest {
     public void updateTest() {
         Map<String, PhoneType> newPhones = new HashMap<>();
         newPhones.put("800", PhoneType.WORK);
-        newPhones.put("801", PhoneType.ADDITIONAL);
+        newPhones.put("801", PhoneType.HOME);
         boolean result = phoneDAO.update(1, newPhones);
         Map<String, PhoneType> expected = new HashMap<>();
         expected.put("800", PhoneType.WORK);
-        expected.put("801", PhoneType.ADDITIONAL);
+        expected.put("801", PhoneType.HOME);
         assertTrue(result);
         assertEquals(expected, phoneDAO.getAll(1));
     }
