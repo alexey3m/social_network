@@ -25,17 +25,10 @@ public class UpdateAccountServlet extends ContextHttpServlet {
         String middleName = request.getParameter("inputMiddleName");
         String birthday = request.getParameter("inputBirthday").equals("") ? null : request.getParameter("inputBirthday");
         Map<String, PhoneType> phones = new HashMap<>();
-        String phonePers = request.getParameter("inputPhonePers");
-        if (!phonePers.equals("")) {
-            phones.put(phonePers, PhoneType.HOME);
-        }
-        String phoneWork = request.getParameter("inputPhoneWork");
-        if (!phoneWork.equals("")) {
-            phones.put(phoneWork, PhoneType.WORK);
-        }
-        String phoneAdd = request.getParameter("inputPhoneAdd");
-        if (!phoneAdd.equals("")) {
-            phones.put(phoneAdd, PhoneType.ADDITIONAL);
+        String[] phonesStr = request.getParameterValues("inputPhone");
+        String[] phonesTypeStr = request.getParameterValues("phoneSel");
+        for (int i = 0; i < phonesStr.length; i++) {
+            phones.put(phonesStr[i], PhoneType.values()[Integer.parseInt(phonesTypeStr[i])]);
         }
         String skype = request.getParameter("inputSkype");
         String icqString = request.getParameter("inputIcq");

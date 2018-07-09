@@ -169,9 +169,9 @@
             <c:forEach var="phone" items="${account.phones}">
                 <div class="row">
                     <div class="col-5">
-                        <c:if test="${phone.value == PhoneType.HOME}">Телефон личный:</c:if>
+                        <c:if test="${phone.value == PhoneType.MOBILE}">Телефон мобильный:</c:if>
                         <c:if test="${phone.value == PhoneType.WORK}">Телефон рабочий:</c:if>
-                        <c:if test="${phone.value == PhoneType.ADDITIONAL}">Телефон дополнительный:</c:if></div>
+                        <c:if test="${phone.value == PhoneType.HOME}">Телефон домашний:</c:if></div>
                     <div class="col-5"><c:out value="${phone.key}"/></div>
                 </div>
             </c:forEach>

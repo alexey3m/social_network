@@ -1,9 +1,9 @@
 package com.getjavajob.training.web1803.common.enums;
 
 public enum PhoneType {
-    HOME(0),
+    MOBILE(0),
     WORK(1),
-    ADDITIONAL(2);
+    HOME(2);
 
     private int status;
 

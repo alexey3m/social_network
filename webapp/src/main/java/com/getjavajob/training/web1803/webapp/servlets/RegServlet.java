@@ -30,17 +30,10 @@ public class RegServlet extends ContextHttpServlet {
         int icq = icqString.equals("") ? 0 : Integer.valueOf(icqString);
         String skype = request.getParameter("inputSkype");
         Map<String, PhoneType> phones = new HashMap<>();
-        String phonePers = request.getParameter("inputPhonePers");
-        if (!phonePers.equals("")) {
-            phones.put(phonePers, PhoneType.HOME);
-        }
-        String phoneWork = request.getParameter("inputPhoneWork");
-        if (!phoneWork.equals("")) {
-            phones.put(phoneWork, PhoneType.WORK);
-        }
-        String phoneAdd = request.getParameter("inputPhoneAdd");
-        if (!phoneAdd.equals("")) {
-            phones.put(phoneAdd, PhoneType.ADDITIONAL);
+        String[] phonesStr = request.getParameterValues("inputPhone");
+        String[] phonesTypeStr = request.getParameterValues("phoneSel");
+        for (int i = 0; i < phonesStr.length; i++) {
+            phones.put(phonesStr[i], PhoneType.values()[Integer.parseInt(phonesTypeStr[i])]);
         }
         InputStream photo = null;
         String photoFileName = null;

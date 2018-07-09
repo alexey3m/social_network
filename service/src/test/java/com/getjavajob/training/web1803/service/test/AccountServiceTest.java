@@ -39,10 +39,10 @@ public class AccountServiceTest {
                 "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
                 "2018-06-13", Role.USER)).thenReturn(true);
         when(accountDAO.getId("kol@ya")).thenReturn(1);
-        when(phoneDAO.create(1, "900", PhoneType.HOME)).thenReturn(true);
+        when(phoneDAO.create(1, "900", PhoneType.MOBILE)).thenReturn(true);
         when(phoneDAO.create(1, "901", PhoneType.WORK)).thenReturn(true);
         Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.HOME);
+        phones.put("900", PhoneType.MOBILE);
         phones.put("901", PhoneType.WORK);
         assertTrue(accountService.create("kol@ya", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
@@ -55,7 +55,7 @@ public class AccountServiceTest {
                 "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
                 "2018-06-13", Role.USER)).thenThrow(new DaoNameException());
         Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.HOME);
+        phones.put("900", PhoneType.MOBILE);
         phones.put("901", PhoneType.WORK);
         accountService.create("kol@ya", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
@@ -65,7 +65,7 @@ public class AccountServiceTest {
     @Test
     public void getTest() {
         Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.HOME);
+        phones.put("900", PhoneType.MOBILE);
         phones.put("901", PhoneType.WORK);
         Account account = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
                 "Urievich", "1988-07-22", null, null, "aaaaa", 0,
@@ -89,7 +89,7 @@ public class AccountServiceTest {
     @Test
     public void searchByStringTest() {
         Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.HOME);
+        phones.put("900", PhoneType.MOBILE);
         phones.put("901", PhoneType.WORK);
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
                 "Urievich", "1988-07-22", null, null, "aaaaa", 0,
