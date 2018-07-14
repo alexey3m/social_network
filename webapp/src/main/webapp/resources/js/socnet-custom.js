@@ -3,16 +3,35 @@ function removeRow(btn) {
 }
 
 function addRow() {
-    var newRow = $('<div id="phone" class="input-group mb-2"><div class="input-group-append">' +
-        '<input type="number" id="inputPhone" name="inputPhone" class="form-control" placeholder="Телефон">' +
-        '</div> <div class="form-control"> <label for="phoneSel" class="sr-only">Тип телефона</label>' +
-        '<select class="custom-select" id="phoneSel" name="phoneSel">' +
-        '<option value="0">Мобильный</option><option value="1">Рабочий</option><option value="2">Домашний</option></select></div>' +
-        '<div class="input-group-append"> <button class="btn btn-danger" type="button" onclick="removeRow(this)">Удалить</button></div>' +
-        '</div>');
+    var newRow = $('<div id="phone" class="input-group mb-2 phoneClass">\n' +
+        '                <div class="input-group-append">\n' +
+        '                    <input type="number" class="form-control phoneClassInput" placeholder="Телефон"/>\n' +
+        '                </div>\n' +
+        '                <div class="form-control">\n' +
+        '                    <select class="custom-select phoneClassSelect" >\n' +
+        '                            <option value="MOBILE">Мобильный</option>\n' +
+        '                            <option value="WORK">Рабочий</option>\n' +
+        '                            <option value="HOME">Домашний</option>\n' +
+        '                    </select>\n' +
+        '                </div>\n' +
+        '                <div class="input-group-append">\n' +
+        '                    <button class="btn btn-danger" type="button" onclick="removeRow(this)">Удалить</button>\n' +
+        '                </div>\n' +
+        '            </div>');
     $('#addRowBtn').before(newRow);
 }
 
-$('#formConfirm').submit(function() {
+$('#formConfirm').submit(function () {
     return confirm("Уверены ли вы, что хотите сохранить изменения?");
 });
+
+function updateIndexedInputNames() {
+    $('.phoneClass').each(function (containerIndex, element) {
+        $(this).find("input").each(function(index, element){
+            $(element).attr("name", "phones["+containerIndex+"].number");
+        });
+        $(this).find("select").each(function(index, element){
+            $(element).attr("name", "phones["+containerIndex+"].phoneType");
+        });
+    });
+}

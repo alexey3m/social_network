@@ -7,14 +7,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="resources/css/navbar.css" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/navbar.css"/>" rel="stylesheet" type="text/css"/>
     <title>Account Social net!</title>
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="./">Социальная сеть</a>
+    <a class="navbar-brand" href="<c:url value="/"/>">Социальная сеть</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -22,17 +22,17 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="FriendsViewServlet">Мои друзья</a>
+                <a class="nav-link" href="<c:url value="/viewFriends"/>">Мои друзья</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="GroupsViewServlet">Мои группы</a>
+                <a class="nav-link" href="<c:url value="/viewGroups"/>">Мои группы</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="AccountMessViewServlet">Мои сообщения</a>
+                <a class="nav-link" href="<c:url value="/viewAccountMess"/>">Мои сообщения</a>
             </li>
         </ul>
         <div class="col-md-4 navs">
-            <form class="form-inline my-2 my-lg-0" action="LogoutServlet">
+            <form class="form-inline my-2 my-lg-0" action="<c:url value="/logoutUser"/>">
                 <div class="text-login mr-sm-2">
                     Текущий пользователь: <c:out value="${sessionScope.userName}"/>
                 </div>
@@ -42,13 +42,13 @@
                 </c:if>
             </form>
         </div>
-        <jsp:include page="search.jsp"/>
+        <jsp:include page="/jsp/search.jsp"/>
     </div>
 </nav>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
-<script src="resources/js/popper.min.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

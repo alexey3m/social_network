@@ -1,14 +1,15 @@
 package com.getjavajob.training.web1803.dao;
 
+import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.Phone;
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class PhoneDAO {
@@ -24,32 +25,44 @@ public class PhoneDAO {
     }
 
     @Transactional
-    public boolean create(int accountId, String number, PhoneType type) {
-        int result = this.jdbcTemplate.update(INSERT_PHONE, accountId, number, type.getStatus());
+    public boolean create(Account account) {
+        int result = 0;
+        for (Phone phone : account.getPhones()) {
+            result = this.jdbcTemplate.update(INSERT_PHONE, account.getId(), phone.getNumber(), phone.getPhoneType().getStatus());
+        }
         return result != 0;
     }
 
-    // Map<PhoneNumber, PhoneType>
-    public Map<String, PhoneType> getAll(int accountId) {
+    public List<Phone> getAll(int accountId) {
         return this.jdbcTemplate.query(SELECT_PHONES_BY_ACCOUNT_ID, new Object[]{accountId},
                 rs -> {
-                    Map<String, PhoneType> result = new HashMap<>();
+                    List<Phone> result = new ArrayList<>();
                     while (rs.next()) {
-                        result.put(rs.getString("phone_number"), PhoneType.values()[rs.getInt("phone_type")]);
+                        result.add(new Phone(rs.getString("phone_number"), PhoneType.values()[rs.getInt("phone_type")]));
                     }
                     return result;
                 });
     }
 
-    // Map<PhoneNumber, PhoneType>
-    public boolean update(int accountId, Map<String, PhoneType> phones) {
-        remove(accountId);
-        boolean result = false;
-        for (Entry<String, PhoneType> phone : phones.entrySet()) {
-            result = create(accountId, phone.getKey(), phone.getValue());
+    public boolean update(Account account) {
+        remove(account.getId());
+        boolean result = true;
+        if (account.getPhones() != null) {
+            result = create(account);
         }
         return result;
     }
+
+//    public boolean update(int accountId, List<Phone> phones) {
+//        remove(accountId);
+//        boolean result = true;
+//        if (phones != null) {
+//            for (Phone phone : phones) {
+//                result = create(accountId, phone.getNumber(), phone.getPhoneType());
+//            }
+//        }
+//        return result;
+//    }
 
     @Transactional
     public boolean remove(int accountId) {

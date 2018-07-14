@@ -7,19 +7,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="resources/css/login.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/resources/css/login.css" rel="stylesheet" type="text/css"/>
 
     <title>Вход в Social net!</title>
 </head>
 <body>
-<jsp:include page="navbar.jsp"/>
+<jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${sessionScope.email != null}">
-        <c:redirect url="AccountViewServlet?id=${sessionScope.id}"/>
+        <c:redirect url="/viewAccount?id=${sessionScope.id}"/>
     </c:if>
-    <form class="form-signin" action="LoginServlet" method="post">
+    <form class="form-signin" action="<c:url value="/loginUser"/>" method="post">
         <c:set var="infoMessage" scope="session" value="${param.infoMessage}"/>
         <c:if test="${infoMessage == 'alert'}">
             <div class="alert alert-danger form-signin-alert" role="alert">
@@ -38,22 +38,22 @@
         <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Пароль">
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="rememberMe" value="active"> Запомнить меня
+                <input type="checkbox" name="rememberMe" value="true"> Запомнить меня
             </label>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
     </form>
     <div class="form-signin-alert">
         или<br>
-        <a href="reg.jsp">
+        <a href="<c:url value="/regPage"/>">
             <button type="button" class="btn btn-lg btn-link">Зарегистрироваться!</button>
         </a>
     </div>
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
-<script src="resources/js/popper.min.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

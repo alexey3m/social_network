@@ -16,7 +16,7 @@
     <title>Группа Social net!</title>
 </head>
 <body>
-<jsp:include page="navbar.jsp"/>
+<jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'regGroup'}">
         <div class="alert alert-success text-alert" role="alert">
@@ -80,13 +80,10 @@
             <strong>Упс!</strong> <br>Что-то пошло не так..
         </div>
     </c:if>
-    <c:if test="${group == null}">
-        <c:redirect url="GroupsViewServlet"/>
-    </c:if>
     <div class="row">
         <div class="col-md-3">
             <div class="text-center">
-                <img src="GetPhotoGroupServlet?id=${groupId}" onerror="this.src='resources/img/no-image-group.png'"
+                <img src="data:image/jpg;base64, ${encodedPhoto}" onerror="this.src='resources/img/no-image-group.png'"
                      class="img-fluid"
                      alt="Responsive image">
                 <div class="control-panel">
@@ -94,7 +91,7 @@
                 </div>
                 <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ADMIN}">
                     <div class="control-panel">
-                        <a href="UpdateGroupViewServlet?id=${groupId}">
+                        <a href="updateGroupPage?id=${groupId}">
                             <button type="button" class="btn btn-sm btn-primary">Обновить группу</button>
                         </a>
                     </div>
@@ -102,7 +99,7 @@
                 <c:if test="${status == GroupStatus.UNKNOWN}">
                     <div class="control-panel">
                         <form method="post"
-                              action="GroupActionServlet?action=addPending&groupId=${groupId}&actionId=${sessionId}">
+                              action="groupAction?action=addPending&groupId=${groupId}&actionId=${sessionId}">
                             <button type="submit" class="btn btn-primary">Вступить в группу!</button>
                         </form>
                     </div>
@@ -110,7 +107,7 @@
                 <c:if test="${status == GroupStatus.PENDING}">
                     <div class="control-panel">
                         <form method="post"
-                              action="GroupActionServlet?action=removeRequest&groupId=${groupId}&actionId=${sessionId}">
+                              action="groupAction?action=removeRequest&groupId=${groupId}&actionId=${sessionId}">
                             <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
                         </form>
                     </div>
@@ -118,7 +115,7 @@
                 <c:if test="${status == GroupStatus.ACCEPTED}">
                     <div class="control-panel">
                         <form method="post"
-                              action="GroupActionServlet?action=leaveGroup&groupId=${groupId}&actionId=${sessionId}">
+                              action="groupAction?action=leaveGroup&groupId=${groupId}&actionId=${sessionId}">
                             <button type="submit" class="btn btn-warning">Покинуть группу!</button>
                         </form>
                     </div>
@@ -140,7 +137,7 @@
             <div class="row">
                 <div class="col-3">Создатель группы:</div>
                 <div class="col-6">
-                    <a href="AccountViewServlet?id=${accountCreator.id}">${accountCreator.firstName} ${accountCreator.lastName}</a><br>
+                    <a href="viewAccount?id=${accountCreator.id}">${accountCreator.firstName} ${accountCreator.lastName}</a><br>
                 </div>
             </div>
             <c:if test="${role == GroupRole.ADMIN}">
@@ -150,17 +147,17 @@
                 <c:forEach var="currentAccount" items="${pendingMembers}">
                     <div class="row row-friends">
                         <div class="col-4">
-                            <a href="AccountViewServlet?id=${currentAccount.id}">
+                            <a href="viewAccount?id=${currentAccount.id}">
                                     ${currentAccount.firstName} ${currentAccount.middleName} ${currentAccount.lastName}
                             </a>
                         </div>
                         <div class="col-5">
                             <form class="d-inline" method="post"
-                                  action="GroupActionServlet?action=acceptMember&groupId=${groupId}&actionId=${currentAccount.id}">
+                                  action="groupAction?action=acceptMember&groupId=${groupId}&actionId=${currentAccount.id}">
                                 <button type="submit" class="btn btn-sm btn-success">Добавить в группу!</button>
                             </form>
                             <form class="d-inline" method="post"
-                                  action="GroupActionServlet?action=declineMember&groupId=${groupId}&actionId=${currentAccount.id}">
+                                  action="groupAction?action=declineMember&groupId=${groupId}&actionId=${currentAccount.id}">
                                 <button type="submit" class="btn btn-sm btn-danger">Отклонить запрос!</button>
                             </form>
                         </div>
@@ -173,20 +170,20 @@
             <c:forEach var="currentAccount" items="${acceptedMembers}">
                 <div class="row row-friends">
                     <div class="col-4">
-                        <a href="AccountViewServlet?id=${currentAccount.id}">
+                        <a href="viewAccount?id=${currentAccount.id}">
                                 ${currentAccount.firstName} ${currentAccount.middleName} ${currentAccount.lastName}
                         </a>
                     </div>
                     <div class="col-6">
                         <c:if test="${role == GroupRole.ADMIN && currentAccount.id != sessionId}">
                             <form class="d-inline" method="post"
-                                  action="GroupActionServlet?action=removeMember&groupId=${groupId}&actionId=${currentAccount.id}">
+                                  action="groupAction?action=removeMember&groupId=${groupId}&actionId=${currentAccount.id}">
                                 <button type="submit" class="btn btn-sm btn-danger">Удалить из группы!</button>
                             </form>
                             <c:set var="rowRole" scope="page" value="${acceptedMembersRole[currentAccount.id]}"/>
                             <c:if test="${rowRole == GroupRole.ADMIN && currentAccount.id != sessionId}">
                                 <form class="d-inline" method="post"
-                                      action="GroupActionServlet?action=toUser&groupId=${groupId}&actionId=${currentAccount.id}">
+                                      action="groupAction?action=toUser&groupId=${groupId}&actionId=${currentAccount.id}">
                                     <button type="submit" class="btn btn-sm btn-primary">Установить роль "Пользователь
                                         группы"
                                     </button>
@@ -194,7 +191,7 @@
                             </c:if>
                             <c:if test="${rowRole == GroupRole.USER && currentAccount.id != sessionId}">
                                 <form class="d-inline" method="post"
-                                      action="GroupActionServlet?action=toAdmin&groupId=${groupId}&actionId=${currentAccount.id}">
+                                      action="groupAction?action=toAdmin&groupId=${groupId}&actionId=${currentAccount.id}">
                                     <button type="submit" class="btn btn-sm btn-primary">Установить роль "Администратор
                                         группы"
                                     </button>
@@ -212,7 +209,7 @@
                 </div>
                 <div class="card mb-1 box-shadow">
                     <div class="card-body">
-                        <form action="MessageServlet?action=new&type=groupWall&assignId=${group.id}"
+                        <form action="messageAction?action=new&type=groupWall&assignId=${group.id}"
                               method="post" enctype="multipart/form-data">
                             <div class="row">
                                 <label for="inputNewMessage" class="sr-only">Новое сообщение</label>
@@ -237,12 +234,12 @@
                             <div class="row">
                                 <div class="col">
                                     <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
-                                            href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
+                                            href="viewAccount?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                     </p>
                                 </div>
                                 <div class="float-right">
                                     <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ADMIN}">
-                                        <form action="MessageServlet?action=remove&type=groupWall&assignId=${group.id}&messageId=${message.id}"
+                                        <form action="messageAction?action=remove&type=groupWall&assignId=${group.id}&messageId=${message.id}"
                                               method="post">
                                             <button type="submit" class="btn btn-outline-primary">Удалить</button>
                                         </form>
@@ -253,7 +250,7 @@
                         <div class="card-body form-inline">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <img src="GetImageMessageServlet?id=${message.id}"
+                                    <img src="<c:url value="getMessagePhoto"/>?id=${message.id}"
                                          onerror="this.src='resources/img/no-image-group.png'" class="img-fluid"
                                          alt="Responsive image">
                                 </div>
@@ -270,8 +267,8 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
-<script src="resources/js/popper.min.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

@@ -7,20 +7,6 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!--<context:property-placeholder location="H2Connect.properties"/>-->
-
-    <!--<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">-->
-    <!--<property name="url" value="${database.url}"/>-->
-    <!--<property name="username" value="${database.user}"/>-->
-    <!--<property name="password" value="${database.password}"/>-->
-    <!--</bean>-->
-
-    <!--<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">-->
-    <!--<constructor-arg ref="dataSource"/>-->
-    <!--</bean>-->
-
     <context:component-scan base-package="com.getjavajob.training.web1803.dao"/>
-
-    <!--<tx:annotation-driven/>-->
 
 </beans>

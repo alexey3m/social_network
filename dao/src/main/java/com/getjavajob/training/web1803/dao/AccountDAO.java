@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,12 +20,13 @@ public class AccountDAO {
             "UNION SELECT * FROM account WHERE LOWER(last_name) LIKE ? " +
             "UNION SELECT * FROM account WHERE LOWER(middle_name) LIKE ? ORDER BY id";
     private static final String SELECT_ACCOUNT_BY_ID = SELECT_ALL_ACCOUNTS + " WHERE id = ?";
+    private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM account WHERE id = ?";
     private static final String SELECT_ACCOUNT_BY_EMAIL = SELECT_ALL_ACCOUNTS + " WHERE email = ?";
     private static final String CHECK_EMAIL_AND_PASSWORD = SELECT_ACCOUNT_BY_EMAIL + " AND password = ?";
     private static final String INSERT_NEW_ACCOUNT = "INSERT INTO account (email, password, first_name, last_name, middle_name, " +
-            "birthday, photo, photo_file_name, skype, icq, reg_date, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "birthday, photo, skype, icq, reg_date, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_ACCOUNT = "UPDATE account SET password = ?, first_name = ?, last_name = ?, middle_name = ?, " +
-            "birthday = ?, photo = ?, photo_file_name = ?, skype = ?, icq = ? WHERE id = ?";
+            "birthday = ?, photo = ?, skype = ?, icq = ? WHERE id = ?";
     private static final String UPDATE_ACCOUNT_SET_ROLE = "UPDATE account SET role = ? WHERE id = ?";
     private static final String COLUMN_ACCOUNT_ID = "id";
     private static final String REMOVE_ACCOUNT = "DELETE FROM account WHERE id = ?";
@@ -40,13 +40,13 @@ public class AccountDAO {
     }
 
     @Transactional
-    public boolean create(String email, String password, String firstName, String lastName, String middleName,
-                          String birthday, InputStream photo, String photoFileName, String skype, int icq, String regDate,
-                          Role role) throws DaoNameException {
+    public boolean create(Account account) throws DaoNameException {
+        String email = account.getEmail();
         boolean emailExist = this.jdbcTemplate.query(SELECT_ACCOUNT_BY_EMAIL, new Object[]{email}, ResultSet::next);
         if (!emailExist) {
-            int result = this.jdbcTemplate.update(INSERT_NEW_ACCOUNT, email, password, firstName, lastName, middleName,
-                    birthday, photo, photoFileName, skype, icq, regDate, role.getStatus());
+            int result = this.jdbcTemplate.update(INSERT_NEW_ACCOUNT, email, account.getPassword(),
+                    account.getFirstName(), account.getLastName(), account.getMiddleName(), account.getBirthday(),
+                    account.getPhoto(), account.getSkype(), account.getIcq(), account.getRegDate(), account.getRole().getStatus());
             return result != 0;
         } else {
             throw new DaoNameException("Email \"" + email + "\" is already used.");
@@ -54,8 +54,17 @@ public class AccountDAO {
     }
 
     public Account get(int id) {
-        return this.jdbcTemplate.queryForObject(SELECT_ACCOUNT_BY_ID, new Object[]{id},
-                (rs, rowNum) -> createAccountFromResult(rs));
+        return this.jdbcTemplate.query(SELECT_ACCOUNT_BY_ID, new Object[]{id}, rs -> {
+            Account account = new Account();
+            if (rs.next()) {
+                account = createAccountFromResult(rs);
+            }
+            return account;
+        });
+    }
+
+    public byte[] getPhoto(int id) {
+        return this.jdbcTemplate.queryForObject(SELECT_PHOTO_BY_ID, new Object[]{id}, (rs, rowNum) -> rs.getBytes("photo"));
     }
 
     public int getId(String email) {
@@ -92,9 +101,10 @@ public class AccountDAO {
 
     @Transactional
     public boolean update(Account account) {
+        String birthday = account.getBirthday();
         int result = this.jdbcTemplate.update(UPDATE_ACCOUNT, account.getPassword(), account.getFirstName(),
-                account.getLastName(), account.getMiddleName(), account.getBirthday(), account.getPhoto(),
-                account.getPhotoFileName(), account.getSkype(), account.getIcq(), account.getId());
+                account.getLastName(), account.getMiddleName(), birthday.equals("") ? null : birthday, account.getPhoto(),
+                account.getSkype(), account.getIcq(), account.getId());
         return result != 0;
     }
 
@@ -120,7 +130,6 @@ public class AccountDAO {
         account.setMiddleName(resultSet.getString("middle_name"));
         account.setBirthday(resultSet.getString("birthday"));
         account.setPhoto(resultSet.getBytes("photo"));
-        account.setPhotoFileName(resultSet.getString("photo_file_name"));
         account.setSkype(resultSet.getString("skype"));
         account.setIcq(resultSet.getInt("icq"));
         account.setRegDate(resultSet.getString("reg_date"));

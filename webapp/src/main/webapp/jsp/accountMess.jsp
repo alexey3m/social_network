@@ -7,20 +7,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="resources/css/accountMess.css" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/accountMess.css"/>" rel="stylesheet" type="text/css"/>
     <title>Ваши сообщения Social net!</title>
 </head>
 <body>
-<jsp:include page="navbar.jsp"/>
+<jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <div class="row">
         <div class="col-md-3">
             <h5>Контакты</h5>
             <c:forEach var="account" items="${contacts}">
                 <div class="row">
-                    <a href="AccountMessViewServlet?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
+                    <a href="viewAccountMess?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
                 </div>
             </c:forEach>
         </div>
@@ -30,10 +30,10 @@
                 <div class="card mb-1 box-shadow">
                     <div class="card-header">
                         Новое сообщение для <a
-                            href="AccountViewServlet?id=${newMessageAccount.id}">${newMessageAccount.firstName} ${newMessageAccount.lastName}</a>
+                            href="viewAccount?id=${newMessageAccount.id}">${newMessageAccount.firstName} ${newMessageAccount.lastName}</a>
                     </div>
                     <div class="card-body">
-                        <form action="MessageServlet?action=new&type=account&assignId=${assignId}"
+                        <form action="messageAction?action=new&type=account&assignId=${assignId}"
                               method="post" enctype="multipart/form-data">
                             <div class="row">
                                 <label for="inputNewMessage" class="sr-only">Новое сообщение</label>
@@ -59,11 +59,11 @@
                             <div class="row">
                                 <div class="col">
                                     <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
-                                            href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
+                                            href="viewAccount?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                     </p>
                                 </div>
                                 <div class="float-right">
-                                    <form action="MessageServlet?action=remove&type=account&assignId=${assignId}&messageId=${message.id}"
+                                    <form action="messageAction?action=remove&type=account&assignId=${assignId}&messageId=${message.id}"
                                           method="post">
                                         <button type="submit" class="btn btn-outline-primary">Удалить</button>
                                     </form>
@@ -73,7 +73,7 @@
                         <div class="card-body form-inline">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <img src="GetImageMessageServlet?id=${message.id}"
+                                    <img src="getMessagePhoto?id=${message.id}"
                                          onerror="this.src='resources/img/no-image-group.png'" class="img-fluid"
                                          alt="Responsive image">
                                 </div>
@@ -91,8 +91,8 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
-<script src="resources/js/popper.min.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

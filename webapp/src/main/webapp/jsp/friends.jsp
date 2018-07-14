@@ -7,13 +7,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="resources/css/friends.css" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/friends.css"/>" rel="stylesheet" type="text/css"/>
     <title>Мои друзья Social net!</title>
 </head>
 <body>
-<jsp:include page="navbar.jsp"/>
+<jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
@@ -53,12 +53,12 @@
     <c:forEach var="account" items="${myRequest}">
         <div class="row row-friends">
             <div class="col-3">
-                <a href="AccountViewServlet?id=${account.id}">
+                <a href="viewAccount?id=${account.id}">
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
             </div>
             <div class="col-3">
-                <form method="post" action="FriendsServlet?action=removeRequest&actionId=${account.id}">
+                <form method="post" action="friends?action=removeRequest&actionId=${account.id}">
                     <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
                 </form>
             </div>
@@ -70,15 +70,15 @@
     <c:forEach var="account" items="${pendingRequest}">
         <div class="row row-friends">
             <div class="col-3">
-                <a href="AccountViewServlet?id=${account.id}">
+                <a href="viewAccount?id=${account.id}">
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
             </div>
             <div class="col-3">
-                <form class="d-inline" method="post" action="FriendsServlet?action=accept&actionId=${account.id}">
+                <form class="d-inline" method="post" action="friends?action=accept&actionId=${account.id}">
                     <button type="submit" class="btn btn-sm btn-success">Принять в друзья!</button>
                 </form>
-                <form class="d-inline" method="post" action="FriendsServlet?action=decline&actionId=${account.id}">
+                <form class="d-inline" method="post" action="friends?action=decline&actionId=${account.id}">
                     <button type="submit" class="btn btn-sm btn-danger">Отклонить запрос!</button>
                 </form>
             </div>
@@ -90,12 +90,12 @@
     <c:forEach var="account" items="${friends}">
         <div class="row row-friends">
             <div class="col-3">
-                <a href="AccountViewServlet?id=${account.id}">
+                <a href="viewAccount?id=${account.id}">
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
             </div>
             <div class="col-3">
-                <form method="post" action="FriendsServlet?action=remove&actionId=${account.id}">
+                <form method="post" action="friends?action=remove&actionId=${account.id}">
                     <button type="submit" class="btn btn-sm btn-warning">Удалить из друзей!</button>
                 </form>
             </div>
@@ -104,8 +104,8 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
-<script src="resources/js/popper.min.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>
