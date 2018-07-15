@@ -10,13 +10,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="resources/css/account.css" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/account.css"/>" rel="stylesheet" type="text/css"/>
     <title>Аккаунт Social net!</title>
 </head>
 <body>
-<jsp:include page="navbar.jsp"/>
+<jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'updateTrue'}">
         <div class="alert alert-success text-alert" role="alert">
@@ -27,9 +27,6 @@
         <div class="alert alert-danger text-alert" role="alert">
             <strong>Ошибка!</strong> <br>Ваш аккаунт не был обновлен! Попробуйте еще раз.
         </div>
-    </c:if>
-    <c:if test="${account == null}">
-        <c:redirect url="AccountViewServlet?id=${sessionId}"/>
     </c:if>
     <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
@@ -78,14 +75,15 @@
     <div class="row">
         <div class="col-md-3">
             <div class="text-center">
-                <img src="getPhoto?id=${id}" onerror="this.src='resources/img/noPhotoAvailable.jpg'" class="img-fluid"
+                <img src="data:image/jpg;base64, ${encodedPhoto}"
+                     onerror="this.src='resources/img/noPhotoAvailable.jpg'" class="img-fluid"
                      alt="Responsive image">
                 <div class="control-panel">
                     Панель управления<br>
                 </div>
                 <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
                     <div class="control-panel">
-                        <a href="UpdateAccountViewServlet?id=${id}">
+                        <a href="updateAccountPage?id=${id}">
                             <button type="button" class="btn btn-sm btn-primary">Обновить аккаунт</button>
                         </a>
                     </div>
@@ -93,13 +91,13 @@
                 <c:if test="${sessionRole == Role.ADMIN && sessionId != id}">
                     <div class="control-panel">
                         <c:if test="${role == Role.ADMIN}">
-                            <form method="post" action="UpdateRoleServlet?action=toUser&actionId=${id}">
+                            <form method="post" action="updateRole?action=toUser&actionId=${id}">
                                 <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Пользователь"
                                 </button>
                             </form>
                         </c:if>
                         <c:if test="${role == Role.USER}">
-                            <form method="post" action="UpdateRoleServlet?action=toAdmin&actionId=${id}">
+                            <form method="post" action="updateRole?action=toAdmin&actionId=${id}">
                                 <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Администратор"
                                 </button>
                             </form>
@@ -108,14 +106,14 @@
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.UNKNOWN}">
                     <div class="control-panel">
-                        <form method="post" action="FriendsServlet?action=add&actionId=${id}">
+                        <form method="post" action="accountFriends?action=add&actionId=${id}">
                             <button type="submit" class="btn btn-primary">Добавить в друзья!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.PENDING && pendingStatus != Status.PENDING}">
                     <div class="control-panel">
-                        <form method="post" action="FriendsServlet?action=removeRequest&actionId=${id}">
+                        <form method="post" action="friends?action=removeRequest&actionId=${id}">
                             <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
                         </form>
                     </div>
@@ -127,31 +125,31 @@
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.ACCEPTED}">
                     <div class="control-panel">
-                        <form method="post" action="FriendsServlet?action=remove&actionId=${id}">
+                        <form method="post" action="accountFriends?action=remove&actionId=${id}">
                             <button type="submit" class="btn btn-warning">Удалить из друзей!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && pendingStatus == Status.PENDING}">
                     <div class="control-panel">
-                        <form method="post" action="FriendsServlet?action=accept&actionId=${id}">
+                        <form method="post" action="accountFriends?action=accept&actionId=${id}">
                             <button type="submit" class="btn btn-success">Принять в друзья!</button>
                         </form>
-                        <form method="post" action="FriendsServlet?action=decline&actionId=${id}">
+                        <form method="post" action="accountFriends?action=decline&actionId=${id}">
                             <button type="submit" class="btn btn-danger">Отклонить запрос!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId == id}">
                     <div class="control-panel">
-                        <form method="post" action="createGroup.jsp">
+                        <form method="get" action="createGroupPage">
                             <button type="submit" class="btn btn-primary">Создать группу!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id}">
                     <div class="control-panel">
-                        <a href="AccountMessViewServlet?assignId=${id}">
+                        <a href="viewAccountMess?assignId=${id}">
                             <button type="submit" class="btn btn-primary">Отправить сообщение!</button>
                         </a>
                     </div>
@@ -169,10 +167,10 @@
             <c:forEach var="phone" items="${account.phones}">
                 <div class="row">
                     <div class="col-5">
-                        <c:if test="${phone.value == PhoneType.MOBILE}">Телефон мобильный:</c:if>
-                        <c:if test="${phone.value == PhoneType.WORK}">Телефон рабочий:</c:if>
-                        <c:if test="${phone.value == PhoneType.HOME}">Телефон домашний:</c:if></div>
-                    <div class="col-5"><c:out value="${phone.key}"/></div>
+                        <c:if test="${phone.phoneType == PhoneType.MOBILE}">Телефон мобильный:</c:if>
+                        <c:if test="${phone.phoneType == PhoneType.WORK}">Телефон рабочий:</c:if>
+                        <c:if test="${phone.phoneType == PhoneType.HOME}">Телефон домашний:</c:if></div>
+                    <div class="col-5"><c:out value="${phone.number}"/></div>
                 </div>
             </c:forEach>
             <div class="row">
@@ -198,7 +196,7 @@
             </div>
             <div class="card mb-1 box-shadow">
                 <div class="card-body">
-                    <form action="MessageServlet?action=new&type=accountWall&assignId=${account.id}"
+                    <form action="messageAction?action=new&type=accountWall&assignId=${account.id}"
                           method="post" enctype="multipart/form-data">
                         <div class="row">
                             <label for="inputNewMessage" class="sr-only">Новое сообщение</label>
@@ -223,12 +221,12 @@
                         <div class="row">
                             <div class="col">
                                 <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
-                                        href="AccountViewServlet?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
+                                        href="viewAccount?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                 </p>
                             </div>
                             <div class="float-right">
                                 <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
-                                    <form action="MessageServlet?action=remove&type=accountWall&assignId=${account.id}&messageId=${message.id}"
+                                    <form action="messageAction?action=remove&type=accountWall&assignId=${account.id}&messageId=${message.id}"
                                           method="post">
                                         <button type="submit" class="btn btn-outline-primary">Удалить</button>
                                     </form>
@@ -239,7 +237,7 @@
                     <div class="card-body form-inline">
                         <div class="row">
                             <div class="col-md-4">
-                                <img src="GetImageMessageServlet?id=${message.id}"
+                                <img src="<c:url value="getMessagePhoto"/>?id=${message.id}"
                                      onerror="this.src='resources/img/no-image-group.png'" class="img-fluid"
                                      alt="Responsive image">
                             </div>
@@ -255,8 +253,8 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="resources/js/jquery-3.3.1.slim.min.js"></script>
-<script src="resources/js/popper.min.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

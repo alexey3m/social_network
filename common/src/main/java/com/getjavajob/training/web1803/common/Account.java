@@ -1,9 +1,8 @@
 package com.getjavajob.training.web1803.common;
 
-import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.common.enums.Role;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class Account {
@@ -15,15 +14,14 @@ public class Account {
     private String middleName;
     private String birthday;
     private byte[] photo;
-    private String photoFileName;
     private String skype;
     private int icq;
     private String regDate;
     private Role role;
-    private Map<String, PhoneType> phones;
+    private List<Phone> phones;
 
     public Account(int id, String email, String password, String firstName, String lastName, String middleName, String birthday,
-                   byte[] photo, String photoFileName, String skype, int icq, String regDate, Role role, Map<String, PhoneType> phones) {
+                   byte[] photo, String skype, int icq, String regDate, Role role, List<Phone> phones) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -32,7 +30,6 @@ public class Account {
         this.middleName = middleName;
         this.birthday = birthday;
         this.photo = photo;
-        this.photoFileName = photoFileName;
         this.skype = skype;
         this.icq = icq;
         this.regDate = regDate;
@@ -107,14 +104,6 @@ public class Account {
         this.photo = photo;
     }
 
-    public String getPhotoFileName() {
-        return photoFileName;
-    }
-
-    public void setPhotoFileName(String photoFileName) {
-        this.photoFileName = photoFileName;
-    }
-
     public String getSkype() {
         return skype;
     }
@@ -147,11 +136,11 @@ public class Account {
         this.role = role;
     }
 
-    public Map<String, PhoneType> getPhones() {
+    public List<Phone> getPhones() {
         return phones;
     }
 
-    public void setPhones(Map<String, PhoneType> phones) {
+    public void setPhones(List<Phone> phones) {
         this.phones = phones;
     }
 
@@ -165,7 +154,7 @@ public class Account {
                 ", lastName='" + lastName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", birthday='" + birthday + '\'' +
-                ", photoFileName='" + photoFileName + '\'' +
+                ", photo=" + photo +
                 ", skype='" + skype + '\'' +
                 ", icq=" + icq +
                 ", regDate='" + regDate + '\'' +
@@ -188,7 +177,6 @@ public class Account {
                 Objects.equals(lastName, account.lastName) &&
                 Objects.equals(middleName, account.middleName) &&
                 Objects.equals(birthday, account.birthday) &&
-                Objects.equals(photoFileName, account.photoFileName) &&
                 Objects.equals(skype, account.skype) &&
                 Objects.equals(regDate, account.regDate) &&
                 Objects.equals(phones, account.phones);
@@ -197,6 +185,6 @@ public class Account {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, email, password, firstName, lastName, middleName, birthday, photoFileName, skype, icq, regDate, role, phones);
+        return Objects.hash(id, email, password, firstName, lastName, middleName, birthday, skype, icq, regDate, role, phones);
     }
 }

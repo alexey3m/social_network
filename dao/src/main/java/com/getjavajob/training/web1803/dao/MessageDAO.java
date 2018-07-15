@@ -31,6 +31,7 @@ public class MessageDAO {
     private static final String SELECT_MESSAGE_BY_ID = SELECT_ALL_MESSAGES + " WHERE message_id = ?";
     private static final String SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE = SELECT_ALL_MESSAGES + " WHERE assign_id = ? AND type = ?";
     private static final String REMOVE_MESSAGE = "DELETE FROM message WHERE message_id = ?";
+    private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM message WHERE message_id = ?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -51,6 +52,10 @@ public class MessageDAO {
     public Message get(int id) {
         return this.jdbcTemplate.queryForObject(SELECT_MESSAGE_BY_ID, new Object[]{id},
                 (rs, rowNum) -> createMessageFromResult(rs));
+    }
+
+    public byte[] getPhoto(int id) {
+        return this.jdbcTemplate.queryForObject(SELECT_PHOTO_BY_ID, new Object[]{id}, (rs, rowNum) -> rs.getBytes("photo"));
     }
 
     public List<Message> getAllByTypeAndAssignId(MessageType type, int assignId) {

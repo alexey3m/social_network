@@ -23,7 +23,9 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -40,14 +42,15 @@ public class GroupDAOTest {
 
     @Test
     public void createTest() throws DaoNameException {
-        boolean result = groupDAO.create("Group 3", null, null, "2018-06-13",
-                "Info 3", 2);
+        Group group = new Group(0, "Group 3", null, "2018-06-13",
+                "Info 3", 2, null, null, null);
+        boolean result = groupDAO.create(group);
         List<Integer> acceptedMembersId = new ArrayList<>();
         acceptedMembersId.add(2);
         List<Integer> pendingMembersId = new ArrayList<>();
         List<Integer> adminsId = new ArrayList<>();
         adminsId.add(2);
-        Group expected = new Group(3, "Group 3", null, null, "2018-06-13",
+        Group expected = new Group(3, "Group 3", null, "2018-06-13",
                 "Info 3", 2, acceptedMembersId, pendingMembersId, adminsId);
         assertTrue(result);
         assertEquals(expected, groupDAO.get(3));
@@ -55,8 +58,10 @@ public class GroupDAOTest {
 
     @Test(expected = DaoNameException.class)
     public void createExceptionTest() throws DaoNameException {
-        groupDAO.create("Group 3", null, null, "2018-06-13", "Info 3", 2);
-        groupDAO.create("Group 3", null, null, "2018-06-13", "Info 3", 2);
+        Group group = new Group(0, "Group 3", null, "2018-06-13",
+                "Info 3", 2, null, null, null);
+        groupDAO.create(group);
+        groupDAO.create(group);
     }
 
     @Test
@@ -67,7 +72,7 @@ public class GroupDAOTest {
         List<Integer> pendingMembersId = new ArrayList<>();
         List<Integer> adminsId = new ArrayList<>();
         adminsId.add(1);
-        Group expected = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group expected = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId, pendingMembersId, adminsId);
         assertEquals(expected, groupDAO.get(1));
     }
@@ -80,14 +85,14 @@ public class GroupDAOTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         List<Integer> acceptedMembersId2 = new ArrayList<>();
         acceptedMembersId2.add(2);
         List<Integer> pendingMembersId2 = new ArrayList<>();
         List<Integer> adminsId2 = new ArrayList<>();
         adminsId2.add(2);
-        Group group2 = new Group(2, "Group 2", null, null, "2018-06-09",
+        Group group2 = new Group(2, "Group 2", null, "2018-06-09",
                 "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
@@ -103,7 +108,7 @@ public class GroupDAOTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
@@ -118,14 +123,14 @@ public class GroupDAOTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         List<Integer> acceptedMembersId2 = new ArrayList<>();
         acceptedMembersId2.add(2);
         List<Integer> pendingMembersId2 = new ArrayList<>();
         List<Integer> adminsId2 = new ArrayList<>();
         adminsId2.add(2);
-        Group group2 = new Group(2, "Group 2", null, null, "2018-06-09",
+        Group group2 = new Group(2, "Group 2", null, "2018-06-09",
                 "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
@@ -162,7 +167,7 @@ public class GroupDAOTest {
         List<Integer> pendingMembersId = new ArrayList<>();
         List<Integer> adminsId = new ArrayList<>();
         adminsId.add(1);
-        Group expected = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group expected = new Group(1, "Group 1", null, "2018-06-07",
                 "NEW info group 1", 1, acceptedMembersId, pendingMembersId, adminsId);
         groupDAO.update(groupToUpdate);
         assertEquals(expected, groupDAO.get(1));

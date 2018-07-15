@@ -1,6 +1,7 @@
 package com.getjavajob.training.web1803.service.test;
 
 import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.Phone;
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.AccountDAO;
@@ -14,12 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,40 +34,37 @@ public class AccountServiceTest {
 
     @Test
     public void createTest() throws DaoNameException {
-        when(accountDAO.create("kol@ya", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
-                "2018-06-13", Role.USER)).thenReturn(true);
-        when(accountDAO.getId("kol@ya")).thenReturn(1);
-        when(phoneDAO.create(1, "900", PhoneType.MOBILE)).thenReturn(true);
-        when(phoneDAO.create(1, "901", PhoneType.WORK)).thenReturn(true);
-        Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.MOBILE);
-        phones.put("901", PhoneType.WORK);
-        assertTrue(accountService.create("kol@ya", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
-                "2018-06-13", Role.USER, phones));
+        List<Phone> phones = new ArrayList<>();
+        phones.add(new Phone("800", PhoneType.MOBILE));
+        phones.add(new Phone("801", PhoneType.WORK));
+        Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
+                "Nikolaevich", "1982-12-13", null, "dddd", 1111,
+                "2018-06-13", Role.USER, phones);
+        when(accountDAO.create(account)).thenReturn(true);
+        when(accountDAO.getId("kolya1@mail")).thenReturn(1);
+        when(phoneDAO.create(account)).thenReturn(true);
+        assertTrue(accountService.create(account));
     }
 
     @Test(expected = DaoNameException.class)
     public void createExceptionTest() throws DaoNameException {
-        when(accountDAO.create("kol@ya", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
-                "2018-06-13", Role.USER)).thenThrow(new DaoNameException());
-        Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.MOBILE);
-        phones.put("901", PhoneType.WORK);
-        accountService.create("kol@ya", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, null, "dddd", 1111,
+        List<Phone> phones = new ArrayList<>();
+        phones.add(new Phone("800", PhoneType.MOBILE));
+        phones.add(new Phone("801", PhoneType.WORK));
+        Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
+                "Nikolaevich", "1982-12-13", null, "dddd", 1111,
                 "2018-06-13", Role.USER, phones);
+        when(accountDAO.create(account)).thenThrow(new DaoNameException());
+        accountService.create(account);
     }
 
     @Test
     public void getTest() {
-        Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.MOBILE);
-        phones.put("901", PhoneType.WORK);
+        List<Phone> phones = new ArrayList<>();
+        phones.add(new Phone("900", PhoneType.MOBILE));
+        phones.add(new Phone("901", PhoneType.WORK));
         Account account = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
+                "Urievich", "1988-07-22", null, "aaaaa", 0,
                 "2018-06-08", Role.ADMIN, phones);
         when(accountDAO.get(1)).thenReturn(account);
         assertEquals(account, accountService.get(1));
@@ -88,15 +84,15 @@ public class AccountServiceTest {
 
     @Test
     public void searchByStringTest() {
-        Map<String, PhoneType> phones = new HashMap<>();
-        phones.put("900", PhoneType.MOBILE);
-        phones.put("901", PhoneType.WORK);
+        List<Phone> phones = new ArrayList<>();
+        phones.add(new Phone("900", PhoneType.MOBILE));
+        phones.add(new Phone("901", PhoneType.WORK));
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, null, "aaaaa", 0,
-                "2018-06-08", Role.ADMIN, phones);
+                "Urievich", "1988-07-22", null, "aaaaa", 0, "2018-06-08",
+                Role.ADMIN, phones);
         Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                null, "1990-01-01", null, null, "bbbbb", 0,
-                "2018-06-13", Role.USER, new HashMap<>());
+                null, "1990-01-01", null, "bbbbb", 0, "2018-06-13", Role.USER,
+                new ArrayList<>());
         List<Account> accounts = new ArrayList<>();
         accounts.add(account1);
         accounts.add(account2);
@@ -111,19 +107,12 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void getIdTest() {
-        when(accountDAO.getId("a@a.ru")).thenReturn(1);
-        assertEquals(1, accountService.getId("a@a.ru"));
-    }
-
-    @Test
     public void updateTest() {
-        when(accountDAO.getId("a@a.ru")).thenReturn(1);
         Account account = new Account(1, "a@a.ru", null, "Ivan", null, null,
-                null, null, null, null, 0, null, null, null);
+                null, null, null, 0, null, null, null);
         when(accountDAO.update(account)).thenReturn(true);
-        assertTrue(accountService.update("a@a.ru", null, "Ivan", null, null, null,
-                null, null, null, 0, null));
+        when(phoneDAO.update(account)).thenReturn(true);
+        assertTrue(accountService.update(account));
     }
 
     @Test

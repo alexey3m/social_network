@@ -7,7 +7,6 @@ public class Group {
     private int id;
     private String name;
     private byte[] photo;
-    private String photoFileName;
     private String createDate;
     private String info;
     private int userCreatorId;
@@ -15,12 +14,11 @@ public class Group {
     private List<Integer> pendingMembersId;
     private List<Integer> adminsId;
 
-    public Group(int id, String name, byte[] photo, String photoFileName, String createDate, String info, int userCreatorId,
+    public Group(int id, String name, byte[] photo, String createDate, String info, int userCreatorId,
                  List<Integer> acceptedMembersId, List<Integer> pendingMembersId, List<Integer> adminsId) {
         this.id = id;
         this.name = name;
         this.photo = photo;
-        this.photoFileName = photoFileName;
         this.createDate = createDate;
         this.info = info;
         this.userCreatorId = userCreatorId;
@@ -54,14 +52,6 @@ public class Group {
 
     public void setPhoto(byte[] photo) {
         this.photo = photo;
-    }
-
-    public String getPhotoFileName() {
-        return photoFileName;
-    }
-
-    public void setPhotoFileName(String photoFileName) {
-        this.photoFileName = photoFileName;
     }
 
     public String getCreateDate() {
@@ -117,7 +107,7 @@ public class Group {
         return "Group{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", photoFileName='" + photoFileName + '\'' +
+                ", photo=" + photo +
                 ", createDate='" + createDate + '\'' +
                 ", info='" + info + '\'' +
                 ", userCreatorId=" + userCreatorId +
@@ -135,7 +125,6 @@ public class Group {
         return id == group.id &&
                 userCreatorId == group.userCreatorId &&
                 Objects.equals(name, group.name) &&
-                Objects.equals(photoFileName, group.photoFileName) &&
                 Objects.equals(createDate, group.createDate) &&
                 Objects.equals(info, group.info) &&
                 Objects.equals(acceptedMembersId, group.acceptedMembersId) &&
@@ -145,6 +134,6 @@ public class Group {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, photoFileName, createDate, info, userCreatorId, acceptedMembersId, pendingMembersId, adminsId);
+        return Objects.hash(id, name, createDate, info, userCreatorId, acceptedMembersId, pendingMembersId, adminsId);
     }
 }

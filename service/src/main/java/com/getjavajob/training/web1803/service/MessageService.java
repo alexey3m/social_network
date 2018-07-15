@@ -28,6 +28,10 @@ public class MessageService {
         return messageDAO.get(id);
     }
 
+    public byte[] getPhoto(int id) {
+        return messageDAO.getPhoto(id);
+    }
+
     public List<Message> getAllByTypeAndAssignId(MessageType type, int assignId) {
         return messageDAO.getAllByTypeAndAssignId(type, assignId);
     }

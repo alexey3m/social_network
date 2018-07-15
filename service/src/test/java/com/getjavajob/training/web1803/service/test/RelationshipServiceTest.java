@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -73,11 +72,11 @@ public class RelationshipServiceTest {
         friendsId.add(2);
         friendsId.add(3);
         Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                null, "1990-01-01", null, null, "bbbbb", 0,
-                "2018-06-13", Role.USER, new HashMap<>());
+                null, "1990-01-01", null, "bbbbb", 0,
+                "2018-06-13", Role.USER, new ArrayList<>());
         Account account3 = new Account(3, "c@c.ru", "123", "Ivan", "Ivanov",
-                "Ivanovich", "1970-05-29", null, null, "ccccc", 12345,
-                "2018-06-13", Role.USER, new HashMap<>());
+                "Ivanovich", "1970-05-29", null, "ccccc", 12345,
+                "2018-06-13", Role.USER, new ArrayList<>());
         List<Account> expected = new ArrayList<>();
         expected.add(account2);
         expected.add(account3);
