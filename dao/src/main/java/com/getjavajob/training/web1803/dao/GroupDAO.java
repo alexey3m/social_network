@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,8 +18,8 @@ import java.util.List;
 public class GroupDAO {
     private static final String SELECT_ALL_GROUPS = "SELECT * FROM soc_group";
     private static final String SELECT_GROUP_BY_NAME = SELECT_ALL_GROUPS + " WHERE name = ?";
-    private static final String INSERT_GROUP = "INSERT INTO soc_group (name, photo, photo_file_name, create_date, " +
-            "info, user_creator_id) VALUES(?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_GROUP = "INSERT INTO soc_group (name, photo, create_date, " +
+            "info, user_creator_id) VALUES(?, ?, ?, ?, ?)";
     private static final String INSERT_ACCOUNT_IN_GROUP = "INSERT INTO account_in_group (group_id, user_member_id, role, status) " +
             "VALUES (?, ?, ?, ?)";
     private static final String SELECT_GROUPS_ID_BY_NAME = "SELECT group_id FROM soc_group WHERE name = ?";
@@ -31,13 +30,14 @@ public class GroupDAO {
     private static final String COLUMN_GROUP_ID = "group_id";
     private static final String SELECT_GROUP_BY_ID = SELECT_ALL_GROUPS + " WHERE group_id = ?";
     private static final String SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP = "SELECT * FROM account_in_group WHERE group_id = ?";
-    private static final String UPDATE_GROUP = "UPDATE soc_group SET name = ?, photo = ?, photo_file_name = ?, info = ? WHERE group_id = ?";
+    private static final String UPDATE_GROUP = "UPDATE soc_group SET photo = ?, info = ? WHERE group_id = ?";
     private static final String UPDATE_STATUS_MEMBER = "UPDATE account_in_group SET status = ? WHERE group_id = ? AND user_member_id = ?";
     private static final String UPDATE_ROLE_MEMBER = "UPDATE account_in_group SET role = ? WHERE group_id = ? AND user_member_id = ?";
     private static final String REMOVE_ACCOUNT_IN_GROUP = "DELETE FROM account_in_group WHERE user_member_id = ? AND group_id = ?";
     private static final String SELECT_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() AS id";
     private static final String REMOVE_GROUP = "DELETE FROM soc_group WHERE group_id = ?";
     private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
+    private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM soc_group WHERE group_id = ?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -47,13 +47,14 @@ public class GroupDAO {
     }
 
     @Transactional
-    public boolean create(String name, InputStream photo, String photoFileName, String createDate, String info, int userCreatorId)
+    public boolean create(Group group)
             throws DaoNameException {
+        String name = group.getName();
         int nameExists = this.jdbcTemplate.query(SELECT_GROUP_BY_NAME, new Object[]{name}, rs -> rs.next() ? 1 : 0);
         if (nameExists == 0) {
-            this.jdbcTemplate.update(INSERT_GROUP, name, photo, photoFileName, createDate, info, userCreatorId);
+            this.jdbcTemplate.update(INSERT_GROUP, name, group.getPhoto(), group.getCreateDate(), group.getInfo(), group.getUserCreatorId());
             int newGroupId = this.jdbcTemplate.queryForObject(SELECT_LAST_INSERT_ID, (rs, rowNum) -> rs.getInt("id"));
-            this.jdbcTemplate.update(INSERT_ACCOUNT_IN_GROUP, newGroupId, userCreatorId, GroupRole.ADMIN.getStatus(),
+            this.jdbcTemplate.update(INSERT_ACCOUNT_IN_GROUP, newGroupId, group.getUserCreatorId(), GroupRole.ADMIN.getStatus(),
                     GroupStatus.ACCEPTED.getStatus());
             return true;
         } else {
@@ -117,6 +118,10 @@ public class GroupDAO {
                 (rs, rowNum) -> rs.getInt(COLUMN_GROUP_ID));
     }
 
+    public byte[] getPhoto(int id) {
+        return this.jdbcTemplate.queryForObject(SELECT_PHOTO_BY_ID, new Object[]{id}, (rs, rowNum) -> rs.getBytes("photo"));
+    }
+
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
         int result = this.jdbcTemplate.query(SELECT_ROLE_MEMBER, new Object[]{groupId, memberId},
                 rs -> rs.next() ? rs.getInt("role") : 0);
@@ -131,8 +136,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean update(Group group) {
-        int result = this.jdbcTemplate.update(UPDATE_GROUP, group.getName(), group.getPhoto(), group.getPhotoFileName(),
-                group.getInfo(), group.getId());
+        int result = this.jdbcTemplate.update(UPDATE_GROUP, group.getPhoto(), group.getInfo(), group.getId());
         return result != 0;
     }
 
@@ -172,7 +176,6 @@ public class GroupDAO {
         group.setId(resultSetGroup.getInt(COLUMN_GROUP_ID));
         group.setName(resultSetGroup.getString("name"));
         group.setPhoto(resultSetGroup.getBytes("photo"));
-        group.setPhotoFileName(resultSetGroup.getString("photo_file_name"));
         group.setCreateDate(resultSetGroup.getString("create_date"));
         group.setInfo(resultSetGroup.getString("info"));
         group.setUserCreatorId(resultSetGroup.getInt("user_creator_id"));

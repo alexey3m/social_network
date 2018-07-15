@@ -155,7 +155,6 @@ public class AccountController {
                     e.printStackTrace();
                 }
             }
-            System.out.println("expected: " + account);
             ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
             modelAndView.addObject("account", account);
             modelAndView.addObject("encodedPhoto", encodedPhoto);

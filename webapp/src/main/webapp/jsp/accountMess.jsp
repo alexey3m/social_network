@@ -87,7 +87,6 @@
             </c:if>
         </div>
     </div>
-
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

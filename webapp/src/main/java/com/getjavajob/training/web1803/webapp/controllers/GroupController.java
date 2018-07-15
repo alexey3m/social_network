@@ -13,6 +13,7 @@ import com.getjavajob.training.web1803.service.GroupService;
 import com.getjavajob.training.web1803.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,9 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -130,59 +129,50 @@ public class GroupController {
     }
 
     @RequestMapping(value = "/updateGroup", method = RequestMethod.POST)
-    public String updateAccount(@RequestParam("inputId") int id,
-                                @RequestParam("inputName") String name,
-                                @RequestParam(required = false, name = "inputInfo") String info,
-                                @RequestParam(required = false, name = "uploadPhoto") MultipartFile filePart,
+    public String updateAccount(@ModelAttribute Group group,
+                                @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
                                 HttpSession session) {
-        InputStream photo = null;
-        String photoFileName;
-        if (!filePart.isEmpty()) {
+        byte[] currentAccountPhoto = groupService.getPhoto(group.getId());
+        if (!file.isEmpty()) {
             try {
-                photo = filePart.getInputStream();
+                currentAccountPhoto = file.getBytes();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            photoFileName = filePart.getName();
-        } else {
-            Group currentGroup = groupService.get(id);
-            byte[] currentPhoto = currentGroup.getPhoto();
-            photo = currentPhoto != null ? new ByteArrayInputStream(currentPhoto) : null;
-            photoFileName = currentGroup.getPhotoFileName();
-
         }
-        boolean result = groupService.update(name, photo, photoFileName, info);
-        String redirect = "redirect:viewGroup?id=" + id + "&infoMessage=";
+        group.setPhoto(currentAccountPhoto);
+        boolean result = groupService.update(group);
+        String redirect = "redirect:/viewGroup?id=" + group.getId() + "&infoMessage=";
         return result ? redirect + "updateTrue" : redirect + "updateFalse";
     }
 
     @RequestMapping(value = "/createGroup", method = RequestMethod.POST)
-    public String createGroup(@RequestParam("inputName") String name,
-                              @RequestParam(required = false, name = "inputInfo") String info,
-                              @RequestParam(required = false, name = "uploadPhoto") MultipartFile filePart,
+    public String createGroup(@ModelAttribute Group group,
+                              @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
                               HttpSession session) {
-        InputStream photo = null;
-        String photoFileName = null;
-        if (!filePart.isEmpty()) {
+        String name = group.getName();
+        byte[] currentGroupPhoto = new byte[0];
+        if (!file.isEmpty()) {
             try {
-                photo = filePart.getInputStream();
+                currentGroupPhoto = file.getBytes();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            photoFileName = filePart.getName();
         }
-        int idCreator = (Integer) session.getAttribute("id");
+        group.setUserCreatorId((Integer) session.getAttribute("id"));
+        group.setCreateDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        group.setPhoto(currentGroupPhoto);
         try {
-            boolean result = groupService.create(name, photo, photoFileName, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), info, idCreator);
+            boolean result = groupService.create(group);
             return result ? "redirect:viewGroup?id=" + groupService.getId(name) + "&infoMessage=regGroup" : "redirect:/jsp/create-group.jsp?infoMessage=smFalse";
         } catch (DaoNameException e) {
-            return "redirect:/jsp/create-group.jsp?infoMessage=nameFalse&name=" + name;
+            return "redirect:/createGroupPage?infoMessage=nameFalse&name=" + name;
         }
     }
 
-    @RequestMapping(value = "/createGroupPage", method = RequestMethod.POST)
-    public String createGroupPage() {
-        return "/jsp/create-group.jsp";
+    @RequestMapping(value = "/createGroupPage", method = RequestMethod.GET)
+    public ModelAndView createGroupPage() {
+        return new ModelAndView("/jsp/create-group.jsp", "group", new Group());
     }
 
 
@@ -242,5 +232,4 @@ public class GroupController {
         }
         return infoMessage;
     }
-
 }

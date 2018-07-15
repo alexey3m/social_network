@@ -34,7 +34,7 @@
         <div class="col-md-4 navs">
             <form class="form-inline my-2 my-lg-0" action="<c:url value="/logoutUser"/>">
                 <div class="text-login mr-sm-2">
-                    Текущий пользователь: <c:out value="${sessionScope.userName}"/>
+                    Пользователь: <c:out value="${sessionScope.userName}"/>
                 </div>
                 <c:set var="email" scope="page" value="${sessionScope.email}"/>
                 <c:if test="${email != null}">

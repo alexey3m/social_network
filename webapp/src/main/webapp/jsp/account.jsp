@@ -142,7 +142,7 @@
                 </c:if>
                 <c:if test="${sessionId == id}">
                     <div class="control-panel">
-                        <form method="post" action="createGroupPage">
+                        <form method="get" action="createGroupPage">
                             <button type="submit" class="btn btn-primary">Создать группу!</button>
                         </form>
                     </div>

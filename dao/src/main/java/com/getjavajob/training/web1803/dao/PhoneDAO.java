@@ -53,17 +53,6 @@ public class PhoneDAO {
         return result;
     }
 
-//    public boolean update(int accountId, List<Phone> phones) {
-//        remove(accountId);
-//        boolean result = true;
-//        if (phones != null) {
-//            for (Phone phone : phones) {
-//                result = create(accountId, phone.getNumber(), phone.getPhoneType());
-//            }
-//        }
-//        return result;
-//    }
-
     @Transactional
     public boolean remove(int accountId) {
         int result = this.jdbcTemplate.update(REMOVE_PHONES, accountId);

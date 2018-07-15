@@ -15,8 +15,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,8 +30,10 @@ public class GroupServiceTest {
 
     @Test
     public void createTest() throws DaoNameException {
-        when(groupDAO.create("Group", null, null, "2018-06-07", "Info 1", 1)).thenReturn(true);
-        assertTrue(groupService.create("Group", null, null, "2018-06-07", "Info 1", 1));
+        Group group = new Group(0, "Group 3", null, "2018-06-13",
+                "Info 3", 2, null, null, null);
+        when(groupDAO.create(group)).thenReturn(true);
+        assertTrue(groupService.create(group));
     }
 
     @Test
@@ -42,7 +44,7 @@ public class GroupServiceTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         when(groupDAO.get(1)).thenReturn(group);
         assertEquals(group, groupService.get(1));
@@ -56,14 +58,14 @@ public class GroupServiceTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         List<Integer> acceptedMembersId2 = new ArrayList<>();
         acceptedMembersId2.add(2);
         List<Integer> pendingMembersId2 = new ArrayList<>();
         List<Integer> adminsId2 = new ArrayList<>();
         adminsId2.add(2);
-        Group group2 = new Group(2, "Group 2", null, null, "2018-06-09",
+        Group group2 = new Group(2, "Group 2", null, "2018-06-09",
                 "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
@@ -80,7 +82,7 @@ public class GroupServiceTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
@@ -96,7 +98,7 @@ public class GroupServiceTest {
         List<Integer> pendingMembersId1 = new ArrayList<>();
         List<Integer> adminsId1 = new ArrayList<>();
         adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, null, "2018-06-07",
+        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
                 "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
@@ -144,11 +146,10 @@ public class GroupServiceTest {
 
     @Test
     public void updateTest() {
-        Group group = new Group(1, "Group 1", null, null, null,
-                "new info", 0, null, null, null);
+        Group group = new Group(1, "Group 1", null, null, "new info", 0,
+                null, null, null);
         when(groupDAO.update(group)).thenReturn(true);
-        when(groupDAO.getId("Group 1")).thenReturn(1);
-        assertTrue(groupService.update("Group 1", null, null, "new info"));
+        assertTrue(groupService.update(group));
     }
 
     @Test

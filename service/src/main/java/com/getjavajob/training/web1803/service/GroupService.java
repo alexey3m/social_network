@@ -5,12 +5,9 @@ import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.GroupDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -22,9 +19,8 @@ public class GroupService {
         this.groupDAO = groupDAO;
     }
 
-    public boolean create(String name, InputStream photo, String photoFileName, String createDate, String info,
-                          int userCreatorId) throws DaoNameException {
-        return groupDAO.create(name, photo, photoFileName, createDate, info, userCreatorId);
+    public boolean create(Group group) throws DaoNameException {
+        return groupDAO.create(group);
     }
 
     public Group get(int groupId) {
@@ -45,6 +41,15 @@ public class GroupService {
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
         return groupDAO.getRoleMemberInGroup(groupId, memberId);
+    }
+
+    public byte[] getPhoto(int id) {
+        byte[] photo = groupDAO.getPhoto(id);
+        if (photo != null) {
+            return photo.length == 0 ? null : photo;
+        } else {
+            return null;
+        }
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
@@ -71,25 +76,11 @@ public class GroupService {
         return groupDAO.getId(name);
     }
 
-    public boolean update(String name, InputStream photo, String photoFileName, String info) {
-        try {
-            int id = groupDAO.getId(name);
-            Group group = new Group();
-            group.setId(id);
-            group.setName(name);
-            group.setPhoto(photo != null ? IOUtils.toByteArray(photo) : null);
-            group.setPhotoFileName(photoFileName);
-            group.setInfo(info);
-            groupDAO.update(group);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public boolean update(Group group) {
+        return groupDAO.update(group);
     }
 
     public boolean remove(int id) {
-        groupDAO.remove(id);
-        return true;
+        return groupDAO.remove(id);
     }
 }

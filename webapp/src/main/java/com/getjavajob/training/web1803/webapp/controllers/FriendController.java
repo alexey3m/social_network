@@ -83,7 +83,6 @@ public class FriendController {
             default:
                 throw new UnsupportedOperationException("action: \"" + action + "\" do not recognized");
         }
-        System.out.println(request.getServletPath());
         if (request.getServletPath().equals("/accountFriends")) {
             return "redirect:viewAccount?id=" + actionId + "&infoMessage=" + infoMessage + "&actionId=" + actionId;
         } else {

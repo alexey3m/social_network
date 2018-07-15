@@ -8,14 +8,11 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
     <link href="<c:url value="/resources/css/update-account.css"/>" rel="stylesheet" type="text/css"/>
-
     <title>Обновление аккаунта Social-Network</title>
 </head>
-
 <body>
 <jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
@@ -23,25 +20,18 @@
     <form:form id="formConfirm" class="form-reg" method="post" action="/updateAccount" enctype="multipart/form-data" modelAttribute="account" onsubmit="updateIndexedInputNames();">
         <h2 class="form-reg-heading">Форма обновления аккаунта</h2>
         <form:input type="hidden" path="id" value="${account.id}"/>
-
         <form:label path="email" class="sr-only">Email</form:label>
         <form:input type="text" path="email" class="form-control" placeholder="Email" value="${account.email}" />
-
         <form:label path="password" class="sr-only">Пароль</form:label>
         <form:input type="password" path="password" class="form-control mb-2" placeholder="Пароль" value="${account.password}" />
-
         <form:label path="lastName" class="sr-only">Фамилия</form:label>
         <form:input type="text" path="lastName" class="form-control" placeholder="Фамилия" value="${account.lastName}"/>
-
         <form:label path="firstName" class="sr-only">Имя</form:label>
         <form:input type="text" path="firstName" class="form-control" placeholder="Имя" value="${account.firstName}"/>
-
         <form:label path="middleName" class="sr-only">Отчество</form:label>
         <form:input type="text" path="middleName" class="form-control mb-2" placeholder="Отчество" value="${account.middleName}"/>
-
         <label for="birthday" class="sr-only">Дата рождения</label>
         <input type="date" name="birthday" id="birthday" class="form-control mb-2" placeholder="Birthday date" value="${account.birthday}"/>
-
         <c:forEach items="${account.phones}" var="phone" varStatus="status">
             <div id="phone" class="input-group mb-2 phoneClass">
                 <div class="input-group-append">
@@ -72,7 +62,6 @@
                 </div>
             </div>
         </c:forEach>
-
         <button type="button" class="btn btn-success mb-2" id="addRowBtn" onclick="addRow()">Добавить телефон</button>
         <form:label path="skype" class="sr-only">Skype</form:label>
         <form:input type="text" path="skype" class="form-control" placeholder="Skype" value="${account.skype}"/>
@@ -94,7 +83,7 @@
     </form:form>
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
-<script src="resources/js/socnet-custom.js"></script>
+<script src="<c:url value="/resources/js/socnet-custom.js"/>"></script>
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
 <script src="<c:url value="/resources/js/popper.min.js"/>"></script>

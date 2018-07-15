@@ -7,13 +7,10 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
-
     <!-- Custom styles for this template -->
     <link href="<c:url value="/resources/css/reg.css"/>" rel="stylesheet" type="text/css"/>
-
     <title>Регистрация аккаунта Social-Network</title>
 </head>
 <body>
@@ -25,31 +22,21 @@
             <strong>Ошибка!</strong> <br>Данная электронная почта уже используется!
         </div>
     </c:if>
-
-
     <%--@elvariable id="account" type="com.getjavajob.training.web1803.common.Account"--%>
     <form:form class="form-reg" method="post" action="/reg" enctype="multipart/form-data" modelAttribute="account" onsubmit="updateIndexedInputNames();">
         <h2 class="form-reg-heading">Форма регистрации</h2>
-
-        <%--<form:label path="email" class="sr-only">Email</form:label>--%>
+        <form:label path="email" class="sr-only">Email</form:label>
         <form:input type="text" path="email" class="form-control" placeholder="Email" required="required" />
-
-        <%--<form:label path="password" class="sr-only">Пароль</form:label>--%>
+        <form:label path="password" class="sr-only">Пароль</form:label>
         <form:input type="password" path="password" class="form-control mb-2" placeholder="Пароль" />
-
-        <%--<form:label path="lastName" class="sr-only">Фамилия</form:label>--%>
+        <form:label path="lastName" class="sr-only">Фамилия</form:label>
         <form:input type="text" path="lastName" class="form-control" placeholder="Фамилия" />
-
-        <%--<form:label path="firstName" class="sr-only">Имя</form:label>--%>
+        <form:label path="firstName" class="sr-only">Имя</form:label>
         <form:input type="text" path="firstName" class="form-control" placeholder="Имя" />
-
-        <%--<form:label path="middleName" class="sr-only">Отчество</form:label>--%>
+        <form:label path="middleName" class="sr-only">Отчество</form:label>
         <form:input type="text" path="middleName" class="form-control mb-2" placeholder="Отчество" />
-
-        <%--<label for="birthday" class="sr-only">Дата рождения</label>--%>
+        <label for="birthday" class="sr-only">Дата рождения</label>
         <input type="date" name="birthday" id="birthday" class="form-control mb-2" placeholder="Birthday date" />
-
-
             <div id="phone" class="input-group mb-2 phoneClass">
                 <div class="input-group-append">
                     <input type="number" class="form-control phoneClassInput" placeholder="Телефон" />
@@ -71,68 +58,11 @@
         <form:input type="text" path="skype" class="form-control" placeholder="Skype" />
         <%--<form:label path="icq" class="sr-only">Icq</form:label>--%>
         <form:input type="text" path="icq" class="form-control" placeholder="Icq" />
-
         <label>Ваше фото</label>
         <input type="file" name="uploadPhoto" class="form-control mb-2"/>
-
         <br>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Регистрация!</button>
     </form:form>
-
-
-    <%--<form class="form-reg" method="post" action="<c:url value="/reg"/>" enctype="multipart/form-data">--%>
-
-        <%--<h2 class="form-reg-heading">Форма регистрации</h2>--%>
-        <%--<label for="inputEmail" class="sr-only">Email</label>--%>
-        <%--<input type="text" id="inputEmail" name="inputEmail" class="form-control" placeholder="Email" required>--%>
-
-        <%--<label for="inputPassword" class="sr-only">Пароль</label>--%>
-        <%--<input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Пароль"--%>
-               <%--required>--%>
-
-        <%--<label for="inputLastName" class="sr-only">Фамилия</label>--%>
-        <%--<input type="text" id="inputLastName" name="inputLastName" class="form-control" placeholder="Фамилия">--%>
-
-        <%--<label for="inputFirstName" class="sr-only">Имя</label>--%>
-        <%--<input type="text" id="inputFirstName" name="inputFirstName" class="form-control" placeholder="Имя">--%>
-
-        <%--<label for="inputMiddleName" class="sr-only">Отчество</label>--%>
-        <%--<input type="text" id="inputMiddleName" name="inputMiddleName" class="form-control" placeholder="Отчество">--%>
-
-        <%--<label for="inputBirthday" class="sr-only">Дата рождения</label>--%>
-        <%--<input type="date" id="inputBirthday" name="inputBirthday" class="form-control" placeholder="Дата рождения">--%>
-
-        <%--<div id="phone" class="input-group mb-2">--%>
-            <%--<div class="input-group-append">--%>
-                <%--<input type="number" id="inputPhone" name="inputPhone" class="form-control" placeholder="Телефон">--%>
-            <%--</div>--%>
-            <%--<div class="form-control">--%>
-                <%--<label for="phoneSel" class="sr-only">Тип телефона</label>--%>
-                <%--<select class="custom-select" id="phoneSel" name="phoneSel">--%>
-                    <%--<option value="0">Мобильный</option>--%>
-                    <%--<option value="1">Рабочий</option>--%>
-                    <%--<option value="2">Домашний</option>--%>
-                <%--</select>--%>
-            <%--</div>--%>
-            <%--<div class="input-group-append">--%>
-                <%--<button class="btn btn-danger" type="button" onclick="removeRow(this)">Удалить</button>--%>
-            <%--</div>--%>
-        <%--</div>--%>
-        <%--<button type="button" class="btn btn-success mb-2" id="addRowBtn" onclick="addRow()">Добавить телефон</button>--%>
-
-        <%--<label for="inputSkype" class="sr-only">Skype</label>--%>
-        <%--<input type="text" id="inputSkype" name="inputSkype" class="form-control" placeholder="Skype">--%>
-
-        <%--<label for="inputIcq" class="sr-only">Icq</label>--%>
-        <%--<input type="text" id="inputIcq" name="inputIcq" class="form-control" placeholder="Icq">--%>
-
-        <%--<label for="uploadPhoto" class="sr-only">Ваш аватар</label>--%>
-        <%--<input type="file" id="uploadPhoto" name="uploadPhoto" class="form-control">--%>
-
-        <%--<br>--%>
-        <%--<button class="btn btn-lg btn-primary btn-block" type="submit">Регистрация!</button>--%>
-    <%--</form>--%>
-
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

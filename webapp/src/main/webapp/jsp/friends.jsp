@@ -74,11 +74,13 @@
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
             </div>
-            <div class="col-3">
-                <form class="d-inline" method="post" action="friends?action=accept&actionId=${account.id}">
+            <div class="col-2">
+                <form method="post" action="friends?action=accept&actionId=${account.id}">
                     <button type="submit" class="btn btn-sm btn-success">Принять в друзья!</button>
                 </form>
-                <form class="d-inline" method="post" action="friends?action=decline&actionId=${account.id}">
+            </div>
+            <div class="col-2">
+                <form method="post" action="friends?action=decline&actionId=${account.id}">
                     <button type="submit" class="btn btn-sm btn-danger">Отклонить запрос!</button>
                 </form>
             </div>
