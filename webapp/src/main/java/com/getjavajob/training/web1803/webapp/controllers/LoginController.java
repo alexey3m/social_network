@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class LoginController {
     private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
 
     private AccountService accountService;
 
@@ -38,7 +39,7 @@ public class LoginController {
                 if (cookieName.equals(EMAIL)) {
                     email = cookie.getValue();
                 }
-                if (cookieName.equals("password")) {
+                if (cookieName.equals(PASSWORD)) {
                     password = cookie.getValue();
                 }
             }
@@ -52,7 +53,7 @@ public class LoginController {
             session.setAttribute("role", currentAccount.getRole());
             if (rememberMe != null) {
                 Cookie cookieUsername = new Cookie(EMAIL, email);
-                Cookie cookiePassword = new Cookie("password", password);
+                Cookie cookiePassword = new Cookie(PASSWORD, password);
                 Cookie cookieId = new Cookie("id", String.valueOf(id));
                 response.addCookie(cookieUsername);
                 response.addCookie(cookiePassword);
@@ -66,7 +67,7 @@ public class LoginController {
 
     @RequestMapping("/logoutUser")
     public String logoutUser(HttpSession session, HttpServletResponse response) {
-        session.removeAttribute("email");
+        session.removeAttribute(EMAIL);
         session.removeAttribute("id");
         session.removeAttribute("userName");
         session.removeAttribute("role");
@@ -74,7 +75,7 @@ public class LoginController {
         Cookie email = new Cookie("email", null);
         email.setMaxAge(0);
         email.setPath("/");
-        Cookie cookiePassword = new Cookie("password", null);
+        Cookie cookiePassword = new Cookie(PASSWORD, null);
         cookiePassword.setMaxAge(0);
         cookiePassword.setPath("/");
         Cookie cookieId = new Cookie("id", null);

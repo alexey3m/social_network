@@ -28,6 +28,7 @@ import java.util.*;
 
 @Controller
 public class GroupController {
+    private static final String GROUP = "group";
 
     private AccountService accountService;
     private GroupService groupService;
@@ -88,7 +89,7 @@ public class GroupController {
         modelAndView.addObject("sessionId", sessionId);
         modelAndView.addObject("actionAccount", actionAccount);
         modelAndView.addObject("accountCreator", accountCreator);
-        modelAndView.addObject("group", group);
+        modelAndView.addObject(GROUP, group);
         modelAndView.addObject("role", role);
         modelAndView.addObject("globalRole", globalRole);
         modelAndView.addObject("status", status);
@@ -123,7 +124,7 @@ public class GroupController {
             e.printStackTrace();
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/update-group.jsp");
-        modelAndView.addObject("group", group);
+        modelAndView.addObject(GROUP, group);
         modelAndView.addObject("encodedPhoto", encodedPhoto);
         return modelAndView;
     }
@@ -172,7 +173,7 @@ public class GroupController {
 
     @RequestMapping(value = "/createGroupPage", method = RequestMethod.GET)
     public ModelAndView createGroupPage() {
-        return new ModelAndView("/jsp/create-group.jsp", "group", new Group());
+        return new ModelAndView("/jsp/create-group.jsp", GROUP, new Group());
     }
 
 

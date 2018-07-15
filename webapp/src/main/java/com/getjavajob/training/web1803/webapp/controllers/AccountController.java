@@ -27,6 +27,8 @@ import java.util.*;
 
 @Controller
 public class AccountController {
+    private static final String ACCOUNT = "account";
+    private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
 
     private AccountService accountService;
     private RelationshipService relationshipService;
@@ -72,7 +74,7 @@ public class AccountController {
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/account.jsp");
         modelAndView.addObject("id", id);
-        modelAndView.addObject("account", account);
+        modelAndView.addObject(ACCOUNT, account);
         modelAndView.addObject("actionAccount", actionAccount);
         modelAndView.addObject("role", role);
         modelAndView.addObject("sessionRole", sessionRole);
@@ -88,7 +90,7 @@ public class AccountController {
 
     @RequestMapping(value = "/regPage", method = RequestMethod.GET)
     public ModelAndView viewRegPage() {
-        return new ModelAndView("/jsp/reg.jsp", "account", new Account());
+        return new ModelAndView("/jsp/reg.jsp", ACCOUNT, new Account());
     }
 
 
@@ -130,9 +132,9 @@ public class AccountController {
         boolean resultUpdate = accountService.update(account);
         if (resultUpdate) {
             session.setAttribute("userName", account.getFirstName() + " " + account.getLastName());
-            return "redirect:viewAccount?id=" + account.getId() + "&infoMessage=updateTrue";
+            return REDIRECT_TO_VIEW_ACCOUNT + account.getId() + "&infoMessage=updateTrue";
         } else {
-            return "redirect:viewAccount?id=" + account.getId() + "&infoMessage=updateFalse";
+            return REDIRECT_TO_VIEW_ACCOUNT + account.getId() + "&infoMessage=updateFalse";
         }
     }
 
@@ -156,7 +158,7 @@ public class AccountController {
                 }
             }
             ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
-            modelAndView.addObject("account", account);
+            modelAndView.addObject(ACCOUNT, account);
             modelAndView.addObject("encodedPhoto", encodedPhoto);
             modelAndView.addObject("phoneTypes", PhoneType.values());
             return modelAndView;
@@ -179,6 +181,6 @@ public class AccountController {
             accountService.updateRole(actionId, Role.ADMIN);
             message = "updateRoleAdmin";
         }
-        return "redirect:viewAccount?id=" + actionId + "&infoMessage=" + message;
+        return REDIRECT_TO_VIEW_ACCOUNT + actionId + "&infoMessage=" + message;
     }
 }

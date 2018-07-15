@@ -35,7 +35,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/login.jsp");
             dispatcher.forward(request, response);
             response.sendRedirect("/jsp/login.jsp");
-            return true;
+            return false;
         } else {
             return true;
         }

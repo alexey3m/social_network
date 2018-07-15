@@ -7,7 +7,7 @@ import java.beans.PropertyEditorSupport;
 public class PhoneTypeEditor extends PropertyEditorSupport {
 
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
+    public void setAsText(String text) {
         switch (text) {
             case "MOBILE":
                 this.setValue(PhoneType.MOBILE);
