@@ -20,3 +20,8 @@ body {
 .navs {
   padding-left: 2rem;
 }
+
+.changeZ {
+  z-index: 1 !important;
+}
+

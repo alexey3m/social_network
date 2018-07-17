@@ -27,11 +27,48 @@ $('#formConfirm').submit(function () {
 
 function updateIndexedInputNames() {
     $('.phoneClass').each(function (containerIndex, element) {
-        $(this).find("input").each(function(index, element){
-            $(element).attr("name", "phones["+containerIndex+"].number");
+        $(this).find("input").each(function (index, element) {
+            $(element).attr("name", "phones[" + containerIndex + "].number");
         });
-        $(this).find("select").each(function(index, element){
-            $(element).attr("name", "phones["+containerIndex+"].phoneType");
+        $(this).find("select").each(function (index, element) {
+            $(element).attr("name", "phones[" + containerIndex + "].phoneType");
         });
     });
 }
+
+$(function () {
+    $("#searchAccount").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/commonSearchFilter',
+                data: {
+                    filter: request.term
+                },
+                success: function (data) {
+                    response(data);
+                }
+            });
+        },
+        minLength: 1
+    });
+});
+
+// $(function () {
+//     $("#searchAccount").autocomplete({
+//         source: function (request, response) {
+//             $.ajax({
+//                 url: '/accountFilter',
+//                 data: {
+//                     filter: request.term
+//                 },
+//                 success: function (data) {
+//                     response($.map(data, function (account, i) {
+//                         return {value: account.id, label: account.firstName + ' ' + account.lastName}
+//                     }));
+//                 }
+//             });
+//         },
+//         minLength: 1
+//     });
+// });
+

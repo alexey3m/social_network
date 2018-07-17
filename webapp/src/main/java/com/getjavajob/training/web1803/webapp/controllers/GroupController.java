@@ -130,7 +130,7 @@ public class GroupController {
     }
 
     @RequestMapping(value = "/updateGroup", method = RequestMethod.POST)
-    public String updateAccount(@ModelAttribute Group group,
+    public String updateGroup(@ModelAttribute Group group,
                                 @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
                                 HttpSession session) {
         byte[] currentAccountPhoto = groupService.getPhoto(group.getId());

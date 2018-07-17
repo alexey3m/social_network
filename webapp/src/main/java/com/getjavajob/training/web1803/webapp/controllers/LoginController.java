@@ -59,7 +59,7 @@ public class LoginController {
                 response.addCookie(cookiePassword);
                 response.addCookie(cookieId);
             }
-            return "redirect:viewAccount?id=" + id;
+            return "redirect:/viewAccount?id=" + id;
         } catch (DaoNameException e) {
             return "redirect:/jsp/login.jsp?infoMessage=alert";
         }
