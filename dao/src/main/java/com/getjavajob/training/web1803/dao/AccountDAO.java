@@ -16,9 +16,9 @@ import java.util.List;
 @Repository
 public class AccountDAO {
     private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM account";
-    private static final String SEARCH_ACCOUNTS_BY_STRING = "SELECT * FROM account WHERE LOWER(first_name) LIKE ? " +
-            "UNION SELECT * FROM account WHERE LOWER(last_name) LIKE ? " +
-            "UNION SELECT * FROM account WHERE LOWER(middle_name) LIKE ? ORDER BY id";
+    private static final String SEARCH_ACCOUNTS_BY_STRING = "SELECT * FROM (SELECT *, CONCAT(first_name, " +
+            "IF (middle_name = '', '', CONCAT(' ', middle_name)), IF (last_name = '', '', CONCAT(' ', last_name))) AS full_name FROM account) p " +
+            "WHERE full_name LIKE ?";
     private static final String SELECT_ACCOUNT_BY_ID = SELECT_ALL_ACCOUNTS + " WHERE id = ?";
     private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM account WHERE id = ?";
     private static final String SELECT_ACCOUNT_BY_EMAIL = SELECT_ALL_ACCOUNTS + " WHERE email = ?";
@@ -41,11 +41,11 @@ public class AccountDAO {
 
     @Transactional
     public boolean create(Account account) throws DaoNameException {
-        String email = account.getEmail();
+        String email = account.getEmail().trim();
         boolean emailExist = this.jdbcTemplate.query(SELECT_ACCOUNT_BY_EMAIL, new Object[]{email}, ResultSet::next);
         if (!emailExist) {
-            int result = this.jdbcTemplate.update(INSERT_NEW_ACCOUNT, email, account.getPassword(),
-                    account.getFirstName(), account.getLastName(), account.getMiddleName(), account.getBirthday(),
+            int result = this.jdbcTemplate.update(INSERT_NEW_ACCOUNT, email, account.getPassword().trim(),
+                    account.getFirstName().trim(), account.getLastName().trim(), account.getMiddleName().trim(), account.getBirthday(),
                     account.getPhoto(), account.getSkype(), account.getIcq(), account.getRegDate(), account.getRole().getStatus());
             return result != 0;
         } else {
@@ -89,8 +89,7 @@ public class AccountDAO {
 
     public List<Account> searchByString(String search) {
         String lowerSearch = search.toLowerCase();
-        return this.jdbcTemplate.query(SEARCH_ACCOUNTS_BY_STRING, new Object[]{"%" + lowerSearch + "%", "%" + lowerSearch + "%",
-                "%" + lowerSearch + "%"}, rs -> {
+        return this.jdbcTemplate.query(SEARCH_ACCOUNTS_BY_STRING, new Object[]{"%" + lowerSearch + "%"}, rs -> {
             List<Account> result = new ArrayList<>();
             while (rs.next()) {
                 result.add(createAccountFromResult(rs));

@@ -93,6 +93,11 @@ public class AccountController {
         return new ModelAndView("/jsp/reg.jsp", ACCOUNT, new Account());
     }
 
+    @RequestMapping(value = "/searchPage", method = RequestMethod.GET)
+    public String searchPage() {
+        return "/jsp/search.jsp";
+    }
+
 
     @RequestMapping(value = "/reg", method = RequestMethod.POST)
     public String regAccount(@ModelAttribute Account account,

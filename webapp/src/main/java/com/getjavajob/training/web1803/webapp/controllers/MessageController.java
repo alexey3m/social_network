@@ -73,7 +73,7 @@ public class MessageController {
     }
 
     @RequestMapping("/viewMessagePhoto")
-    public String viewAccountMessages(byte[] photo) {
+    public String viewMessagePhoto(byte[] photo) {
         byte[] encodedPhotoBytes = Base64.getEncoder().encode(photo);
 
         try {

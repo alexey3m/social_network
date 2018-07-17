@@ -27,7 +27,7 @@ public class FriendController {
     }
 
     @RequestMapping(value = "/viewFriends", method = RequestMethod.GET)
-    public ModelAndView viewAccount(@RequestParam(required = false, name = "actionId") Integer actionId,
+    public ModelAndView viewFriends(@RequestParam(required = false, name = "actionId") Integer actionId,
                                     @RequestParam(required = false, name = "infoMessage") String infoMessage,
                                     HttpSession session) {
         int id = (Integer) session.getAttribute("id");
@@ -48,7 +48,7 @@ public class FriendController {
     }
 
     @RequestMapping(value = {"/friends", "/accountFriends"}, method = RequestMethod.POST)
-    public String viewAccount(@RequestParam("action") String action,
+    public String friends(@RequestParam("action") String action,
                               @RequestParam("actionId") Integer actionId,
                               HttpSession session,
                               HttpServletRequest request) {

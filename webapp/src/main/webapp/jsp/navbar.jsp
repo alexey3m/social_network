@@ -7,13 +7,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
     <link href="<c:url value="/resources/css/navbar.css"/>" rel="stylesheet" type="text/css"/>
     <title>Account Social net!</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top changeZ">
     <a class="navbar-brand" href="<c:url value="/"/>">Социальная сеть</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,8 +46,5 @@
 </nav>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
-<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
-<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

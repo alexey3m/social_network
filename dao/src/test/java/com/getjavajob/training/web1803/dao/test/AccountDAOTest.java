@@ -19,8 +19,6 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -95,48 +93,6 @@ public class AccountDAOTest {
     @Test
     public void getRoleUserTest() {
         assertEquals(Role.USER, accountDAO.getRole(2));
-    }
-
-    @Test
-    public void searchByStringFirstNameTest() {
-        Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, "aaaaa", 0,
-                "2018-06-08", Role.ADMIN, null);
-        Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                null, "1990-01-01", null, "bbbbb", 0,
-                "2018-06-13", Role.USER, null);
-        List<Account> expected = new ArrayList<>();
-        expected.add(account1);
-        expected.add(account2);
-        assertEquals(expected, accountDAO.searchByString("ey"));
-    }
-
-    @Test
-    public void searchByStringMiddleNameTest() {
-        Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, "aaaaa", 0,
-                "2018-06-08", Role.ADMIN, null);
-        List<Account> expected = new ArrayList<>();
-        expected.add(account1);
-        assertEquals(expected, accountDAO.searchByString("URI"));
-    }
-
-    @Test
-    public void searchByStringLastNameTest() {
-        Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
-                "Urievich", "1988-07-22", null, "aaaaa", 0,
-                "2018-06-08", Role.ADMIN, null);
-        Account account2 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                null, "1990-01-01", null, "bbbbb", 0,
-                "2018-06-13", Role.USER, null);
-        Account account3 = new Account(3, "c@c.ru", "123", "Ivan", "Ivanov",
-                "Ivanovich", "1970-05-29", null, "ccccc", 12345,
-                "2018-06-13", Role.USER, null);
-        List<Account> expected = new ArrayList<>();
-        expected.add(account1);
-        expected.add(account2);
-        expected.add(account3);
-        assertEquals(expected, accountDAO.searchByString("ov"));
     }
 
     @Test

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
     <link href="<c:url value="/resources/css/search-result.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
     <title>Результаты поиска Social net!</title>
 </head>
 <body>
@@ -53,8 +54,10 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="<c:url value="/resources/js/jquery-3.3.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.js"/>"></script>
+<script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
 <script src="<c:url value="/resources/js/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+<script src="<c:url value="/resources/js/socnet-custom.js"/>"></script>
 </body>
 </html>
