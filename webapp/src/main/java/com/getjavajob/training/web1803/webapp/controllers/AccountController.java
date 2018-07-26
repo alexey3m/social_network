@@ -55,6 +55,7 @@ public class AccountController {
         }
         Account actionAccount = actionId == null ? new Account() : accountService.get(actionId);
         Role role = accountService.getRole(id);
+        System.out.println("viewAccount, role: " + role );
         Status status = relationshipService.getStatus(sessionId, id);
         Status pendingStatus = relationshipService.getPendingRequestToMe(id, sessionId);
         List<Message> messages = messageService.getAllByTypeAndAssignId(MessageType.ACCOUNT_WALL, account.getId());

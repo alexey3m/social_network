@@ -1,8 +1,8 @@
-INSERT INTO account (id, email, password, first_name, last_name, middle_name, birthday, photo, photo_file_name, skype, icq, reg_date, role)
+INSERT INTO account (account_id, email, password, first_name, last_name, middle_name, birthday, photo, photo_file_name, skype, icq, reg_date, role)
 VALUES (1, 'a@a.ru', '123', 'Alexey', 'Ershov', 'Urievich', '1988-07-22', null, null, 'aaaaa', 0, '2018-06-08', 1);
-INSERT INTO account (id, email, password, first_name, last_name, middle_name, birthday, photo, photo_file_name, skype, icq, reg_date, role)
+INSERT INTO account (account_id, email, password, first_name, last_name, middle_name, birthday, photo, photo_file_name, skype, icq, reg_date, role)
 VALUES (2, 'b@b.ru', '123', 'Sergey', 'Semenov', null, '1990-01-01', null, null, 'bbbbb', null, '2018-06-13', 0);
-INSERT INTO account (id, email, password, first_name, last_name, middle_name, birthday, photo, photo_file_name, skype, icq, reg_date, role)
+INSERT INTO account (account_id, email, password, first_name, last_name, middle_name, birthday, photo, photo_file_name, skype, icq, reg_date, role)
 VALUES (3, 'c@c.ru', '123', 'Ivan', 'Ivanov', 'Ivanovich', '1970-05-29', null, null, 'ccccc', 12345, '2018-06-13', 0);
 
 INSERT INTO phone (account_id, phone_number, phone_type) VALUES (1, '900', 0);

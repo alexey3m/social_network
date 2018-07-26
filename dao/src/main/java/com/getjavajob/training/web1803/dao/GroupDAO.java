@@ -1,25 +1,28 @@
 package com.getjavajob.training.web1803.dao;
 
+import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
+@Transactional
 public class GroupDAO {
     private static final String SELECT_ALL_GROUPS = "SELECT * FROM soc_group";
     private static final String SELECT_GROUP_BY_NAME = SELECT_ALL_GROUPS + " WHERE name = ?";
     private static final String INSERT_GROUP = "INSERT INTO soc_group (name, photo, create_date, " +
             "info, user_creator_id) VALUES(?, ?, ?, ?, ?)";
+    private static final String INSERT_ACCOUNT_IN_GROUP1 = "INSERT INTO account_in_group (group_id, user_member_id, role, status) " +
+            "VALUES (?, ?, ?, ?)";
     private static final String INSERT_ACCOUNT_IN_GROUP = "INSERT INTO account_in_group (group_id, user_member_id, role, status) " +
             "VALUES (?, ?, ?, ?)";
     private static final String SELECT_GROUPS_ID_BY_NAME = "SELECT group_id FROM soc_group WHERE name = ?";
@@ -39,172 +42,189 @@ public class GroupDAO {
     private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
     private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM soc_group WHERE group_id = ?";
 
-    private JdbcTemplate jdbcTemplate;
+
+    private SessionFactory sessionFactory;
 
     @Autowired
-    public GroupDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public GroupDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    public GroupDAO() {
     }
 
     @Transactional
-    public boolean create(Group group)
-            throws DaoNameException {
-        String name = group.getName();
-        int nameExists = this.jdbcTemplate.query(SELECT_GROUP_BY_NAME, new Object[]{name}, rs -> rs.next() ? 1 : 0);
-        if (nameExists == 0) {
-            this.jdbcTemplate.update(INSERT_GROUP, name, group.getPhoto(), group.getCreateDate(), group.getInfo(), group.getUserCreatorId());
-            int newGroupId = this.jdbcTemplate.queryForObject(SELECT_LAST_INSERT_ID, (rs, rowNum) -> rs.getInt("id"));
-            this.jdbcTemplate.update(INSERT_ACCOUNT_IN_GROUP, newGroupId, group.getUserCreatorId(), GroupRole.ADMIN.getStatus(),
-                    GroupStatus.ACCEPTED.getStatus());
+    public boolean create(Group group) throws DaoNameException {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Group> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Group.class);
+        Root<Group> from = criteriaQueryCheckEmail.from(Group.class);
+        CriteriaQuery<Group> selectName = criteriaQueryCheckEmail.select(from).where(criteriaBuilder.equal(from.get("name"), group.getName()));
+        boolean nameNotExist = session.createQuery(selectName).getResultList().isEmpty();
+        if (nameNotExist) {
+            session.persist(group);
             return true;
         } else {
-            throw new DaoNameException("Group name \"" + name + "\" is already used.");
+            throw new DaoNameException("Group name \"" + group.getName() + "\" is already used.");
         }
     }
 
     public Group get(int groupId) {
-        List<Group> groups = this.jdbcTemplate.query(SELECT_GROUP_BY_ID, new Object[]{groupId},
-                (rs, rowNum) -> createGroupFromResult(rs));
-        if (groups.size() == 0) {
-            return null;
-        } else {
-            return this.jdbcTemplate.query(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP, new Object[]{groupId}, rs -> {
-                return createGroupMembersFromResult(groups.get(0), rs);
-            });
-        }
-
+        return sessionFactory.getCurrentSession().get(Group.class, groupId);
     }
 
     public List<Group> getAll() {
-        List<Group> groups = this.jdbcTemplate.query(SELECT_ALL_GROUPS, (rs, rowNum) -> createGroupFromResult(rs));
-        List<Group> result = new ArrayList<>();
-        for (Group group : groups) {
-            result.add(this.jdbcTemplate.query(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP, new Object[]{group.getId()},
-                    rs -> {
-                        return createGroupMembersFromResult(group, rs);
-                    }));
-        }
-        return result;
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
+        Root<Group> from = criteriaQuery.from(Group.class);
+        CriteriaQuery<Group> selectName = criteriaQuery.select(from);
+        return session.createQuery(selectName).getResultList();
     }
 
-    public List<Group> getAllById(int userId) {
-        List<Group> groups = this.jdbcTemplate.query(SELECT_GROUPS_ID_BY_USER_MEMBER_ID, new Object[]{userId},
-                (rs, rowNum) -> createGroupFromResult(rs));
-        List<Group> result = new ArrayList<>();
-        for (Group group : groups) {
-            result.add(this.jdbcTemplate.query(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP, new Object[]{group.getId()},
-                    rs -> {
-                        return createGroupMembersFromResult(group, rs);
-                    }));
-        }
+    public List<Group> getAllByUserId(int userId) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
+        Root<Group> from = criteriaQuery.from(Group.class);
+        Join<Group, AccountInGroup> accountInGroupJoin = from.join("accounts", JoinType.INNER);
+        criteriaQuery.select(from).distinct(true).where(criteriaBuilder.and(
+                        criteriaBuilder.equal(accountInGroupJoin.get("userMemberId"), userId),
+                        criteriaBuilder.equal(accountInGroupJoin.get("status"), GroupStatus.ACCEPTED)));
+        List<Group> result = session.createQuery(criteriaQuery).getResultList();
+        System.out.println("List<Group>: " + result);
         return result;
     }
 
     public List<Group> searchByString(String search) {
-        List<Group> groups = this.jdbcTemplate.query(SEARCH_GROUPS_BY_STRING, new Object[]{"%" + search.toLowerCase() + "%"},
-                (rs, rowNum) -> createGroupFromResult(rs));
-        List<Group> result = new ArrayList<>();
-        for (Group group : groups) {
-            result.add(this.jdbcTemplate.query(SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP, new Object[]{group.getId()},
-                    rs -> {
-                        return createGroupMembersFromResult(group, rs);
-                    }));
-        }
-        return result;
+        String lowerSearch = search.toLowerCase();
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Group> criteriaQuerySearch = criteriaBuilder.createQuery(Group.class);
+        Root<Group> from = criteriaQuerySearch.from(Group.class);
+        CriteriaQuery<Group> selectEmail = criteriaQuerySearch.select(from).where(
+                criteriaBuilder.like(from.get("name"), "%" + lowerSearch + "%"));
+        return session.createQuery(selectEmail).getResultList();
     }
 
     public int getId(String name) {
-        return this.jdbcTemplate.queryForObject(SELECT_GROUPS_ID_BY_NAME, new Object[]{name},
-                (rs, rowNum) -> rs.getInt(COLUMN_GROUP_ID));
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
+        Root<Group> from = criteriaQuery.from(Group.class);
+        CriteriaQuery<Group> select = criteriaQuery.select(from).where(criteriaBuilder.equal(from.get("name"), name));
+        return session.createQuery(select).getSingleResult().getId();
     }
 
     public byte[] getPhoto(int id) {
-        return this.jdbcTemplate.queryForObject(SELECT_PHOTO_BY_ID, new Object[]{id}, (rs, rowNum) -> rs.getBytes("photo"));
+        Session session = sessionFactory.getCurrentSession();
+        Group group = session.get(Group.class, id);
+        return group.getPhoto();
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
-        int result = this.jdbcTemplate.query(SELECT_ROLE_MEMBER, new Object[]{groupId, memberId},
-                rs -> rs.next() ? rs.getInt("role") : 0);
-        return result != 0 ? GroupRole.values()[result] : GroupRole.UNKNOWN;
+        Session session = sessionFactory.getCurrentSession();
+        Group group = session.get(Group.class, groupId);
+        for (AccountInGroup accountInGroup : group.getAccounts()) {
+            if (accountInGroup.getUserMemberId() == memberId) {
+                return accountInGroup.getRole();
+            }
+        }
+        return GroupRole.UNKNOWN;
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
-        int result = this.jdbcTemplate.query(SELECT_STATUS_MEMBER, new Object[]{groupId, memberId},
-                rs -> rs.next() ? rs.getInt("status") : 0);
-        return result != 0 ? GroupStatus.values()[result] : GroupStatus.UNKNOWN;
+        Session session = sessionFactory.getCurrentSession();
+        Group group = session.get(Group.class, groupId);
+        for (AccountInGroup accountInGroup : group.getAccounts()) {
+            if (accountInGroup.getUserMemberId() == memberId) {
+                return accountInGroup.getStatus();
+            }
+        }
+        return GroupStatus.UNKNOWN;
     }
 
     @Transactional
     public boolean update(Group group) {
-        int result = this.jdbcTemplate.update(UPDATE_GROUP, group.getPhoto(), group.getInfo(), group.getId());
-        return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        Group currentGroup = session.get(Group.class, group.getId());
+        group.setAccounts(currentGroup.getAccounts());
+        session.merge(group);
+        return true;
     }
 
     @Transactional
     public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
-        int result = this.jdbcTemplate.update(INSERT_ACCOUNT_IN_GROUP, idGroup, idNewMember, GroupRole.USER.getStatus(),
-                GroupStatus.PENDING.getStatus());
-        return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        Group currentGroup = session.get(Group.class, idGroup);
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        accounts.add(new AccountInGroup(idNewMember, GroupRole.USER, GroupStatus.PENDING));
+        currentGroup.setAccounts(accounts);
+        session.merge(currentGroup);
+        return true;
     }
 
     @Transactional
     public boolean setStatusMemberInGroup(int idGroup, int member, GroupStatus status) {
-        int result = this.jdbcTemplate.update(UPDATE_STATUS_MEMBER, status.getStatus(), idGroup, member);
-        return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        Group currentGroup = session.get(Group.class, idGroup);
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        for (AccountInGroup accountInGroup : accounts) {
+            if (accountInGroup.getUserMemberId() == member) {
+                accountInGroup.setStatus(status);
+                break;
+            }
+        }
+        currentGroup.setAccounts(accounts);
+        session.merge(currentGroup);
+        return true;
     }
 
     @Transactional
     public boolean setRoleMemberInGroup(int idGroup, int member, GroupRole role) {
-        int result = this.jdbcTemplate.update(UPDATE_ROLE_MEMBER, role.getStatus(), idGroup, member);
-        return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        Group currentGroup = session.get(Group.class, idGroup);
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        for (AccountInGroup accountInGroup : accounts) {
+            if (accountInGroup.getUserMemberId() == member) {
+                accountInGroup.setRole(role);
+                break;
+            }
+        }
+        currentGroup.setAccounts(accounts);
+        session.merge(currentGroup);
+        return true;
     }
 
     @Transactional
     public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
-        int result = this.jdbcTemplate.update(REMOVE_ACCOUNT_IN_GROUP, idMemberToDelete, idGroup);
-        return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        Group currentGroup = session.get(Group.class, idGroup);
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+//        List<AccountInGroup> accountsResult = new ArrayList<>();
+//        for (AccountInGroup accountInGroup : accounts) {
+//            if (accountInGroup.getUserMemberId() != idMemberToDelete) {
+//                accountsResult.add(accountInGroup);
+//            }
+//        }
+//        currentGroup.setAccounts(accountsResult);
+
+        for (AccountInGroup accountInGroup : accounts) {
+            if (accountInGroup.getUserMemberId() == idMemberToDelete) {
+                accounts.remove(accountInGroup);
+                break;
+            }
+        }
+        currentGroup.setAccounts(accounts);
+        session.merge(currentGroup);
+        return true;
     }
 
     @Transactional
     public boolean remove(int idGroup) {
-        int result = this.jdbcTemplate.update(REMOVE_GROUP, idGroup);
-        return result != 0;
-    }
-
-    private Group createGroupFromResult(ResultSet resultSetGroup) throws SQLException {
-        Group group = new Group();
-        group.setId(resultSetGroup.getInt(COLUMN_GROUP_ID));
-        group.setName(resultSetGroup.getString("name"));
-        group.setPhoto(resultSetGroup.getBytes("photo"));
-        group.setCreateDate(resultSetGroup.getString("create_date"));
-        group.setInfo(resultSetGroup.getString("info"));
-        group.setUserCreatorId(resultSetGroup.getInt("user_creator_id"));
-        return group;
-    }
-
-    private Group createGroupMembersFromResult(Group group, ResultSet resultSetMembers) throws SQLException {
-        if (group == null) {
-            return null;
-        }
-        List<Integer> acceptedMembersId = new ArrayList<>();
-        List<Integer> pendingMembersId = new ArrayList<>();
-        List<Integer> adminsId = new ArrayList<>();
-        while (resultSetMembers.next()) {
-            int memberId = resultSetMembers.getInt("user_member_id");
-            int role = resultSetMembers.getInt("role");
-            int status = resultSetMembers.getInt("status");
-            if (status == GroupStatus.ACCEPTED.getStatus()) {
-                acceptedMembersId.add(memberId);
-            } else if (status == GroupStatus.PENDING.getStatus()) {
-                pendingMembersId.add(memberId);
-            }
-            if (role == GroupRole.ADMIN.getStatus()) {
-                adminsId.add(memberId);
-            }
-        }
-        group.setAcceptedMembersId(acceptedMembersId);
-        group.setPendingMembersId(pendingMembersId);
-        group.setAdminsId(adminsId);
-        return group;
+        Session session = sessionFactory.getCurrentSession();
+        Group group = session.get(Group.class, idGroup);
+        session.remove(group);
+        return true;
     }
 }

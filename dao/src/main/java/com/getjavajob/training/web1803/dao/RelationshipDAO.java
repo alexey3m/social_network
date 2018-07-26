@@ -41,7 +41,7 @@ public class RelationshipDAO {
 
     @Transactional
     public boolean createQueryFriend(int idFrom, int idTo, int actionId) {
-        int result = this.jdbcTemplate.update(CREATE_QUERY_FRIEND, idFrom, idTo, Status.PENDING.getStatus(), actionId);
+        int result = this.jdbcTemplate.update(CREATE_QUERY_FRIEND, idFrom, idTo, Status.PENDING, actionId);
         return result != 0;
     }
 
@@ -68,8 +68,8 @@ public class RelationshipDAO {
     }
 
     public List<Integer> getFriendsIdList(int id) {
-        return this.jdbcTemplate.query(GET_FRIENDS, new Object[]{id, id, Status.ACCEPTED.getStatus(), id, id,
-                Status.ACCEPTED.getStatus()}, rs -> {
+        return this.jdbcTemplate.query(GET_FRIENDS, new Object[]{id, id, Status.ACCEPTED, id, id,
+                Status.ACCEPTED}, rs -> {
             List<Integer> result = new ArrayList<>();
             while (rs.next()) {
                 int friendId = rs.getInt("id");
@@ -82,8 +82,8 @@ public class RelationshipDAO {
     }
 
     public List<Integer> getPendingRequestToId(int id) {
-        return this.jdbcTemplate.query(GET_PENDING_REQUEST_TO_ID, new Object[]{Status.PENDING.getStatus(), id, id, id,
-                Status.PENDING.getStatus(), id, id, id}, rs -> {
+        return this.jdbcTemplate.query(GET_PENDING_REQUEST_TO_ID, new Object[]{Status.PENDING, id, id, id,
+                Status.PENDING, id, id, id}, rs -> {
             List<Integer> result = new ArrayList<>();
             while (rs.next()) {
                 int friendId = rs.getInt("id");
@@ -97,7 +97,7 @@ public class RelationshipDAO {
 
     public List<Integer> getFriendRequestsFromId(int id) {
         return this.jdbcTemplate.query(GET_REQUESTS_FROM_ID,
-                new Object[]{id, Status.PENDING.getStatus(), id, id, Status.PENDING.getStatus(), id}, rs -> {
+                new Object[]{id, Status.PENDING, id, id, Status.PENDING, id}, rs -> {
                     List<Integer> result = new ArrayList<>();
                     while (rs.next()) {
                         int friendId = rs.getInt("id");

@@ -1,6 +1,7 @@
 package com.getjavajob.training.web1803.webapp.controllers;
 
 import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
@@ -57,17 +58,34 @@ public class GroupController {
         if (group == null) {
             return new ModelAndView("/");
         }
+        System.out.println("View group: " + group);
         GroupRole role = groupService.getRoleMemberInGroup(groupId, sessionId);
+        System.out.println("GroupRole role: class: " + role.getClass() + " value: " + role);
         Role globalRole = accountService.getRole(sessionId);
+        System.out.println("Role globalRole: class: " + globalRole.getClass() + " value: " + globalRole);
+
         GroupStatus status = groupService.getStatusMemberInGroup(groupId, sessionId);
         Account accountCreator = accountService.get(group.getUserCreatorId());
-        for (int id : group.getPendingMembersId()) {
-            pendingMembers.add(accountService.get(id));
+
+        for (AccountInGroup accountInGroup : group.getAccounts()) {
+            int userMemberId = accountInGroup.getUserMemberId();
+            if (accountInGroup.getStatus() == GroupStatus.PENDING) {
+                pendingMembers.add(accountService.get(userMemberId));
+            } else if (accountInGroup.getStatus() == GroupStatus.ACCEPTED) {
+                acceptedMembers.add(accountService.get(userMemberId));
+                acceptedMembersRole.put(userMemberId, groupService.getRoleMemberInGroup(groupId, userMemberId));
+            }
+
         }
-        for (int id : group.getAcceptedMembersId()) {
-            acceptedMembers.add(accountService.get(id));
-            acceptedMembersRole.put(id, groupService.getRoleMemberInGroup(groupId, id));
-        }
+
+//        for (int id : group.getPendingMembersId()) {
+//            pendingMembers.add(accountService.get(id));
+//        }
+//        for (int id : group.getAcceptedMembersId()) {
+//            acceptedMembers.add(accountService.get(id));
+//            acceptedMembersRole.put(id, groupService.getRoleMemberInGroup(groupId, id));
+//        }
+
         List<Message> messages = messageService.getAllByTypeAndAssignId(MessageType.GROUP_WALL, group.getId());
         for (Message item : messages) {
             int accountId = item.getUserCreatorId();
@@ -105,7 +123,7 @@ public class GroupController {
     @RequestMapping(value = "/viewGroups", method = RequestMethod.GET)
     public ModelAndView viewGroups(HttpSession session) {
         int sessionId = (Integer) session.getAttribute("id");
-        List<Group> myGroups = groupService.getAllById(sessionId);
+        List<Group> myGroups = groupService.getAllByUserId(sessionId);
         List<Group> allGroups = groupService.getAll();
         ModelAndView modelAndView = new ModelAndView("/jsp/groups.jsp");
         modelAndView.addObject("myGroups", myGroups);
@@ -163,6 +181,9 @@ public class GroupController {
         group.setUserCreatorId((Integer) session.getAttribute("id"));
         group.setCreateDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         group.setPhoto(currentGroupPhoto);
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(group.getUserCreatorId(), GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        group.setAccounts(accounts);
         try {
             boolean result = groupService.create(group);
             return result ? "redirect:viewGroup?id=" + groupService.getId(name) + "&infoMessage=regGroup" : "redirect:/jsp/create-group.jsp?infoMessage=smFalse";

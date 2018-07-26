@@ -3,136 +3,114 @@ package com.getjavajob.training.web1803.dao;
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
 public class AccountDAO {
-    private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM account";
-    private static final String SEARCH_ACCOUNTS_BY_STRING = "SELECT * FROM (SELECT *, CONCAT(first_name, " +
-            "IF (middle_name = '', '', CONCAT(' ', middle_name)), IF (last_name = '', '', CONCAT(' ', last_name))) AS full_name FROM account) p " +
-            "WHERE full_name LIKE ?";
-    private static final String SELECT_ACCOUNT_BY_ID = SELECT_ALL_ACCOUNTS + " WHERE id = ?";
-    private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM account WHERE id = ?";
-    private static final String SELECT_ACCOUNT_BY_EMAIL = SELECT_ALL_ACCOUNTS + " WHERE email = ?";
-    private static final String CHECK_EMAIL_AND_PASSWORD = SELECT_ACCOUNT_BY_EMAIL + " AND password = ?";
-    private static final String INSERT_NEW_ACCOUNT = "INSERT INTO account (email, password, first_name, last_name, middle_name, " +
-            "birthday, photo, skype, icq, reg_date, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_ACCOUNT = "UPDATE account SET password = ?, first_name = ?, last_name = ?, middle_name = ?, " +
-            "birthday = ?, photo = ?, skype = ?, icq = ? WHERE id = ?";
-    private static final String UPDATE_ACCOUNT_SET_ROLE = "UPDATE account SET role = ? WHERE id = ?";
-    private static final String COLUMN_ACCOUNT_ID = "id";
-    private static final String REMOVE_ACCOUNT = "DELETE FROM account WHERE id = ?";
-    private static final String SELECT_ROLE = "SELECT role FROM account WHERE id = ?";
 
-    private JdbcTemplate jdbcTemplate;
+    private SessionFactory sessionFactory;
 
     @Autowired
-    public AccountDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public AccountDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
-    @Transactional
+    public AccountDAO() {
+    }
+
     public boolean create(Account account) throws DaoNameException {
-        String email = account.getEmail().trim();
-        boolean emailExist = this.jdbcTemplate.query(SELECT_ACCOUNT_BY_EMAIL, new Object[]{email}, ResultSet::next);
-        if (!emailExist) {
-            int result = this.jdbcTemplate.update(INSERT_NEW_ACCOUNT, email, account.getPassword().trim(),
-                    account.getFirstName().trim(), account.getLastName().trim(), account.getMiddleName().trim(), account.getBirthday(),
-                    account.getPhoto(), account.getSkype(), account.getIcq(), account.getRegDate(), account.getRole().getStatus());
-            return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Account> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Account.class);
+        Root<Account> from = criteriaQueryCheckEmail.from(Account.class);
+        CriteriaQuery<Account> selectEmail = criteriaQueryCheckEmail.select(from).where(criteriaBuilder.equal(from.get("email"), account.getEmail()));
+        boolean emailNotExist = session.createQuery(selectEmail).getResultList().isEmpty();
+        if (emailNotExist) {
+            session.persist(account);
+            return true;
         } else {
-            throw new DaoNameException("Email \"" + email + "\" is already used.");
+            throw new DaoNameException("Email \"" + account.getEmail() + "\" is already used.");
         }
     }
 
     public Account get(int id) {
-        return this.jdbcTemplate.query(SELECT_ACCOUNT_BY_ID, new Object[]{id}, rs -> {
-            Account account = new Account();
-            if (rs.next()) {
-                account = createAccountFromResult(rs);
-            }
-            return account;
-        });
+        return sessionFactory.getCurrentSession().get(Account.class, id);
     }
 
     public byte[] getPhoto(int id) {
-        return this.jdbcTemplate.queryForObject(SELECT_PHOTO_BY_ID, new Object[]{id}, (rs, rowNum) -> rs.getBytes("photo"));
-    }
-
-    public int getId(String email) {
-        return this.jdbcTemplate.queryForObject(SELECT_ACCOUNT_BY_EMAIL, new Object[]{email},
-                (rs, rowNum) -> rs.getInt(COLUMN_ACCOUNT_ID));
+        return sessionFactory.getCurrentSession().get(Account.class, id).getPhoto();
     }
 
     public int loginAndGetId(String email, String password) throws DaoNameException {
-        int result = this.jdbcTemplate.query(CHECK_EMAIL_AND_PASSWORD, new Object[]{email, password},
-                rs -> rs.next() ? rs.getInt("id") : 0);
-        if (result == 0) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Account> criteriaQueryLogin = criteriaBuilder.createQuery(Account.class);
+        Root<Account> from = criteriaQueryLogin.from(Account.class);
+        CriteriaQuery<Account> selectOnEmail = criteriaQueryLogin.select(from).where(criteriaBuilder.and(
+                criteriaBuilder.equal(from.get("email"), email),
+                criteriaBuilder.equal(from.get("password"), password)));
+        Account account;
+        try {
+            account = session.createQuery(selectOnEmail).getSingleResult();
+        } catch (NoResultException e) {
             throw new DaoNameException("Email: \"" + email + "\" and password: " + password + " not found in database.");
-        } else {
-            return result;
         }
+        return account.getId();
     }
 
     public Role getRole(int accountId) {
-        return this.jdbcTemplate.queryForObject(SELECT_ROLE, new Object[]{accountId},
-                (rs, rowNum) -> Role.values()[rs.getInt("role")]);
+        return sessionFactory.getCurrentSession().get(Account.class, accountId).getRole();
     }
 
     public List<Account> searchByString(String search) {
         String lowerSearch = search.toLowerCase();
-        return this.jdbcTemplate.query(SEARCH_ACCOUNTS_BY_STRING, new Object[]{"%" + lowerSearch + "%"}, rs -> {
-            List<Account> result = new ArrayList<>();
-            while (rs.next()) {
-                result.add(createAccountFromResult(rs));
-            }
-            return result;
-        });
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Account> criteriaQuerySearch = criteriaBuilder.createQuery(Account.class);
+        Root<Account> from = criteriaQuerySearch.from(Account.class);
+        Expression<String> exp1 = criteriaBuilder.concat(from.get("firstName"), " ");
+        exp1 = criteriaBuilder.concat(exp1, from.get("lastName"));
+        exp1 = criteriaBuilder.concat(exp1, " ");
+        exp1 = criteriaBuilder.concat(exp1, from.get("middleName"));
+        Expression<String> exp2 = criteriaBuilder.concat(from.get("firstName"), " ");
+        exp2 = criteriaBuilder.concat(exp2, from.get("middleName"));
+        exp2 = criteriaBuilder.concat(exp2, " ");
+        exp2 = criteriaBuilder.concat(exp2, from.get("lastName"));
+        Predicate whereClause = criteriaBuilder.or(
+                criteriaBuilder.like(exp1, "%" + lowerSearch + "%"),
+                criteriaBuilder.like(exp2, "%" + lowerSearch + "%"));
+        CriteriaQuery<Account> selectEmail = criteriaQuerySearch.select(from).where(whereClause);
+        return session.createQuery(selectEmail).getResultList();
     }
 
     @Transactional
     public boolean update(Account account) {
-        String birthday = account.getBirthday();
-        int result = this.jdbcTemplate.update(UPDATE_ACCOUNT, account.getPassword(), account.getFirstName(),
-                account.getLastName(), account.getMiddleName(), birthday.equals("") ? null : birthday, account.getPhoto(),
-                account.getSkype(), account.getIcq(), account.getId());
-        return result != 0;
+        sessionFactory.getCurrentSession().merge(account);
+        return true;
     }
 
     @Transactional
     public boolean updateRole(int accountId, Role newRole) {
-        int result = this.jdbcTemplate.update(UPDATE_ACCOUNT_SET_ROLE, newRole.getStatus(), accountId);
-        return result != 0;
+        Session session = sessionFactory.getCurrentSession();
+        Account account = session.find(Account.class, accountId);
+        account.setRole(newRole);
+        session.merge(account);
+        return true;
     }
 
     @Transactional
     public boolean remove(int id) {
-        int result = this.jdbcTemplate.update(REMOVE_ACCOUNT, id);
-        return result != 0;
-    }
-
-    private Account createAccountFromResult(ResultSet resultSet) throws SQLException {
-        Account account = new Account();
-        account.setId(resultSet.getInt(COLUMN_ACCOUNT_ID));
-        account.setEmail(resultSet.getString("email"));
-        account.setPassword(resultSet.getString("password"));
-        account.setFirstName(resultSet.getString("first_name"));
-        account.setLastName(resultSet.getString("last_name"));
-        account.setMiddleName(resultSet.getString("middle_name"));
-        account.setBirthday(resultSet.getString("birthday"));
-        account.setPhoto(resultSet.getBytes("photo"));
-        account.setSkype(resultSet.getString("skype"));
-        account.setIcq(resultSet.getInt("icq"));
-        account.setRegDate(resultSet.getString("reg_date"));
-        account.setRole(Role.values()[resultSet.getInt("role")]);
-        return account;
+        Session session = sessionFactory.getCurrentSession();
+        Account account = session.find(Account.class, id);
+        session.remove(account);
+        return true;
     }
 }

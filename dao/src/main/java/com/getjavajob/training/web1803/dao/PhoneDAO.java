@@ -28,7 +28,7 @@ public class PhoneDAO {
     public boolean create(Account account) {
         int result = 0;
         for (Phone phone : account.getPhones()) {
-            result = this.jdbcTemplate.update(INSERT_PHONE, account.getId(), phone.getNumber(), phone.getPhoneType().getStatus());
+            result = this.jdbcTemplate.update(INSERT_PHONE, account.getId(), phone.getNumber(), phone.getPhoneType());
         }
         return result != 0;
     }
@@ -38,7 +38,7 @@ public class PhoneDAO {
                 rs -> {
                     List<Phone> result = new ArrayList<>();
                     while (rs.next()) {
-                        result.add(new Phone(rs.getString("phone_number"), PhoneType.values()[rs.getInt("phone_type")]));
+                        result.add(new Phone(rs.getInt("phone_id"), rs.getString("phone_number"), PhoneType.values()[rs.getInt("phone_type")]));
                     }
                     return result;
                 });

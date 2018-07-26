@@ -1,18 +1,11 @@
 package com.getjavajob.training.web1803.common.enums;
 
 public enum GroupStatus {
-    UNKNOWN(0),
-    PENDING(1),
-    ACCEPTED(2),
-    DECLINE(3);
+    UNKNOWN,
+    PENDING,
+    ACCEPTED,
+    DECLINE;
 
-    private int status;
-
-    GroupStatus(int status) {
-        this.status = status;
-    }
-
-    public int getStatus() {
-        return status;
+    GroupStatus() {
     }
 }

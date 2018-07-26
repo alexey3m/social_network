@@ -1,17 +1,10 @@
 package com.getjavajob.training.web1803.common.enums;
 
 public enum GroupRole {
-    UNKNOWN(0),
-    USER(1),
-    ADMIN(2);
+    UNKNOWN,
+    USER,
+    ADMIN;
 
-    private int status;
-
-    GroupRole(int status) {
-        this.status = status;
-    }
-
-    public int getStatus() {
-        return status;
+    GroupRole() {
     }
 }

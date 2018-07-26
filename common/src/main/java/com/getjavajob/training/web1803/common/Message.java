@@ -2,11 +2,15 @@ package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.MessageType;
 
+import javax.persistence.Enumerated;
 import java.util.Objects;
+
+import static javax.persistence.EnumType.STRING;
 
 public class Message {
     private int id;
     private int assignId;
+    @Enumerated(STRING)
     private MessageType type;
     private byte[] photo;
     private String photoFileName;

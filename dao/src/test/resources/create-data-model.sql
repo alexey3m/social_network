@@ -19,7 +19,7 @@ CREATE TABLE phone (
   account_id   INT         NOT NULL,
   phone_number VARCHAR(15) NOT NULL,
   phone_type   TINYINT     NOT NULL,
-  FOREIGN KEY (account_id) REFERENCES account (id)
+  FOREIGN KEY (account_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
@@ -29,13 +29,13 @@ CREATE TABLE relationship (
   user_two_id    INT     NOT NULL,
   status         TINYINT NOT NULL,
   action_user_id INT     NOT NULL,
-  FOREIGN KEY (user_one_id) REFERENCES account (id)
+  FOREIGN KEY (user_one_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  FOREIGN KEY (user_two_id) REFERENCES account (id)
+  FOREIGN KEY (user_two_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  FOREIGN KEY (action_user_id) REFERENCES account (id)
+  FOREIGN KEY (action_user_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   UNIQUE KEY (user_one_id, user_two_id)
@@ -50,7 +50,7 @@ CREATE TABLE soc_group (
   info            TEXT         NOT NULL,
   user_creator_id INT          NOT NULL,
   PRIMARY KEY (group_id),
-  FOREIGN KEY (user_creator_id) REFERENCES account (id)
+  FOREIGN KEY (user_creator_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
@@ -63,7 +63,7 @@ CREATE TABLE account_in_group (
   FOREIGN KEY (group_id) REFERENCES soc_group (group_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  FOREIGN KEY (user_member_id) REFERENCES account (id)
+  FOREIGN KEY (user_member_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
@@ -78,7 +78,7 @@ CREATE TABLE message (
   date_create     DATE    NOT NULL,
   user_creator_id INT     NOT NULL,
   PRIMARY KEY (message_id),
-  FOREIGN KEY (user_creator_id) REFERENCES account (id)
+  FOREIGN KEY (user_creator_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

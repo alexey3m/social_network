@@ -44,7 +44,7 @@ public class MessageDAO {
     public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName, String text,
                       String createDate, int userCreatorId) {
         int assignId = groupId != 0 ? groupId : accountId;
-        int result = this.jdbcTemplate.update(INSERT_NEW_MESSAGE, assignId, type.getStatus(), photo, photoFileName, text,
+        int result = this.jdbcTemplate.update(INSERT_NEW_MESSAGE, assignId, type, photo, photoFileName, text,
                 createDate, userCreatorId);
         return result == 0 ? 0 : this.jdbcTemplate.queryForObject(SELECT_LAST_INSERT_ID, (rs, rowNum) -> rs.getInt("id"));
     }
@@ -59,18 +59,18 @@ public class MessageDAO {
     }
 
     public List<Message> getAllByTypeAndAssignId(MessageType type, int assignId) {
-        return this.jdbcTemplate.query(SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE, new Object[]{assignId, type.getStatus()},
+        return this.jdbcTemplate.query(SELECT_MESSAGE_BY_ASSIGN_ID_AND_TYPE, new Object[]{assignId, type},
                 (rs, rowNum) -> createMessageFromResult(rs));
     }
 
     public List<Integer> getAllAccountIdDialog(int currentId) {
-        return this.jdbcTemplate.query(SELECT_ACCOUNT_ID_WITH_DIALOG, new Object[]{MessageType.ACCOUNT.getStatus(),
-                currentId, MessageType.ACCOUNT.getStatus(), currentId}, (rs, rowNum) -> rs.getInt("id"));
+        return this.jdbcTemplate.query(SELECT_ACCOUNT_ID_WITH_DIALOG, new Object[]{MessageType.ACCOUNT,
+                currentId, MessageType.ACCOUNT, currentId}, (rs, rowNum) -> rs.getInt("id"));
     }
 
     public Map<Integer, Integer> getAllByCurrentIdAssignId(int currentId, int assignId) {
-        return this.jdbcTemplate.query(SELECT_MESSAGE_ID_BY_CREATOR_ID, new Object[]{MessageType.ACCOUNT.getStatus(),
-                currentId, assignId, MessageType.ACCOUNT.getStatus(), assignId, currentId}, rs -> {
+        return this.jdbcTemplate.query(SELECT_MESSAGE_ID_BY_CREATOR_ID, new Object[]{MessageType.ACCOUNT,
+                currentId, assignId, MessageType.ACCOUNT, assignId, currentId}, rs -> {
             Map<Integer, Integer> messages = new HashMap<>();
             while (rs.next()) {
                 messages.put(rs.getInt("message_id"), rs.getInt("user_creator_id"));

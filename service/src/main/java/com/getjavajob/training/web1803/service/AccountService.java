@@ -3,39 +3,35 @@ package com.getjavajob.training.web1803.service;
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.AccountDAO;
-import com.getjavajob.training.web1803.dao.PhoneDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class AccountService {
     private AccountDAO accountDAO;
-    private PhoneDAO phoneDAO;
+
 
     @Autowired
-    public AccountService(AccountDAO accountDAO, PhoneDAO phoneDAO) {
+    public AccountService(AccountDAO accountDAO) {
         this.accountDAO = accountDAO;
-        this.phoneDAO = phoneDAO;
     }
 
+    @Transactional
     public boolean create(Account account) throws DaoNameException {
         String birthday = account.getBirthday();
         account.setBirthday(birthday.length() == 0 ? null : birthday);
+        System.out.println("before dao " + account);
         accountDAO.create(account);
-        account.setId(accountDAO.getId(account.getEmail()));
-        phoneDAO.create(account);
         return true;
     }
 
     public Account get(int id) {
-        Account result = accountDAO.get(id);
-        if (result != null) {
-            result.setPhones(phoneDAO.getAll(id));
-        }
-        return result;
+        return accountDAO.get(id);
     }
 
     public byte[] getPhoto(int id) {
@@ -52,11 +48,7 @@ public class AccountService {
     }
 
     public List<Account> searchByString(String search) {
-        List<Account> result = accountDAO.searchByString(search);
-        for (Account account : result) {
-            account.setPhones(phoneDAO.getAll(account.getId()));
-        }
-        return result;
+        return accountDAO.searchByString(search);
     }
 
     public Role getRole(int accountId) {
@@ -64,8 +56,13 @@ public class AccountService {
     }
 
     public boolean update(Account account) {
+        Account currentAccount = accountDAO.get(account.getId());
+        String birthday = account.getBirthday();
+        account.setBirthday(birthday.equals("") ? null : birthday);
+        account.setRole(currentAccount.getRole());
+        account.setRegDate(currentAccount.getRegDate());
+        System.out.println("before update "+account);
         accountDAO.update(account);
-        phoneDAO.update(account);
         return true;
     }
 
