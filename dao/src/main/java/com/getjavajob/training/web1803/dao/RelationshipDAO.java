@@ -1,111 +1,193 @@
 package com.getjavajob.training.web1803.dao;
 
+import com.getjavajob.training.web1803.common.Relationship;
 import com.getjavajob.training.web1803.common.enums.Status;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
+@Transactional
 public class RelationshipDAO {
-    private static final String CREATE_QUERY_FRIEND = "INSERT INTO relationship (user_one_id, user_two_id, status, action_user_id) " +
-            "VALUES (?, ?, ?, ?)";
-    private static final String UPDATE_QUERY_FRIEND = "UPDATE relationship SET status = ?, action_user_id = ? " +
-            "WHERE user_one_id = ? AND user_two_id = ?";
-    private static final String REMOVE_FRIEND = "DELETE FROM relationship WHERE user_one_id = ? AND user_two_id = ?";
-    private static final String SELECT_STATUS = "SELECT status FROM relationship WHERE user_one_id = ? AND user_two_id = ?";
-    private static final String SELECT_STATUS_TO_ME = "SELECT status FROM relationship WHERE user_one_id = ? AND user_two_id = ? " +
-            "AND action_user_id = ?";
-    private static final String GET_FRIENDS = "SELECT user_one_id AS id FROM relationship WHERE (user_one_id = ? OR user_two_id = ?) " +
-            "AND status = ? " +
-            "UNION " +
-            "SELECT user_two_id FROM relationship WHERE (user_one_id = ? OR user_two_id = ?) AND status = ?";
-    private static final String GET_PENDING_REQUEST_TO_ID = "SELECT user_one_id AS id FROM relationship WHERE status = ? " +
-            "AND action_user_id <> ? AND (user_one_id = ? OR user_two_id = ?) " +
-            "UNION " +
-            "SELECT user_two_id FROM relationship WHERE status = ? AND action_user_id <> ? AND (user_one_id = ? OR user_two_id = ?)";
-    private static final String GET_REQUESTS_FROM_ID = "SELECT user_one_id AS id FROM relationship WHERE user_two_id = ? " +
-            "AND status = ? AND action_user_id = ? " +
-            "UNION " +
-            "SELECT user_two_id FROM relationship WHERE user_one_id = ? AND status = ? AND action_user_id = ?";
 
-    private JdbcTemplate jdbcTemplate;
+    private SessionFactory sessionFactory;
 
     @Autowired
-    public RelationshipDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public RelationshipDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    public RelationshipDAO() {
     }
 
     @Transactional
-    public boolean createQueryFriend(int idFrom, int idTo, int actionId) {
-        int result = this.jdbcTemplate.update(CREATE_QUERY_FRIEND, idFrom, idTo, Status.PENDING, actionId);
-        return result != 0;
+    public boolean createQueryFriend(Relationship relationship) {
+        sessionFactory.getCurrentSession().persist(relationship);
+        return true;
     }
 
     @Transactional
-    public boolean updateQueryFriend(int idFrom, int idTo, int status, int actionId) {
-        int result = this.jdbcTemplate.update(UPDATE_QUERY_FRIEND, status, actionId, idFrom, idTo);
-        return result != 0;
+    public boolean updateQueryFriend(Relationship relationship) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> select = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("userOneId"), relationship.getUserOneId()),
+                        criteriaBuilder.equal(from.get("userTwoId"), relationship.getUserTwoId())));
+        Relationship currentRel = session.createQuery(select).getSingleResult();
+        currentRel.setType(relationship.getType());
+        session.merge(currentRel);
+        return true;
     }
 
     @Transactional
-    public boolean removeFriend(int idFrom, int idTo) {
-        int result = this.jdbcTemplate.update(REMOVE_FRIEND, idFrom, idTo);
-        return result != 0;
+    public boolean removeFriend(Relationship relationship) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> select = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("userOneId"), relationship.getUserOneId()),
+                        criteriaBuilder.equal(from.get("userTwoId"), relationship.getUserTwoId())));
+        Relationship currentRel = session.createQuery(select).getSingleResult();
+        session.remove(currentRel);
+        return true;
     }
 
-    public Status getStatus(int idFrom, int idTo) {
-        return this.jdbcTemplate.query(SELECT_STATUS, new Object[]{idFrom, idTo},
-                rs -> rs.next() ? Status.values()[rs.getInt("status") + 1] : Status.UNKNOWN);
+    public Status getStatus(Relationship relationship) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> select = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("userOneId"), relationship.getUserOneId()),
+                        criteriaBuilder.equal(from.get("userTwoId"), relationship.getUserTwoId())));
+        Relationship currentRel;
+        try {
+            currentRel = session.createQuery(select).getSingleResult();
+        } catch (NoResultException e) {
+            return Status.UNKNOWN;
+        }
+        return currentRel.getType();
     }
 
-    public Status getPendingRequestToMe(int idFrom, int idTo, int actionId) {
-        return this.jdbcTemplate.query(SELECT_STATUS_TO_ME, new Object[]{idFrom, idTo, actionId},
-                rs -> rs.next() ? Status.values()[rs.getInt("status") + 1] : Status.UNKNOWN);
+    public Status getPendingRequestToMe(Relationship relationship) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> select = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("userOneId"), relationship.getUserOneId()),
+                        criteriaBuilder.equal(from.get("userTwoId"), relationship.getUserTwoId()),
+                        criteriaBuilder.equal(from.get("actionUserId"), relationship.getActionUserId())));
+        Relationship currentRel;
+        try {
+            currentRel = session.createQuery(select).getSingleResult();
+        } catch (NoResultException e) {
+            return Status.UNKNOWN;
+        }
+        return currentRel.getType();
     }
 
     public List<Integer> getFriendsIdList(int id) {
-        return this.jdbcTemplate.query(GET_FRIENDS, new Object[]{id, id, Status.ACCEPTED, id, id,
-                Status.ACCEPTED}, rs -> {
-            List<Integer> result = new ArrayList<>();
-            while (rs.next()) {
-                int friendId = rs.getInt("id");
-                if (friendId != id) {
-                    result.add(friendId);
-                }
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> firstSelect = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.or(
+                                criteriaBuilder.equal(from.get("userOneId"), id),
+                                criteriaBuilder.equal(from.get("userTwoId"), id)),
+                        criteriaBuilder.equal(from.get("type"), Status.ACCEPTED)));
+        List<Relationship> relationshipList = session.createQuery(firstSelect).getResultList();
+        Set<Integer> result = new HashSet<>();
+        for (Relationship relationship : relationshipList) {
+            int userOneId = relationship.getUserOneId();
+            if (userOneId != id) {
+                result.add(userOneId);
             }
-            return result;
-        });
+            int userTwoId = relationship.getUserTwoId();
+            if (userTwoId != id) {
+                result.add(userTwoId);
+            }
+        }
+        return new ArrayList<>(result);
     }
 
     public List<Integer> getPendingRequestToId(int id) {
-        return this.jdbcTemplate.query(GET_PENDING_REQUEST_TO_ID, new Object[]{Status.PENDING, id, id, id,
-                Status.PENDING, id, id, id}, rs -> {
-            List<Integer> result = new ArrayList<>();
-            while (rs.next()) {
-                int friendId = rs.getInt("id");
-                if (friendId != id) {
-                    result.add(friendId);
-                }
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> firstSelect = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("type"), Status.PENDING),
+                        criteriaBuilder.notEqual(from.get("actionUserId"), id),
+                        criteriaBuilder.or(
+                                criteriaBuilder.equal(from.get("userOneId"), id),
+                                criteriaBuilder.equal(from.get("userTwoId"), id))));
+        List<Relationship> relationshipList = session.createQuery(firstSelect).getResultList();
+        Set<Integer> result = new HashSet<>();
+        for (Relationship relationship : relationshipList) {
+            int userOneId = relationship.getUserOneId();
+            if (userOneId != id) {
+                result.add(userOneId);
             }
-            return result;
-        });
+            int userTwoId = relationship.getUserTwoId();
+            if (userTwoId != id) {
+                result.add(userTwoId);
+            }
+        }
+        return new ArrayList<>(result);
     }
 
     public List<Integer> getFriendRequestsFromId(int id) {
-        return this.jdbcTemplate.query(GET_REQUESTS_FROM_ID,
-                new Object[]{id, Status.PENDING, id, id, Status.PENDING, id}, rs -> {
-                    List<Integer> result = new ArrayList<>();
-                    while (rs.next()) {
-                        int friendId = rs.getInt("id");
-                        if (friendId != id) {
-                            result.add(friendId);
-                        }
-                    }
-                    return result;
-                });
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
+        Root<Relationship> from = criteriaQuery.from(Relationship.class);
+        CriteriaQuery<Relationship> firstSelect = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("userTwoId"), id),
+                        criteriaBuilder.equal(from.get("type"), Status.PENDING),
+                        criteriaBuilder.equal(from.get("actionUserId"), id)));
+        List<Relationship> firstResult = session.createQuery(firstSelect).getResultList();
+        CriteriaQuery<Relationship> secondSelect = criteriaQuery.select(from).where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(from.get("userOneId"), id),
+                        criteriaBuilder.equal(from.get("type"), Status.PENDING),
+                        criteriaBuilder.equal(from.get("actionUserId"), id)));
+        List<Relationship> secondResult = session.createQuery(secondSelect).getResultList();
+        Set<Integer> result = new HashSet<>();
+        for (Relationship relationship : firstResult) {
+            int userOneId = relationship.getUserOneId();
+            if (userOneId != id) {
+                result.add(userOneId);
+            }
+        }
+        for (Relationship relationship : secondResult) {
+            int userTwoId = relationship.getUserTwoId();
+            if (userTwoId != id) {
+                result.add(userTwoId);
+            }
+        }
+        return new ArrayList<>(result);
     }
 }

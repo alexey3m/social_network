@@ -14,6 +14,7 @@ import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
+@Transactional
 public class AccountDAO {
 
     private SessionFactory sessionFactory;

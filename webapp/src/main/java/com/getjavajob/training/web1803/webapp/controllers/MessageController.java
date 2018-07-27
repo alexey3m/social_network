@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -104,7 +103,7 @@ public class MessageController {
                                 @RequestParam("action") String action,
                                 @RequestParam(required = false, name = "inputNewMessage") String text,
                                 @RequestParam(required = false, name = "messageId") Integer messageId,
-                                @RequestParam(required = false, name = "uploadImage") MultipartFile filePart,
+                                @RequestParam(required = false, name = "uploadImage") MultipartFile file,
                                 HttpSession session) {
         int groupId = 0;
         int accountId = 0;
@@ -131,18 +130,16 @@ public class MessageController {
                 break;
         }
         if (action.equals("new")) {
-            InputStream photo = null;
-            String photoFileName = null;
-            if (!filePart.isEmpty()) {
+            byte[] photo = new byte[0];
+            if (!file.isEmpty()) {
                 try {
-                    photo = filePart.getInputStream();
+                    photo = file.getBytes();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                photoFileName = filePart.getOriginalFilename();
             }
             int currentId = (Integer) session.getAttribute("id");
-            messageService.create(groupId, accountId, type, photo, photoFileName, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId);
+            messageService.create(new Message(groupId, accountId, type, photo, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId));
         } else if (action.equals("remove")) {
             messageService.remove(messageId);
         }

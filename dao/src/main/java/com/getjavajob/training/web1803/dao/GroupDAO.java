@@ -17,31 +17,6 @@ import java.util.List;
 @Repository
 @Transactional
 public class GroupDAO {
-    private static final String SELECT_ALL_GROUPS = "SELECT * FROM soc_group";
-    private static final String SELECT_GROUP_BY_NAME = SELECT_ALL_GROUPS + " WHERE name = ?";
-    private static final String INSERT_GROUP = "INSERT INTO soc_group (name, photo, create_date, " +
-            "info, user_creator_id) VALUES(?, ?, ?, ?, ?)";
-    private static final String INSERT_ACCOUNT_IN_GROUP1 = "INSERT INTO account_in_group (group_id, user_member_id, role, status) " +
-            "VALUES (?, ?, ?, ?)";
-    private static final String INSERT_ACCOUNT_IN_GROUP = "INSERT INTO account_in_group (group_id, user_member_id, role, status) " +
-            "VALUES (?, ?, ?, ?)";
-    private static final String SELECT_GROUPS_ID_BY_NAME = "SELECT group_id FROM soc_group WHERE name = ?";
-    private static final String SELECT_GROUPS_ID_BY_USER_MEMBER_ID = "SELECT * FROM soc_group WHERE group_id IN " +
-            "(SELECT group_id FROM account_in_group WHERE user_member_id = ? AND status = 2)";
-    private static final String SELECT_ROLE_MEMBER = "SELECT role FROM account_in_group WHERE group_id = ? AND user_member_id = ?";
-    private static final String SELECT_STATUS_MEMBER = "SELECT status FROM account_in_group WHERE group_id = ? AND user_member_id = ?";
-    private static final String COLUMN_GROUP_ID = "group_id";
-    private static final String SELECT_GROUP_BY_ID = SELECT_ALL_GROUPS + " WHERE group_id = ?";
-    private static final String SELECT_USER_MEMBER_ID_FROM_ACCOUNT_IN_GROUP = "SELECT * FROM account_in_group WHERE group_id = ?";
-    private static final String UPDATE_GROUP = "UPDATE soc_group SET photo = ?, info = ? WHERE group_id = ?";
-    private static final String UPDATE_STATUS_MEMBER = "UPDATE account_in_group SET status = ? WHERE group_id = ? AND user_member_id = ?";
-    private static final String UPDATE_ROLE_MEMBER = "UPDATE account_in_group SET role = ? WHERE group_id = ? AND user_member_id = ?";
-    private static final String REMOVE_ACCOUNT_IN_GROUP = "DELETE FROM account_in_group WHERE user_member_id = ? AND group_id = ?";
-    private static final String SELECT_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() AS id";
-    private static final String REMOVE_GROUP = "DELETE FROM soc_group WHERE group_id = ?";
-    private static final String SEARCH_GROUPS_BY_STRING = "SELECT * FROM soc_group WHERE LOWER(name) LIKE ?";
-    private static final String SELECT_PHOTO_BY_ID = "SELECT photo FROM soc_group WHERE group_id = ?";
-
 
     private SessionFactory sessionFactory;
 
@@ -201,14 +176,6 @@ public class GroupDAO {
         Session session = sessionFactory.getCurrentSession();
         Group currentGroup = session.get(Group.class, idGroup);
         List<AccountInGroup> accounts = currentGroup.getAccounts();
-//        List<AccountInGroup> accountsResult = new ArrayList<>();
-//        for (AccountInGroup accountInGroup : accounts) {
-//            if (accountInGroup.getUserMemberId() != idMemberToDelete) {
-//                accountsResult.add(accountInGroup);
-//            }
-//        }
-//        currentGroup.setAccounts(accountsResult);
-
         for (AccountInGroup accountInGroup : accounts) {
             if (accountInGroup.getUserMemberId() == idMemberToDelete) {
                 accounts.remove(accountInGroup);

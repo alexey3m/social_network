@@ -26,13 +26,6 @@ public class Group implements Serializable {
     @JoinColumn(name = "group_id", nullable = false)
     private List<AccountInGroup> accounts = new ArrayList<>();
 
-//    @Transient
-//    private List<Integer> acceptedMembersId;
-//    @Transient
-//    private List<Integer> pendingMembersId;
-//    @Transient
-//    private List<Integer> adminsId;
-
     public Group(int id, String name, byte[] photo, String createDate, String info, int userCreatorId, List<AccountInGroup> accounts) {
         this.id = id;
         this.name = name;

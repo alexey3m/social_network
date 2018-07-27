@@ -5,6 +5,8 @@
         <class>com.getjavajob.training.web1803.common.Phone</class>
         <class>com.getjavajob.training.web1803.common.Group</class>
         <class>com.getjavajob.training.web1803.common.AccountInGroup</class>
+        <class>com.getjavajob.training.web1803.common.Message</class>
+        <class>com.getjavajob.training.web1803.common.Relationship</class>
     </persistence-unit>
 
 </persistence>

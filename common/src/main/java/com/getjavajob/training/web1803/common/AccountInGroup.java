@@ -34,6 +34,15 @@ public class AccountInGroup implements Serializable {
         this.status = status;
     }
 
+    public AccountInGroup(int id, int userMemberId, GroupRole role, GroupStatus status) {
+        this.id = id;
+        this.userMemberId = userMemberId;
+        this.role = role;
+        this.status = status;
+    }
+
+
+
     public AccountInGroup() {
     }
 
