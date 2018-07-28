@@ -36,6 +36,7 @@ import java.util.*;
 public class AccountController {
     private static final String ACCOUNT = "account";
     private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
+    private static final String MESSAGE_ENCODE = "Encode bytes to UTF-8 end with error! Exception: ";
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
     private static final int BUFFER_SIZE = 4096;
 
@@ -80,7 +81,7 @@ public class AccountController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+                logger.error(MESSAGE_ENCODE + e);
             }
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/account.jsp");
@@ -174,7 +175,7 @@ public class AccountController {
                 try {
                     encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+                    logger.error(MESSAGE_ENCODE + e);
                 }
             }
             ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
@@ -223,18 +224,12 @@ public class AccountController {
         } catch (JAXBException e) {
             logger.error("Error with JAXB instance. Exception: " + e);
         }
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            logger.error("FileNotFoundException: " + e);
-        }
-        response.setContentType("application/xml");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-        response.setContentType("application/xml");
-        response.setContentLength((int) file.length());
-        byte[] buffer = new byte[BUFFER_SIZE];
-        try {
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            response.setContentType("application/xml");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+            response.setContentType("application/xml");
+            response.setContentLength((int) file.length());
+            byte[] buffer = new byte[BUFFER_SIZE];
             OutputStream outStream = response.getOutputStream();
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -242,6 +237,8 @@ public class AccountController {
             }
             inputStream.close();
             outStream.close();
+        } catch (FileNotFoundException e) {
+            logger.error("FileNotFoundException: " + e);
         } catch (IOException e) {
             logger.error("IOException: " + e);
         }
@@ -270,7 +267,7 @@ public class AccountController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+                logger.error(MESSAGE_ENCODE + e);
             }
         }
         account.setRole(accountService.getRole(account.getId()));
