@@ -25,7 +25,6 @@ public class AccountService {
     public boolean create(Account account) throws DaoNameException {
         String birthday = account.getBirthday();
         account.setBirthday(birthday.length() == 0 ? null : birthday);
-        System.out.println("before dao " + account);
         accountDAO.create(account);
         return true;
     }
@@ -61,7 +60,6 @@ public class AccountService {
         account.setBirthday(birthday.equals("") ? null : birthday);
         account.setRole(currentAccount.getRole());
         account.setRegDate(currentAccount.getRegDate());
-        System.out.println("before update "+account);
         accountDAO.update(account);
         return true;
     }

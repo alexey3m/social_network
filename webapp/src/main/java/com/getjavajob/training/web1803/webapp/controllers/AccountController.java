@@ -21,9 +21,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -32,6 +37,7 @@ public class AccountController {
     private static final String ACCOUNT = "account";
     private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+    private static final int BUFFER_SIZE = 4096;
 
     private AccountService accountService;
     private RelationshipService relationshipService;
@@ -174,7 +180,6 @@ public class AccountController {
             ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
             modelAndView.addObject(ACCOUNT, account);
             modelAndView.addObject("encodedPhoto", encodedPhoto);
-            modelAndView.addObject("phoneTypes", PhoneType.values());
             return modelAndView;
         }
     }
@@ -202,5 +207,76 @@ public class AccountController {
     @RequestMapping(value = "/page404")
     public String updateRole() {
         return "/jsp/404page.jsp";
+    }
+
+    @RequestMapping(value = "/accountToXml")
+    public void accountToXml(@RequestParam("id") int id, HttpServletRequest request, HttpServletResponse response) {
+        logger.info("In accountToXml method");
+        Account account = accountService.get(id);
+        File file = new File("account.xml");
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Account.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "utf-8");
+            marshaller.marshal(account, file);
+        } catch (JAXBException e) {
+            logger.error("Error with JAXB instance. Exception: " + e);
+        }
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            logger.error("FileNotFoundException: " + e);
+        }
+        response.setContentType("application/xml");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+        response.setContentType("application/xml");
+        response.setContentLength((int) file.length());
+        byte[] buffer = new byte[BUFFER_SIZE];
+        try {
+            OutputStream outStream = response.getOutputStream();
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+            inputStream.close();
+            outStream.close();
+        } catch (IOException e) {
+            logger.error("IOException: " + e);
+        }
+    }
+
+    @RequestMapping(value = "/updateAccountPageFromXml", method = RequestMethod.POST)
+    public ModelAndView updateAccountPageFromXml(@RequestParam("uploadXml") MultipartFile file,
+                                                 HttpSession session) {
+        logger.info("In updateAccountPage method");
+        Account account = new Account();
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Account.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            File fileToUpdate = new File(file.getOriginalFilename());
+            file.transferTo(fileToUpdate);
+            account = (Account) unmarshaller.unmarshal(fileToUpdate);
+        } catch (JAXBException e) {
+            logger.error("Error with JAXB instance. Exception: " + e);
+        } catch (IOException e) {
+            logger.error("Error with transfer to file. Exception: " + e);
+        }
+        String encodedPhoto = "";
+        byte[] photo = accountService.getPhoto(account.getId());
+        if (photo != null) {
+            byte[] encodedPhotoBytes = Base64.getEncoder().encode(photo);
+            try {
+                encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+            }
+        }
+        account.setRole(accountService.getRole(account.getId()));
+        ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
+        modelAndView.addObject(ACCOUNT, account);
+        modelAndView.addObject("encodedPhoto", encodedPhoto);
+        return modelAndView;
     }
 }

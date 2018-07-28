@@ -23,34 +23,33 @@ public class RelationshipService {
     }
 
     public boolean addQueryFriend(int idFrom, int idTo) {
-
-        return idFrom < idTo ? relationshipDAO.createQueryFriend(new Relationship(idFrom, idTo, Status.PENDING,idFrom)) :
-                relationshipDAO.createQueryFriend(new Relationship(idTo, idFrom, Status.PENDING,idFrom));
+        return idFrom < idTo ? relationshipDAO.createQueryFriend(new Relationship(idFrom, idTo, Status.PENDING, idFrom)) :
+                relationshipDAO.createQueryFriend(new Relationship(idTo, idFrom, Status.PENDING, idFrom));
     }
 
     public boolean acceptFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.updateQueryFriend(new Relationship(idFrom, idTo, Status.ACCEPTED,idFrom)) :
-                relationshipDAO.updateQueryFriend(new Relationship(idTo, idFrom, Status.ACCEPTED,idFrom));
+        return idFrom < idTo ? relationshipDAO.updateQueryFriend(new Relationship(idFrom, idTo, Status.ACCEPTED, idFrom)) :
+                relationshipDAO.updateQueryFriend(new Relationship(idTo, idFrom, Status.ACCEPTED, idFrom));
     }
 
     public boolean declineFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.updateQueryFriend(new Relationship(idFrom, idTo, Status.DECLINE,idFrom)) :
-                relationshipDAO.updateQueryFriend(new Relationship(idTo, idFrom, Status.DECLINE,idFrom));
+        return idFrom < idTo ? relationshipDAO.updateQueryFriend(new Relationship(idFrom, idTo, Status.DECLINE, idFrom)) :
+                relationshipDAO.updateQueryFriend(new Relationship(idTo, idFrom, Status.DECLINE, idFrom));
     }
 
     public boolean removeFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.removeFriend(new Relationship(idFrom, idTo, null,0)) :
-                relationshipDAO.removeFriend(new Relationship(idTo, idFrom, null,0));
+        return idFrom < idTo ? relationshipDAO.removeFriend(new Relationship(idFrom, idTo, null, 0)) :
+                relationshipDAO.removeFriend(new Relationship(idTo, idFrom, null, 0));
     }
 
     public Status getStatus(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.getStatus(new Relationship(idFrom, idTo, null,0)) :
-                relationshipDAO.getStatus(new Relationship(idTo, idFrom, null,0));
+        return idFrom < idTo ? relationshipDAO.getStatus(new Relationship(idFrom, idTo, null, 0)) :
+                relationshipDAO.getStatus(new Relationship(idTo, idFrom, null, 0));
     }
 
     public Status getPendingRequestToMe(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.getPendingRequestToMe(new Relationship(idFrom, idTo, null,idFrom)) :
-                relationshipDAO.getPendingRequestToMe(new Relationship(idTo, idFrom, null,idFrom));
+        return idFrom < idTo ? relationshipDAO.getPendingRequestToMe(new Relationship(idFrom, idTo, null, idFrom)) :
+                relationshipDAO.getPendingRequestToMe(new Relationship(idTo, idFrom, null, idFrom));
     }
 
     public List<Account> getAcceptedFriendsList(int id) {

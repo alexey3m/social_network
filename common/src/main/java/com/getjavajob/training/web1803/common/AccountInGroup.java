@@ -17,7 +17,7 @@ public class AccountInGroup implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private int id;
-//    @Column(name = "group_id", nullable = false)
+    //    @Column(name = "group_id", nullable = false)
 //    private int groupId;
     @Column(name = "user_member_id", nullable = false)
     private int userMemberId;
@@ -40,8 +40,6 @@ public class AccountInGroup implements Serializable {
         this.role = role;
         this.status = status;
     }
-
-
 
     public AccountInGroup() {
     }

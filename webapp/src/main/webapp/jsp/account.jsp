@@ -156,6 +156,11 @@
                         </a>
                     </div>
                 </c:if>
+                <div class="control-panel">
+                    <a href="accountToXml?id=${id}">
+                        <button type="submit" class="btn btn-primary">Скачать аккаунт в XML</button>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="col-md-9">

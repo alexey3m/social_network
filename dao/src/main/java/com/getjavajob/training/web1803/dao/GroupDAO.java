@@ -73,8 +73,8 @@ public class GroupDAO {
         Root<Group> from = criteriaQuery.from(Group.class);
         Join<Group, AccountInGroup> accountInGroupJoin = from.join("accounts", JoinType.INNER);
         criteriaQuery.select(from).distinct(true).where(criteriaBuilder.and(
-                        criteriaBuilder.equal(accountInGroupJoin.get("userMemberId"), userId),
-                        criteriaBuilder.equal(accountInGroupJoin.get("status"), GroupStatus.ACCEPTED)));
+                criteriaBuilder.equal(accountInGroupJoin.get("userMemberId"), userId),
+                criteriaBuilder.equal(accountInGroupJoin.get("status"), GroupStatus.ACCEPTED)));
         return session.createQuery(criteriaQuery).getResultList();
     }
 
