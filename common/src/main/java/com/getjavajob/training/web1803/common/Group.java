@@ -1,30 +1,39 @@
 package com.getjavajob.training.web1803.common;
 
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class Group {
+@Entity
+@Table(name = "soc_group")
+public class Group implements Serializable {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "group_id")
     private int id;
     private String name;
     private byte[] photo;
+    @Column(name = "create_date")
     private String createDate;
     private String info;
+    @Column(name = "user_creator_id")
     private int userCreatorId;
-    private List<Integer> acceptedMembersId;
-    private List<Integer> pendingMembersId;
-    private List<Integer> adminsId;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "group_id", nullable = false)
+    private List<AccountInGroup> accounts = new ArrayList<>();
 
-    public Group(int id, String name, byte[] photo, String createDate, String info, int userCreatorId,
-                 List<Integer> acceptedMembersId, List<Integer> pendingMembersId, List<Integer> adminsId) {
+    public Group(int id, String name, byte[] photo, String createDate, String info, int userCreatorId, List<AccountInGroup> accounts) {
         this.id = id;
         this.name = name;
         this.photo = photo;
         this.createDate = createDate;
         this.info = info;
         this.userCreatorId = userCreatorId;
-        this.acceptedMembersId = acceptedMembersId;
-        this.pendingMembersId = pendingMembersId;
-        this.adminsId = adminsId;
+        this.accounts = accounts;
     }
 
     public Group() {
@@ -78,28 +87,59 @@ public class Group {
         this.userCreatorId = userCreatorId;
     }
 
-    public List<Integer> getAcceptedMembersId() {
-        return acceptedMembersId;
+    public List<AccountInGroup> getAccounts() {
+        return accounts;
     }
 
-    public void setAcceptedMembersId(List<Integer> acceptedMembersId) {
-        this.acceptedMembersId = acceptedMembersId;
+    public void setAccounts(List<AccountInGroup> accounts) {
+        this.accounts = accounts;
     }
 
-    public List<Integer> getAdminsId() {
-        return adminsId;
+    //    public List<Integer> getAcceptedMembersId() {
+//        return acceptedMembersId;
+//    }
+//
+//    public void setAcceptedMembersId(List<Integer> acceptedMembersId) {
+//        this.acceptedMembersId = acceptedMembersId;
+//    }
+//
+//    public List<Integer> getAdminsId() {
+//        return adminsId;
+//    }
+//
+//    public void setAdminsId(List<Integer> adminsId) {
+//        this.adminsId = adminsId;
+//    }
+//
+//    public List<Integer> getPendingMembersId() {
+//        return pendingMembersId;
+//    }
+//
+//    public void setPendingMembersId(List<Integer> pendingMembersId) {
+//        this.pendingMembersId = pendingMembersId;
+//    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return id == group.id &&
+                userCreatorId == group.userCreatorId &&
+                Objects.equals(name, group.name) &&
+                Arrays.equals(photo, group.photo) &&
+                Objects.equals(createDate, group.createDate) &&
+                Objects.equals(info, group.info) &&
+                Objects.equals(accounts, group.accounts);
     }
 
-    public void setAdminsId(List<Integer> adminsId) {
-        this.adminsId = adminsId;
-    }
+    @Override
+    public int hashCode() {
 
-    public List<Integer> getPendingMembersId() {
-        return pendingMembersId;
-    }
-
-    public void setPendingMembersId(List<Integer> pendingMembersId) {
-        this.pendingMembersId = pendingMembersId;
+        int result = Objects.hash(id, name, createDate, info, userCreatorId, accounts);
+        result = 31 * result + Arrays.hashCode(photo);
+        return result;
     }
 
     @Override
@@ -111,29 +151,7 @@ public class Group {
                 ", createDate='" + createDate + '\'' +
                 ", info='" + info + '\'' +
                 ", userCreatorId=" + userCreatorId +
-                ", acceptedMembersId=" + acceptedMembersId +
-                ", pendingMembersId=" + pendingMembersId +
-                ", adminsId=" + adminsId +
+                ", accounts=" + accounts +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Group group = (Group) o;
-        return id == group.id &&
-                userCreatorId == group.userCreatorId &&
-                Objects.equals(name, group.name) &&
-                Objects.equals(createDate, group.createDate) &&
-                Objects.equals(info, group.info) &&
-                Objects.equals(acceptedMembersId, group.acceptedMembersId) &&
-                Objects.equals(pendingMembersId, group.pendingMembersId) &&
-                Objects.equals(adminsId, group.adminsId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, createDate, info, userCreatorId, acceptedMembersId, pendingMembersId, adminsId);
     }
 }

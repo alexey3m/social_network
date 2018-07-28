@@ -3,6 +3,8 @@ package com.getjavajob.training.web1803.webapp.controllers;
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.AccountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpSession;
 public class LoginController {
     private static final String EMAIL = "email";
     private static final String PASSWORD = "password";
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     private AccountService accountService;
 
@@ -32,6 +35,7 @@ public class LoginController {
                         @RequestParam(required = false, name = "inputEmail") String email,
                         @RequestParam(required = false, name = "inputPassword") String password,
                         HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        logger.info("In login method");
         if (useCookies != null) {
             Cookie[] cookies = request.getCookies();
             for (Cookie cookie : cookies) {
@@ -67,6 +71,7 @@ public class LoginController {
 
     @RequestMapping("/logoutUser")
     public String logoutUser(HttpSession session, HttpServletResponse response) {
+        logger.info("In logoutUser method");
         session.removeAttribute(EMAIL);
         session.removeAttribute("id");
         session.removeAttribute("userName");

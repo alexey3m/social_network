@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
         @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:create-data-model.sql", "classpath:fillDB.sql"}),
         @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:remove.sql")
 })
+@Transactional
 public class MessageDAOTest {
 
     @Autowired
@@ -39,25 +41,26 @@ public class MessageDAOTest {
 
     @Test
     public void getTest() {
-        Message expected = new Message(1, 1, MessageType.ACCOUNT, null, null, "Text account 1",
+        Message expected = new Message(1, 1, MessageType.ACCOUNT, null, "Text account 1",
                 "2018-06-17", 1);
         assertEquals(expected, messageDAO.get(1));
     }
 
     @Test
     public void createAccountMessageTest() {
-        messageDAO.create(0, 1, MessageType.ACCOUNT, null, null, "Text 1",
+        Message newMessage = new Message(0, 1, MessageType.ACCOUNT, null, "Text 1",
                 "2018-06-17", 1);
-        Message expected = new Message(9, 1, MessageType.ACCOUNT, null, null, "Text 1",
+        messageDAO.create(newMessage);
+        Message expected = new Message(9, 1, MessageType.ACCOUNT, null, "Text 1",
                 "2018-06-17", 1);
         assertEquals(expected, messageDAO.get(9));
     }
 
     @Test
     public void getAllByTypeAndAssignIdAccountTest() {
-        Message message1 = new Message(1, 1, MessageType.ACCOUNT, null, null, "Text account 1",
+        Message message1 = new Message(1, 1, MessageType.ACCOUNT, null, "Text account 1",
                 "2018-06-17", 1);
-        Message message2 = new Message(2, 1, MessageType.ACCOUNT, null, null, "Text account 1-2",
+        Message message2 = new Message(2, 1, MessageType.ACCOUNT, null, "Text account 1-2",
                 "2018-06-17", 1);
         List<Message> messages = new ArrayList<>();
         messages.add(message1);
@@ -67,7 +70,7 @@ public class MessageDAOTest {
 
     @Test
     public void getAllByTypeAndAssignIdAccountWallTest() {
-        Message message = new Message(5, 2, MessageType.ACCOUNT_WALL, null, null, "Text account wall 2",
+        Message message = new Message(5, 2, MessageType.ACCOUNT_WALL, null, "Text account wall 2",
                 "2018-06-17", 2);
         List<Message> messages = new ArrayList<>();
         messages.add(message);
@@ -76,9 +79,9 @@ public class MessageDAOTest {
 
     @Test
     public void getAllByTypeAndAssignIdGroupWallTest() {
-        Message message1 = new Message(7, 2, MessageType.GROUP_WALL, null, null, "Text group 2",
+        Message message1 = new Message(7, 2, MessageType.GROUP_WALL, null, "Text group 2",
                 "2018-06-17", 3);
-        Message message2 = new Message(8, 2, MessageType.GROUP_WALL, null, null, "Text group 2-2",
+        Message message2 = new Message(8, 2, MessageType.GROUP_WALL, null, "Text group 2-2",
                 "2018-06-17", 3);
         List<Message> messages = new ArrayList<>();
         messages.add(message1);

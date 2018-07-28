@@ -1,5 +1,6 @@
 package com.getjavajob.training.web1803.dao.test;
 
+import com.getjavajob.training.web1803.common.Relationship;
 import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -15,13 +16,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -31,6 +33,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
         @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:create-data-model.sql", "classpath:fillDB.sql"}),
         @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:remove.sql")
 })
+@Transactional
 public class RelationshipDAOTest {
 
     @Autowired
@@ -66,19 +69,19 @@ public class RelationshipDAOTest {
 
     @Test
     public void getStatusTest() {
-        assertEquals(Status.PENDING, relationshipDAO.getStatus(1, 2));
-        assertEquals(Status.ACCEPTED, relationshipDAO.getStatus(2, 3));
+        assertEquals(Status.PENDING, relationshipDAO.getStatus(new Relationship(1, 2, null, 0)));
+        assertEquals(Status.ACCEPTED, relationshipDAO.getStatus(new Relationship(2, 3, null, 0)));
     }
 
     @Test
     public void getPendingRequestToMeTest() {
-        assertEquals(Status.PENDING, relationshipDAO.getPendingRequestToMe(1, 3, 1));
+        assertEquals(Status.PENDING, relationshipDAO.getPendingRequestToMe(new Relationship(1, 3, null, 1)));
     }
 
     @Test
     public void updateQueryFriendDeclineTest() {
-        assertTrue(relationshipDAO.updateQueryFriend(1, 2, Status.DECLINE.getStatus(), 2));
-        assertEquals(Status.DECLINE, relationshipDAO.getStatus(1, 2));
+        assertTrue(relationshipDAO.updateQueryFriend(new Relationship(1, 2, Status.DECLINE, 2)));
+        assertEquals(Status.DECLINE, relationshipDAO.getStatus(new Relationship(1, 2, null, 0)));
     }
 
     @Test
@@ -86,25 +89,15 @@ public class RelationshipDAOTest {
         List<Integer> expectedId = new ArrayList<>();
         expectedId.add(1);
         expectedId.add(3);
-        assertTrue(relationshipDAO.updateQueryFriend(1, 2, Status.ACCEPTED.getStatus(), 2));
-        assertEquals(Status.ACCEPTED, relationshipDAO.getStatus(1, 2));
+        assertTrue(relationshipDAO.updateQueryFriend(new Relationship(1, 2, Status.ACCEPTED, 2)));
+        assertEquals(Status.ACCEPTED, relationshipDAO.getStatus(new Relationship(1, 2, null, 0)));
         assertEquals(expectedId, relationshipDAO.getFriendsIdList(2));
     }
 
     @Test
     public void removeFriendTest() {
-        assertTrue(relationshipDAO.removeFriend(2, 3));
-        assertEquals(Status.UNKNOWN, relationshipDAO.getStatus(2, 3));
-    }
-
-    @Test
-    public void createQueryFriendTest() {
-        relationshipDAO.removeFriend(2, 3);
-        assertTrue(relationshipDAO.createQueryFriend(2, 3, 2));
-        List<Integer> expectedId = new ArrayList<>();
-        expectedId.add(1);
-        expectedId.add(2);
-        assertEquals(expectedId, relationshipDAO.getPendingRequestToId(3));
+        assertTrue(relationshipDAO.removeFriend(new Relationship(2, 3, null, 0)));
+        assertEquals(Status.UNKNOWN, relationshipDAO.getStatus(new Relationship(2, 3, null, 0)));
     }
 
     @Configuration

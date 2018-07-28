@@ -1,6 +1,7 @@
 package com.getjavajob.training.web1803.webapp.controllers;
 
 import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
@@ -11,6 +12,8 @@ import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.AccountService;
 import com.getjavajob.training.web1803.service.GroupService;
 import com.getjavajob.training.web1803.service.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,6 +32,7 @@ import java.util.*;
 @Controller
 public class GroupController {
     private static final String GROUP = "group";
+    private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
 
     private AccountService accountService;
     private GroupService groupService;
@@ -46,6 +50,7 @@ public class GroupController {
                                   @RequestParam(required = false, name = "actionId") Integer actionId,
                                   @RequestParam(required = false, name = "infoMessage") String infoMessage,
                                   HttpSession session) {
+        logger.info("In viewGroup method");
         actionId = actionId == null ? 0 : actionId;
         int sessionId = (Integer) session.getAttribute("id");
         List<Account> pendingMembers = new ArrayList<>();
@@ -55,18 +60,20 @@ public class GroupController {
         Account actionAccount = actionId == 0 ? new Account() : accountService.get(actionId);
         Group group = groupService.get(groupId);
         if (group == null) {
-            return new ModelAndView("/");
+            return new ModelAndView("redirect:page404");
         }
         GroupRole role = groupService.getRoleMemberInGroup(groupId, sessionId);
         Role globalRole = accountService.getRole(sessionId);
         GroupStatus status = groupService.getStatusMemberInGroup(groupId, sessionId);
         Account accountCreator = accountService.get(group.getUserCreatorId());
-        for (int id : group.getPendingMembersId()) {
-            pendingMembers.add(accountService.get(id));
-        }
-        for (int id : group.getAcceptedMembersId()) {
-            acceptedMembers.add(accountService.get(id));
-            acceptedMembersRole.put(id, groupService.getRoleMemberInGroup(groupId, id));
+        for (AccountInGroup accountInGroup : group.getAccounts()) {
+            int userMemberId = accountInGroup.getUserMemberId();
+            if (accountInGroup.getStatus() == GroupStatus.PENDING) {
+                pendingMembers.add(accountService.get(userMemberId));
+            } else if (accountInGroup.getStatus() == GroupStatus.ACCEPTED) {
+                acceptedMembers.add(accountService.get(userMemberId));
+                acceptedMembersRole.put(userMemberId, groupService.getRoleMemberInGroup(groupId, userMemberId));
+            }
         }
         List<Message> messages = messageService.getAllByTypeAndAssignId(MessageType.GROUP_WALL, group.getId());
         for (Message item : messages) {
@@ -79,7 +86,7 @@ public class GroupController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
             }
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/group.jsp");
@@ -104,8 +111,9 @@ public class GroupController {
 
     @RequestMapping(value = "/viewGroups", method = RequestMethod.GET)
     public ModelAndView viewGroups(HttpSession session) {
+        logger.info("In viewGroups method");
         int sessionId = (Integer) session.getAttribute("id");
-        List<Group> myGroups = groupService.getAllById(sessionId);
+        List<Group> myGroups = groupService.getAllByUserId(sessionId);
         List<Group> allGroups = groupService.getAll();
         ModelAndView modelAndView = new ModelAndView("/jsp/groups.jsp");
         modelAndView.addObject("myGroups", myGroups);
@@ -115,13 +123,14 @@ public class GroupController {
 
     @RequestMapping(value = "/updateGroupPage", method = RequestMethod.GET)
     public ModelAndView updateGroupPage(@RequestParam("id") int id, HttpSession session) {
+        logger.info("In updateGroupPage method");
         Group group = groupService.get(id);
         byte[] encodedPhotoBytes = Base64.getEncoder().encode(group.getPhoto());
         String encodedPhoto = "";
         try {
             encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/update-group.jsp");
         modelAndView.addObject(GROUP, group);
@@ -131,14 +140,15 @@ public class GroupController {
 
     @RequestMapping(value = "/updateGroup", method = RequestMethod.POST)
     public String updateGroup(@ModelAttribute Group group,
-                                @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
-                                HttpSession session) {
+                              @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
+                              HttpSession session) {
+        logger.info("In updateGroup method");
         byte[] currentAccountPhoto = groupService.getPhoto(group.getId());
         if (!file.isEmpty()) {
             try {
                 currentAccountPhoto = file.getBytes();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Get bytes from file end with error! Exception: " + e);
             }
         }
         group.setPhoto(currentAccountPhoto);
@@ -151,18 +161,22 @@ public class GroupController {
     public String createGroup(@ModelAttribute Group group,
                               @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
                               HttpSession session) {
+        logger.info("In createGroup method");
         String name = group.getName();
         byte[] currentGroupPhoto = new byte[0];
         if (!file.isEmpty()) {
             try {
                 currentGroupPhoto = file.getBytes();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Get bytes from file end with error! Exception: " + e);
             }
         }
         group.setUserCreatorId((Integer) session.getAttribute("id"));
         group.setCreateDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         group.setPhoto(currentGroupPhoto);
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(group.getUserCreatorId(), GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        group.setAccounts(accounts);
         try {
             boolean result = groupService.create(group);
             return result ? "redirect:viewGroup?id=" + groupService.getId(name) + "&infoMessage=regGroup" : "redirect:/jsp/create-group.jsp?infoMessage=smFalse";
@@ -173,6 +187,7 @@ public class GroupController {
 
     @RequestMapping(value = "/createGroupPage", method = RequestMethod.GET)
     public ModelAndView createGroupPage() {
+        logger.info("In createGroupPage method");
         return new ModelAndView("/jsp/create-group.jsp", GROUP, new Group());
     }
 
@@ -181,6 +196,7 @@ public class GroupController {
     public String groupAction(@RequestParam("action") String action,
                               @RequestParam("actionId") Integer actionId,
                               @RequestParam("groupId") Integer groupId) {
+        logger.info("In groupAction method");
         String infoMessage = "groupActionFalse";
         infoMessage = doAction(action, actionId, groupId, groupService, infoMessage);
         return "redirect:viewGroup?id=" + groupId + "&infoMessage=" + infoMessage + "&actionId=" + actionId;

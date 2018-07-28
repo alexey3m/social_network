@@ -12,16 +12,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -31,6 +32,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
         @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:create-data-model.sql", "classpath:fillDB.sql"}),
         @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:remove.sql")
 })
+@Transactional
 public class AccountDAOTest {
 
     @Autowired
@@ -71,11 +73,6 @@ public class AccountDAOTest {
     }
 
     @Test
-    public void getIdTest() {
-        assertEquals(1, accountDAO.getId("a@a.ru"));
-    }
-
-    @Test
     public void loginAndGetIdTest() throws DaoNameException {
         assertEquals(1, accountDAO.loginAndGetId("a@a.ru", "123"));
     }
@@ -99,6 +96,7 @@ public class AccountDAOTest {
     public void updateAccountTest() {
         Account accountUpdate = new Account();
         accountUpdate.setId(1);
+        accountUpdate.setEmail("a@a.ru");
         accountUpdate.setPassword("456");
         accountUpdate.setFirstName("Ivan");
         accountUpdate.setLastName("Ivanov");
@@ -106,10 +104,12 @@ public class AccountDAOTest {
         accountUpdate.setBirthday("1988-07-23");
         accountUpdate.setSkype("bbbbb");
         accountUpdate.setIcq(123456);
+        accountUpdate.setRegDate("2018-06-08");
+        accountUpdate.setRole(Role.ADMIN);
         accountDAO.update(accountUpdate);
         Account expected = new Account(1, "a@a.ru", "456", "Ivan", "Ivanov",
                 "Ivanovych", "1988-07-23", null, "bbbbb", 123456,
-                "2018-06-08", Role.ADMIN, null);
+                "2018-06-08", Role.ADMIN, new ArrayList<>());
         assertEquals(expected, accountDAO.get(1));
     }
 
@@ -117,15 +117,14 @@ public class AccountDAOTest {
     public void updateRoleTest() {
         boolean result = accountDAO.updateRole(2, Role.ADMIN);
         Account expected = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                null, "1990-01-01", null, "bbbbb", 0,
-                "2018-06-13", Role.ADMIN, null);
+                "", "1990-01-01", null, "bbbbb", 0,
+                "2018-06-13", Role.ADMIN, new ArrayList<>());
         assertTrue(result);
         assertEquals(expected, accountDAO.get(2));
     }
 
     @Test
     public void removeTest() {
-        assertEquals(1, accountDAO.getId("a@a.ru"));
         assertTrue(accountDAO.remove(1));
     }
 
@@ -143,11 +142,6 @@ public class AccountDAOTest {
             dataSource.setUsername(env.getProperty("database.user"));
             dataSource.setPassword(env.getProperty("database.password"));
             return dataSource;
-        }
-
-        @Bean
-        public JdbcTemplate jdbcTemplate() {
-            return new JdbcTemplate(dataSource());
         }
     }
 }

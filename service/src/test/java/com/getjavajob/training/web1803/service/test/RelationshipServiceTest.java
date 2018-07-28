@@ -1,6 +1,7 @@
 package com.getjavajob.training.web1803.service.test;
 
 import com.getjavajob.training.web1803.common.Account;
+import com.getjavajob.training.web1803.common.Relationship;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.common.enums.Status;
 import com.getjavajob.training.web1803.dao.AccountDAO;
@@ -15,8 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,37 +33,37 @@ public class RelationshipServiceTest {
 
     @Test
     public void addQueryFriendTest() {
-        when(relationshipDAO.createQueryFriend(1, 2, 1)).thenReturn(true);
+        when(relationshipDAO.createQueryFriend(new Relationship(1, 2, Status.PENDING, 1))).thenReturn(true);
         assertTrue(phoneService.addQueryFriend(1, 2));
     }
 
     @Test
     public void acceptFriendTest() {
-        when(relationshipDAO.updateQueryFriend(1, 2, 1, 1)).thenReturn(true);
+        when(relationshipDAO.updateQueryFriend(new Relationship(1, 2, Status.ACCEPTED, 1))).thenReturn(true);
         assertTrue(phoneService.acceptFriend(1, 2));
     }
 
     @Test
     public void declineFriendTest() {
-        when(relationshipDAO.updateQueryFriend(1, 2, 2, 1)).thenReturn(true);
+        when(relationshipDAO.updateQueryFriend(new Relationship(1, 2, Status.DECLINE, 1))).thenReturn(true);
         assertTrue(phoneService.declineFriend(1, 2));
     }
 
     @Test
     public void removeFriendTest() {
-        when(relationshipDAO.removeFriend(1, 2)).thenReturn(true);
+        when(relationshipDAO.removeFriend(new Relationship(1, 2, null, 0))).thenReturn(true);
         assertTrue(phoneService.removeFriend(1, 2));
     }
 
     @Test
     public void getStatusTest() {
-        when(relationshipDAO.getStatus(1, 2)).thenReturn(Status.ACCEPTED);
+        when(relationshipDAO.getStatus(new Relationship(1, 2, null, 0))).thenReturn(Status.ACCEPTED);
         assertEquals(Status.ACCEPTED, phoneService.getStatus(1, 2));
     }
 
     @Test
     public void getPendingRequestToMeTest() {
-        when(relationshipDAO.getPendingRequestToMe(1, 2, 1)).thenReturn(Status.PENDING);
+        when(relationshipDAO.getPendingRequestToMe(new Relationship(1, 2, null, 1))).thenReturn(Status.PENDING);
         assertEquals(Status.PENDING, phoneService.getPendingRequestToMe(1, 2));
     }
 

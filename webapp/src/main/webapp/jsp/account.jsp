@@ -156,6 +156,11 @@
                         </a>
                     </div>
                 </c:if>
+                <div class="control-panel">
+                    <a href="accountToXml?id=${id}">
+                        <button type="submit" class="btn btn-primary">Скачать аккаунт в XML</button>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="col-md-9">
@@ -222,7 +227,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
-                                <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
+                                <p class="blog-post-meta">Отправлено ${message.dateCreate} пользователем <a
                                         href="viewAccount?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                 </p>
                             </div>

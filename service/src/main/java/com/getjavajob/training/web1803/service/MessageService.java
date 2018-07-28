@@ -6,7 +6,6 @@ import com.getjavajob.training.web1803.dao.MessageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +18,8 @@ public class MessageService {
         this.messageDAO = messageDAO;
     }
 
-    public int create(int groupId, int accountId, MessageType type, InputStream photo, String photoFileName,
-                      String text, String createDate, int userCreatorId) {
-        return messageDAO.create(groupId, accountId, type, photo, photoFileName, text, createDate, userCreatorId);
+    public int create(Message message) {
+        return messageDAO.create(message);
     }
 
     public Message get(int id) {

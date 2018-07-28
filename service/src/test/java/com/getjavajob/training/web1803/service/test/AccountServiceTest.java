@@ -5,7 +5,6 @@ import com.getjavajob.training.web1803.common.Phone;
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.AccountDAO;
-import com.getjavajob.training.web1803.dao.PhoneDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.AccountService;
 import org.junit.Test;
@@ -17,8 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,8 +25,6 @@ public class AccountServiceTest {
 
     @Mock
     private AccountDAO accountDAO;
-    @Mock
-    private PhoneDAO phoneDAO;
 
     @InjectMocks
     private AccountService accountService;
@@ -35,22 +32,20 @@ public class AccountServiceTest {
     @Test
     public void createTest() throws DaoNameException {
         List<Phone> phones = new ArrayList<>();
-        phones.add(new Phone("800", PhoneType.MOBILE));
-        phones.add(new Phone("801", PhoneType.WORK));
+        phones.add(new Phone(1, "800", PhoneType.MOBILE));
+        phones.add(new Phone(2, "801", PhoneType.WORK));
         Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "1982-12-13", null, "dddd", 1111,
                 "2018-06-13", Role.USER, phones);
         when(accountDAO.create(account)).thenReturn(true);
-        when(accountDAO.getId("kolya1@mail")).thenReturn(1);
-        when(phoneDAO.create(account)).thenReturn(true);
         assertTrue(accountService.create(account));
     }
 
     @Test(expected = DaoNameException.class)
     public void createExceptionTest() throws DaoNameException {
         List<Phone> phones = new ArrayList<>();
-        phones.add(new Phone("800", PhoneType.MOBILE));
-        phones.add(new Phone("801", PhoneType.WORK));
+        phones.add(new Phone(1, "800", PhoneType.MOBILE));
+        phones.add(new Phone(2, "801", PhoneType.WORK));
         Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
                 "Nikolaevich", "1982-12-13", null, "dddd", 1111,
                 "2018-06-13", Role.USER, phones);
@@ -61,8 +56,8 @@ public class AccountServiceTest {
     @Test
     public void getTest() {
         List<Phone> phones = new ArrayList<>();
-        phones.add(new Phone("900", PhoneType.MOBILE));
-        phones.add(new Phone("901", PhoneType.WORK));
+        phones.add(new Phone(1, "900", PhoneType.MOBILE));
+        phones.add(new Phone(2, "901", PhoneType.WORK));
         Account account = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
                 "Urievich", "1988-07-22", null, "aaaaa", 0,
                 "2018-06-08", Role.ADMIN, phones);
@@ -85,8 +80,8 @@ public class AccountServiceTest {
     @Test
     public void searchByStringTest() {
         List<Phone> phones = new ArrayList<>();
-        phones.add(new Phone("900", PhoneType.MOBILE));
-        phones.add(new Phone("901", PhoneType.WORK));
+        phones.add(new Phone(1, "900", PhoneType.MOBILE));
+        phones.add(new Phone(2, "901", PhoneType.WORK));
         Account account1 = new Account(1, "a@a.ru", "123", "Alexey", "Ershov",
                 "Urievich", "1988-07-22", null, "aaaaa", 0, "2018-06-08",
                 Role.ADMIN, phones);
@@ -109,9 +104,9 @@ public class AccountServiceTest {
     @Test
     public void updateTest() {
         Account account = new Account(1, "a@a.ru", null, "Ivan", null, null,
-                null, null, null, 0, null, null, null);
+                "", null, null, 0, "2018-06-13", Role.USER, null);
         when(accountDAO.update(account)).thenReturn(true);
-        when(phoneDAO.update(account)).thenReturn(true);
+        when(accountDAO.get(1)).thenReturn(account);
         assertTrue(accountService.update(account));
     }
 

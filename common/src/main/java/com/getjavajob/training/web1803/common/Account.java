@@ -2,23 +2,58 @@ package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.Role;
 
+import javax.persistence.*;
+import javax.xml.bind.annotation.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Account {
+import static javax.persistence.EnumType.STRING;
+
+@Entity
+@XmlRootElement(name = "account")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Account implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id", nullable = false)
+    @XmlAttribute(name = "id")
     private int id;
+    @Column(name = "email", nullable = false)
+    @XmlElement(name = "email")
     private String email;
+    @Column(name = "password", nullable = false)
+    @XmlElement(name = "password")
     private String password;
+    @Column(name = "first_name")
+    @XmlElement(name = "firstName")
     private String firstName;
+    @Column(name = "last_name")
+    @XmlElement(name = "lastName")
     private String lastName;
+    @Column(name = "middle_name")
+    @XmlElement(name = "middleName")
     private String middleName;
+    @XmlElement(name = "birthday")
     private String birthday;
+    @XmlTransient
     private byte[] photo;
+    @XmlElement(name = "skype")
     private String skype;
+    @XmlElement(name = "icq")
     private int icq;
+    @Column(name = "reg_date")
+    @XmlElement(name = "regDate")
     private String regDate;
+    @Enumerated(STRING)
+    @XmlElement(name = "role")
     private Role role;
-    private List<Phone> phones;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "account_id", nullable = false)
+    @XmlElement(name = "phones")
+    private List<Phone> phones = new ArrayList<>();
 
     public Account(int id, String email, String password, String firstName, String lastName, String middleName, String birthday,
                    byte[] photo, String skype, int icq, String regDate, Role role, List<Phone> phones) {

@@ -19,38 +19,51 @@
     <div>
         <h5>Результаты поиска по "${searchString}"</h5>
     </div>
-    <table class="table table-hover">
+    <script type="text/javascript">
+        var filterPage = "${searchString}"; // use expression tag in JSP here
+    </script>
+    <table id="tableAcc" class="table table-hover">
         <thead>
         <tr>
             <th>Аккаунты</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach var="account" items="${findAccounts}">
-            <tr>
-                <th>
-                    <a href="viewAccount?id=${account.id}">${account.firstName} ${account.middleName} ${account.lastName}</a>
-                </th>
-            </tr>
-        </c:forEach>
+        <tr id="templateRowAcc" class="rowAcc" style="display:none;">
+            <td id="templateColAcc">
+            </td>
+        </tr>
         </tbody>
     </table>
-    <table class="table table-hover">
+    <ul class="pagination">
+        <li class="page-item" id="prevAcc" style='display:none'>
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item" id="nextAcc" style='display:none'>
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+    <table id="tableGr" class="table table-hover">
         <thead>
         <tr>
             <th>Группы</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach var="group" items="${findGroups}">
-            <tr>
-                <th>
-                    <a href="viewGroup?id=${group.id}">${group.name}</a>
-                </th>
-            </tr>
-        </c:forEach>
+        <tr id="templateRowGr" class="rowGr" style="display:none;">
+            <td id="templateColGr">
+            </td>
+        </tr>
         </tbody>
     </table>
+    <ul class="pagination">
+        <li class="page-item" id="prevGr" style='display:none'>
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item" id="nextGr" style='display:none'>
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -59,5 +72,6 @@
 <script src="<c:url value="/resources/js/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/js/socnet-custom.js"/>"></script>
+<script src="<c:url value="/resources/js/socnet-custom-search.js"/>"></script>
 </body>
 </html>

@@ -2,27 +2,37 @@ package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.MessageType;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+import static javax.persistence.EnumType.STRING;
+
+@Entity
 public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "message_id", nullable = false)
     private int id;
+    @Column(name = "assign_id", nullable = false)
     private int assignId;
+    @Enumerated(STRING)
+    @Column(name = "type", nullable = false)
     private MessageType type;
     private byte[] photo;
-    private String photoFileName;
     private String text;
-    private String createDate;
+    @Column(name = "date_create", nullable = false)
+    private String dateCreate;
+    @Column(name = "user_creator_id", nullable = false)
     private int userCreatorId;
 
-    public Message(int id, int assignId, MessageType type, byte[] photo, String photoFileName, String text,
-                   String createDate, int userCreatorId) {
+    public Message(int id, int assignId, MessageType type, byte[] photo, String text, String dateCreate, int userCreatorId) {
         this.id = id;
         this.assignId = assignId;
         this.type = type;
         this.photo = photo;
-        this.photoFileName = photoFileName;
         this.text = text;
-        this.createDate = createDate;
+        this.dateCreate = dateCreate;
         this.userCreatorId = userCreatorId;
     }
 
@@ -53,14 +63,6 @@ public class Message {
         this.photo = photo;
     }
 
-    public String getPhotoFileName() {
-        return photoFileName;
-    }
-
-    public void setPhotoFileName(String photoFileName) {
-        this.photoFileName = photoFileName;
-    }
-
     public String getText() {
         return text;
     }
@@ -69,12 +71,12 @@ public class Message {
         this.text = text;
     }
 
-    public String getCreateDate() {
-        return createDate;
+    public String getDateCreate() {
+        return dateCreate;
     }
 
-    public void setCreateDate(String createDate) {
-        this.createDate = createDate;
+    public void setDateCreate(String createDate) {
+        this.dateCreate = createDate;
     }
 
     public int getUserCreatorId() {
@@ -99,9 +101,8 @@ public class Message {
                 "id=" + id +
                 ", assignId=" + assignId +
                 ", type=" + type +
-                ", photoFileName='" + photoFileName + '\'' +
                 ", text='" + text + '\'' +
-                ", createDate='" + createDate + '\'' +
+                ", dateCreate='" + dateCreate + '\'' +
                 ", userCreatorId=" + userCreatorId +
                 '}';
     }
@@ -115,13 +116,12 @@ public class Message {
                 assignId == message.assignId &&
                 userCreatorId == message.userCreatorId &&
                 type == message.type &&
-                Objects.equals(photoFileName, message.photoFileName) &&
                 Objects.equals(text, message.text) &&
-                Objects.equals(createDate, message.createDate);
+                Objects.equals(dateCreate, message.dateCreate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, assignId, type, photoFileName, text, createDate, userCreatorId);
+        return Objects.hash(id, assignId, type, text, dateCreate, userCreatorId);
     }
 }

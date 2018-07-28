@@ -3,6 +3,8 @@ package com.getjavajob.training.web1803.webapp.controllers;
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.service.AccountService;
 import com.getjavajob.training.web1803.service.RelationshipService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @Controller
 public class FriendController {
+    private static final Logger logger = LoggerFactory.getLogger(FriendController.class);
 
     private AccountService accountService;
     private RelationshipService relationshipService;
@@ -30,6 +33,7 @@ public class FriendController {
     public ModelAndView viewFriends(@RequestParam(required = false, name = "actionId") Integer actionId,
                                     @RequestParam(required = false, name = "infoMessage") String infoMessage,
                                     HttpSession session) {
+        logger.info("In viewFriends method");
         int id = (Integer) session.getAttribute("id");
         actionId = actionId == null ? 0 : actionId;
         Account actionAccount = actionId == 0 ? new Account() : accountService.get(actionId);
@@ -49,9 +53,10 @@ public class FriendController {
 
     @RequestMapping(value = {"/friends", "/accountFriends"}, method = RequestMethod.POST)
     public String friends(@RequestParam("action") String action,
-                              @RequestParam("actionId") Integer actionId,
-                              HttpSession session,
-                              HttpServletRequest request) {
+                          @RequestParam("actionId") Integer actionId,
+                          HttpSession session,
+                          HttpServletRequest request) {
+        logger.info("In friends method");
         int currentId = (Integer) session.getAttribute("id");
         String infoMessage = "friendsFalse";
         switch (action) {

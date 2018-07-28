@@ -5,6 +5,8 @@ import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.service.AccountService;
 import com.getjavajob.training.web1803.service.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 @Controller
 public class MessageController {
+    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     private AccountService accountService;
     private MessageService messageService;
@@ -40,6 +42,7 @@ public class MessageController {
     public ModelAndView viewAccountMessages(@RequestParam(required = false, name = "id") Integer id,
                                             @RequestParam(required = false, name = "assignId") Integer assignId,
                                             HttpSession session) {
+        logger.info("In viewAccountMessages method");
         int sessionId = (Integer) session.getAttribute("id");
         if (assignId == null) {
             assignId = id != null ? id : 0;
@@ -74,18 +77,19 @@ public class MessageController {
 
     @RequestMapping("/viewMessagePhoto")
     public String viewMessagePhoto(byte[] photo) {
+        logger.info("In viewMessagePhoto method");
         byte[] encodedPhotoBytes = Base64.getEncoder().encode(photo);
-
         try {
             return new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
             return null;
         }
     }
 
     @RequestMapping("/getMessagePhoto")
     public void getMessagePhoto(@RequestParam("id") int id, HttpServletResponse response) throws IOException {
+        logger.info("In getMessagePhoto method");
         byte[] photo = messageService.getPhoto(id);
         if (photo == null) {
             response.sendError(SC_NOT_FOUND);
@@ -104,8 +108,9 @@ public class MessageController {
                                 @RequestParam("action") String action,
                                 @RequestParam(required = false, name = "inputNewMessage") String text,
                                 @RequestParam(required = false, name = "messageId") Integer messageId,
-                                @RequestParam(required = false, name = "uploadImage") MultipartFile filePart,
+                                @RequestParam(required = false, name = "uploadImage") MultipartFile file,
                                 HttpSession session) {
+        logger.info("In messageAction method");
         int groupId = 0;
         int accountId = 0;
         MessageType type = null;
@@ -131,18 +136,16 @@ public class MessageController {
                 break;
         }
         if (action.equals("new")) {
-            InputStream photo = null;
-            String photoFileName = null;
-            if (!filePart.isEmpty()) {
+            byte[] photo = new byte[0];
+            if (!file.isEmpty()) {
                 try {
-                    photo = filePart.getInputStream();
+                    photo = file.getBytes();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                photoFileName = filePart.getOriginalFilename();
             }
             int currentId = (Integer) session.getAttribute("id");
-            messageService.create(groupId, accountId, type, photo, photoFileName, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId);
+            messageService.create(new Message(groupId, accountId, type, photo, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId));
         } else if (action.equals("remove")) {
             messageService.remove(messageId);
         }

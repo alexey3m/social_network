@@ -18,7 +18,13 @@
 <jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <%--@elvariable id="account" type="com.getjavajob.training.web1803.common.Account"--%>
-    <form:form id="formConfirm" class="form-reg" method="post" action="/updateAccount" enctype="multipart/form-data" modelAttribute="account" onsubmit="updateIndexedInputNames();">
+
+        <form action="updateAccountPageFromXml" method="post" enctype="multipart/form-data" class="form-upd" >
+            <label>Загрузить аккаунт для обновления из XML файла?</label>
+            <input type="file" name="uploadXml" class="form-control mb-2"/>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Загрузить</button>
+        </form>
+    <form:form id="formConfirm" class="form-upd" method="post" action="/updateAccount" enctype="multipart/form-data" modelAttribute="account" onsubmit="updateIndexedInputNames();">
         <h2 class="form-reg-heading">Форма обновления аккаунта</h2>
         <form:input type="hidden" path="id" value="${account.id}"/>
         <form:label path="email" class="sr-only">Email</form:label>

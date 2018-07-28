@@ -52,23 +52,3 @@ $(function () {
         minLength: 1
     });
 });
-
-// $(function () {
-//     $("#searchAccount").autocomplete({
-//         source: function (request, response) {
-//             $.ajax({
-//                 url: '/accountFilter',
-//                 data: {
-//                     filter: request.term
-//                 },
-//                 success: function (data) {
-//                     response($.map(data, function (account, i) {
-//                         return {value: account.id, label: account.firstName + ' ' + account.lastName}
-//                     }));
-//                 }
-//             });
-//         },
-//         minLength: 1
-//     });
-// });
-

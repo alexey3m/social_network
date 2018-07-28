@@ -1,5 +1,6 @@
 package com.getjavajob.training.web1803.dao.test;
 
+import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
@@ -18,14 +19,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -35,6 +37,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
         @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:create-data-model.sql", "classpath:fillDB.sql"}),
         @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:remove.sql")
 })
+@Transactional
 public class GroupDAOTest {
 
     @Autowired
@@ -42,58 +45,48 @@ public class GroupDAOTest {
 
     @Test
     public void createTest() throws DaoNameException {
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(0, 2, GroupRole.ADMIN, GroupStatus.ACCEPTED));
         Group group = new Group(0, "Group 3", null, "2018-06-13",
-                "Info 3", 2, null, null, null);
+                "Info 3", 2, accounts);
         boolean result = groupDAO.create(group);
-        List<Integer> acceptedMembersId = new ArrayList<>();
-        acceptedMembersId.add(2);
-        List<Integer> pendingMembersId = new ArrayList<>();
-        List<Integer> adminsId = new ArrayList<>();
-        adminsId.add(2);
         Group expected = new Group(3, "Group 3", null, "2018-06-13",
-                "Info 3", 2, acceptedMembersId, pendingMembersId, adminsId);
+                "Info 3", 2, accounts);
         assertTrue(result);
         assertEquals(expected, groupDAO.get(3));
     }
 
     @Test(expected = DaoNameException.class)
     public void createExceptionTest() throws DaoNameException {
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(0, 2, GroupRole.ADMIN, GroupStatus.ACCEPTED));
         Group group = new Group(0, "Group 3", null, "2018-06-13",
-                "Info 3", 2, null, null, null);
+                "Info 3", 2, accounts);
         groupDAO.create(group);
         groupDAO.create(group);
     }
 
     @Test
     public void getTest() {
-        List<Integer> acceptedMembersId = new ArrayList<>();
-        acceptedMembersId.add(1);
-        acceptedMembersId.add(3);
-        List<Integer> pendingMembersId = new ArrayList<>();
-        List<Integer> adminsId = new ArrayList<>();
-        adminsId.add(1);
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group expected = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId, pendingMembersId, adminsId);
+                "Info 1", 1, accounts);
         assertEquals(expected, groupDAO.get(1));
     }
 
     @Test
     public void getAllTest() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
+        List<AccountInGroup> accounts1 = new ArrayList<>();
+        accounts1.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts1.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group group1 = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
-        List<Integer> acceptedMembersId2 = new ArrayList<>();
-        acceptedMembersId2.add(2);
-        List<Integer> pendingMembersId2 = new ArrayList<>();
-        List<Integer> adminsId2 = new ArrayList<>();
-        adminsId2.add(2);
+                "Info 1", 1, accounts1);
+        List<AccountInGroup> accounts2 = new ArrayList<>();
+        accounts2.add(new AccountInGroup(3, 2, GroupRole.ADMIN, GroupStatus.ACCEPTED));
         Group group2 = new Group(2, "Group 2", null, "2018-06-09",
-                "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
+                "Info 2", 2, accounts2);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
         expected.add(group2);
@@ -101,41 +94,27 @@ public class GroupDAOTest {
     }
 
     @Test
-    public void getAllByIdTest() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
+    public void getAllByUserIdTest() {
+        List<AccountInGroup> accounts1 = new ArrayList<>();
+        accounts1.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts1.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group group1 = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+                "Info 1", 1, accounts1);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
-        assertEquals(expected, groupDAO.getAllById(1));
+        assertEquals(expected, groupDAO.getAllByUserId(1));
     }
 
     @Test
     public void searchByStringTest() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
+        List<AccountInGroup> accounts1 = new ArrayList<>();
+        accounts1.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts1.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group group1 = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
-        List<Integer> acceptedMembersId2 = new ArrayList<>();
-        acceptedMembersId2.add(2);
-        List<Integer> pendingMembersId2 = new ArrayList<>();
-        List<Integer> adminsId2 = new ArrayList<>();
-        adminsId2.add(2);
-        Group group2 = new Group(2, "Group 2", null, "2018-06-09",
-                "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
+                "Info 1", 1, accounts1);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
-        expected.add(group2);
-        assertEquals(expected, groupDAO.searchByString("Gr"));
+        assertEquals(expected, groupDAO.searchByString("1"));
     }
 
     @Test
@@ -157,41 +136,38 @@ public class GroupDAOTest {
 
     @Test
     public void updateGroupInfoTest() {
-        Group groupToUpdate = new Group();
+        Group groupToUpdate = groupDAO.get(1);
         groupToUpdate.setId(1);
         groupToUpdate.setName("Group 1");
         groupToUpdate.setInfo("NEW info group 1");
-        List<Integer> acceptedMembersId = new ArrayList<>();
-        acceptedMembersId.add(1);
-        acceptedMembersId.add(3);
-        List<Integer> pendingMembersId = new ArrayList<>();
-        List<Integer> adminsId = new ArrayList<>();
-        adminsId.add(1);
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group expected = new Group(1, "Group 1", null, "2018-06-07",
-                "NEW info group 1", 1, acceptedMembersId, pendingMembersId, adminsId);
+                "NEW info group 1", 1, accounts);
         groupDAO.update(groupToUpdate);
         assertEquals(expected, groupDAO.get(1));
     }
 
     @Test
     public void addPendingMemberToGroupTest() {
-        List<Integer> expected = new ArrayList<>();
-        expected.add(2);
+        List<AccountInGroup> expected = new ArrayList<>();
+        expected.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(4, 2, GroupRole.USER, GroupStatus.PENDING));
         assertTrue(groupDAO.addPendingMemberToGroup(1, 2));
-        assertEquals(expected, groupDAO.get(1).getPendingMembersId());
+        assertEquals(expected, groupDAO.get(1).getAccounts());
     }
 
     @Test
     public void setStatusMemberInGroupAcceptTest() {
         groupDAO.addPendingMemberToGroup(1, 2);
         assertTrue(groupDAO.setStatusMemberInGroup(1, 2, GroupStatus.ACCEPTED));
-        List<Integer> expectedPending = new ArrayList<>();
-        List<Integer> expectedAccepted = new ArrayList<>();
-        expectedAccepted.add(1);
-        expectedAccepted.add(3);
-        expectedAccepted.add(2);
-        assertEquals(expectedPending, groupDAO.get(1).getPendingMembersId());
-        assertEquals(expectedAccepted, groupDAO.get(1).getAcceptedMembersId());
+        List<AccountInGroup> expected = new ArrayList<>();
+        expected.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(4, 2, GroupRole.USER, GroupStatus.ACCEPTED));
+        assertEquals(expected, groupDAO.get(1).getAccounts());
     }
 
     @Test
@@ -199,10 +175,11 @@ public class GroupDAOTest {
         groupDAO.addPendingMemberToGroup(1, 2);
         groupDAO.setStatusMemberInGroup(1, 2, GroupStatus.ACCEPTED);
         assertTrue(groupDAO.setRoleMemberInGroup(1, 2, GroupRole.ADMIN));
-        List<Integer> expected = new ArrayList<>();
-        expected.add(1);
-        expected.add(2);
-        assertEquals(expected, groupDAO.get(1).getAdminsId());
+        List<AccountInGroup> expected = new ArrayList<>();
+        expected.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(4, 2, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        assertEquals(expected, groupDAO.get(1).getAccounts());
     }
 
     @Test
@@ -210,10 +187,10 @@ public class GroupDAOTest {
         groupDAO.addPendingMemberToGroup(1, 2);
         groupDAO.setStatusMemberInGroup(1, 2, GroupStatus.ACCEPTED);
         assertTrue(groupDAO.removeMemberFromGroup(1, 2));
-        List<Integer> expected = new ArrayList<>();
-        expected.add(1);
-        expected.add(3);
-        assertEquals(expected, groupDAO.get(1).getAcceptedMembersId());
+        List<AccountInGroup> expected = new ArrayList<>();
+        expected.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        expected.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
+        assertEquals(expected, groupDAO.get(1).getAccounts());
     }
 
     @Test
@@ -242,5 +219,7 @@ public class GroupDAOTest {
         public JdbcTemplate jdbcTemplate() {
             return new JdbcTemplate(dataSource());
         }
+
+
     }
 }

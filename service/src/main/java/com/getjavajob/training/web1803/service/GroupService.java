@@ -35,8 +35,8 @@ public class GroupService {
         return groupDAO.searchByString(search);
     }
 
-    public List<Group> getAllById(int userId) {
-        return groupDAO.getAllById(userId);
+    public List<Group> getAllByUserId(int userId) {
+        return groupDAO.getAllByUserId(userId);
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {

@@ -234,7 +234,7 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <p class="blog-post-meta">Отправлено ${message.createDate} пользователем <a
+                                    <p class="blog-post-meta">Отправлено ${message.dateCreate} пользователем <a
                                             href="viewAccount?id=${messageAccount.id}">${messageAccount.firstName} ${messageAccount.lastName}</a>
                                     </p>
                                 </div>

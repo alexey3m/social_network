@@ -1,5 +1,6 @@
 package com.getjavajob.training.web1803.service.test;
 
+import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
@@ -15,8 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,43 +31,36 @@ public class GroupServiceTest {
 
     @Test
     public void createTest() throws DaoNameException {
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
         Group group = new Group(0, "Group 3", null, "2018-06-13",
-                "Info 3", 2, null, null, null);
+                "Info 3", 2, accounts);
         when(groupDAO.create(group)).thenReturn(true);
         assertTrue(groupService.create(group));
     }
 
     @Test
     public void getTest() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group group = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+                "Info 1", 1, accounts);
         when(groupDAO.get(1)).thenReturn(group);
         assertEquals(group, groupService.get(1));
     }
 
     @Test
     public void getAllTest() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
+        List<AccountInGroup> accounts1 = new ArrayList<>();
+        accounts1.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts1.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
         Group group1 = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
-        List<Integer> acceptedMembersId2 = new ArrayList<>();
-        acceptedMembersId2.add(2);
-        List<Integer> pendingMembersId2 = new ArrayList<>();
-        List<Integer> adminsId2 = new ArrayList<>();
-        adminsId2.add(2);
+                "Info 1", 1, accounts1);
+        List<AccountInGroup> accounts2 = new ArrayList<>();
+        accounts2.add(new AccountInGroup(1, 2, GroupRole.ADMIN, GroupStatus.ACCEPTED));
         Group group2 = new Group(2, "Group 2", null, "2018-06-09",
-                "Info 2", 2, acceptedMembersId2, pendingMembersId2, adminsId2);
+                "Info 2", 2, accounts2);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
         expected.add(group2);
@@ -76,34 +70,28 @@ public class GroupServiceTest {
 
     @Test
     public void searchByStringTest() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
+        Group group = new Group(1, "Group 1", null, "2018-06-07",
+                "Info 1", 1, accounts);
         List<Group> expected = new ArrayList<>();
-        expected.add(group1);
+        expected.add(group);
         when(groupDAO.searchByString("1")).thenReturn(expected);
         assertEquals(expected, groupService.searchByString("1"));
     }
 
     @Test
-    public void getAllById() {
-        List<Integer> acceptedMembersId1 = new ArrayList<>();
-        acceptedMembersId1.add(1);
-        acceptedMembersId1.add(3);
-        List<Integer> pendingMembersId1 = new ArrayList<>();
-        List<Integer> adminsId1 = new ArrayList<>();
-        adminsId1.add(1);
-        Group group1 = new Group(1, "Group 1", null, "2018-06-07",
-                "Info 1", 1, acceptedMembersId1, pendingMembersId1, adminsId1);
+    public void getAllByUserId() {
+        List<AccountInGroup> accounts = new ArrayList<>();
+        accounts.add(new AccountInGroup(1, 1, GroupRole.ADMIN, GroupStatus.ACCEPTED));
+        accounts.add(new AccountInGroup(2, 3, GroupRole.USER, GroupStatus.ACCEPTED));
+        Group group = new Group(1, "Group 1", null, "2018-06-07",
+                "Info 1", 1, accounts);
         List<Group> expected = new ArrayList<>();
-        expected.add(group1);
-        when(groupDAO.getAllById(1)).thenReturn(expected);
-        assertEquals(expected, groupService.getAllById(1));
+        expected.add(group);
+        when(groupDAO.getAllByUserId(1)).thenReturn(expected);
+        assertEquals(expected, groupService.getAllByUserId(1));
     }
 
     @Test
@@ -146,8 +134,7 @@ public class GroupServiceTest {
 
     @Test
     public void updateTest() {
-        Group group = new Group(1, "Group 1", null, null, "new info", 0,
-                null, null, null);
+        Group group = new Group(1, "Group 1", null, null, "new info", 0, null);
         when(groupDAO.update(group)).thenReturn(true);
         assertTrue(groupService.update(group));
     }
