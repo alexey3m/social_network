@@ -35,12 +35,8 @@ public class SearchController {
     public ModelAndView viewSearch(@RequestParam(required = false, name = "inputSearch") String searchString) {
         logger.info("In viewSearch method");
         String temp = searchString.replaceAll("\\s+", " ").trim();
-        List<Account> findAccounts = accountService.searchByString(temp);
-        List<Group> findGroups = groupService.searchByString(temp);
         ModelAndView modelAndView = new ModelAndView("/jsp/search-result.jsp");
         modelAndView.addObject("searchString", temp);
-        modelAndView.addObject("findAccounts", findAccounts);
-        modelAndView.addObject("findGroups", findGroups);
         return modelAndView;
     }
 
@@ -61,16 +57,16 @@ public class SearchController {
         return result;
     }
 
-    @RequestMapping(value = "/accountFilter")
-    @ResponseBody
-    public List<Account> accountFilter(@RequestParam("filter") String filter) {
+    @RequestMapping(value = "/accountFilterAjax")
+    public @ResponseBody
+    List<Account> accountFilterAjax(@RequestParam("filter") String filter) {
         logger.info("In accountFilter method");
         return accountService.searchByString(filter);
     }
 
-    @RequestMapping(value = "/groupFilter")
-    @ResponseBody
-    public List<Group> groupFilter(@RequestParam("filter") String filter) {
+    @RequestMapping(value = "/groupFilterAjax")
+    public @ResponseBody
+    List<Group> groupFilter(@RequestParam("filter") String filter) {
         logger.info("In groupFilter method");
         return groupService.searchByString(filter);
     }
