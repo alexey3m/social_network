@@ -5,6 +5,8 @@ import com.getjavajob.training.web1803.common.Message;
 import com.getjavajob.training.web1803.common.enums.MessageType;
 import com.getjavajob.training.web1803.service.AccountService;
 import com.getjavajob.training.web1803.service.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 @Controller
 public class MessageController {
+    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     private AccountService accountService;
     private MessageService messageService;
@@ -39,6 +42,7 @@ public class MessageController {
     public ModelAndView viewAccountMessages(@RequestParam(required = false, name = "id") Integer id,
                                             @RequestParam(required = false, name = "assignId") Integer assignId,
                                             HttpSession session) {
+        logger.info("In viewAccountMessages method");
         int sessionId = (Integer) session.getAttribute("id");
         if (assignId == null) {
             assignId = id != null ? id : 0;
@@ -73,18 +77,19 @@ public class MessageController {
 
     @RequestMapping("/viewMessagePhoto")
     public String viewMessagePhoto(byte[] photo) {
+        logger.info("In viewMessagePhoto method");
         byte[] encodedPhotoBytes = Base64.getEncoder().encode(photo);
-
         try {
             return new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
             return null;
         }
     }
 
     @RequestMapping("/getMessagePhoto")
     public void getMessagePhoto(@RequestParam("id") int id, HttpServletResponse response) throws IOException {
+        logger.info("In getMessagePhoto method");
         byte[] photo = messageService.getPhoto(id);
         if (photo == null) {
             response.sendError(SC_NOT_FOUND);
@@ -105,6 +110,7 @@ public class MessageController {
                                 @RequestParam(required = false, name = "messageId") Integer messageId,
                                 @RequestParam(required = false, name = "uploadImage") MultipartFile file,
                                 HttpSession session) {
+        logger.info("In messageAction method");
         int groupId = 0;
         int accountId = 0;
         MessageType type = null;

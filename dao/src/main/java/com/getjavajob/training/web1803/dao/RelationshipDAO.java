@@ -4,6 +4,8 @@ import com.getjavajob.training.web1803.common.Relationship;
 import com.getjavajob.training.web1803.common.enums.Status;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.Set;
 @Repository
 @Transactional
 public class RelationshipDAO {
+    private static final Logger logger = LoggerFactory.getLogger(RelationshipDAO.class);
 
     private SessionFactory sessionFactory;
 
@@ -33,12 +36,14 @@ public class RelationshipDAO {
 
     @Transactional
     public boolean createQueryFriend(Relationship relationship) {
+        logger.info("In createQueryFriend method");
         sessionFactory.getCurrentSession().persist(relationship);
         return true;
     }
 
     @Transactional
     public boolean updateQueryFriend(Relationship relationship) {
+        logger.info("In updateQueryFriend method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
@@ -55,6 +60,7 @@ public class RelationshipDAO {
 
     @Transactional
     public boolean removeFriend(Relationship relationship) {
+        logger.info("In removeFriend method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
@@ -69,6 +75,7 @@ public class RelationshipDAO {
     }
 
     public Status getStatus(Relationship relationship) {
+        logger.info("In getStatus method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
@@ -87,6 +94,7 @@ public class RelationshipDAO {
     }
 
     public Status getPendingRequestToMe(Relationship relationship) {
+        logger.info("In getPendingRequestToMe method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
@@ -106,6 +114,7 @@ public class RelationshipDAO {
     }
 
     public List<Integer> getFriendsIdList(int id) {
+        logger.info("In getFriendsIdList method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
@@ -132,6 +141,7 @@ public class RelationshipDAO {
     }
 
     public List<Integer> getPendingRequestToId(int id) {
+        logger.info("In getPendingRequestToId method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);
@@ -159,6 +169,7 @@ public class RelationshipDAO {
     }
 
     public List<Integer> getFriendRequestsFromId(int id) {
+        logger.info("In getFriendRequestsFromId method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Relationship> criteriaQuery = criteriaBuilder.createQuery(Relationship.class);

@@ -4,6 +4,8 @@ import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.service.AccountService;
 import com.getjavajob.training.web1803.service.GroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Controller
 public class SearchController {
+    private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
     private AccountService accountService;
     private GroupService groupService;
@@ -30,6 +33,7 @@ public class SearchController {
 
     @RequestMapping(value = "/viewSearch", method = RequestMethod.GET)
     public ModelAndView viewSearch(@RequestParam(required = false, name = "inputSearch") String searchString) {
+        logger.info("In viewSearch method");
         String temp = searchString.replaceAll("\\s+", " ").trim();
         List<Account> findAccounts = accountService.searchByString(temp);
         List<Group> findGroups = groupService.searchByString(temp);
@@ -43,7 +47,7 @@ public class SearchController {
     @RequestMapping(value = "/commonSearchFilter")
     @ResponseBody
     public List<String> commonSearchFilter(@RequestParam("filter") String filter) {
-
+        logger.info("In commonSearchFilter method");
         List<Account> accounts = accountService.searchByString(filter);
         List<Group> groups = groupService.searchByString(filter);
         List<String> result = new ArrayList<>();
@@ -60,12 +64,14 @@ public class SearchController {
     @RequestMapping(value = "/accountFilter")
     @ResponseBody
     public List<Account> accountFilter(@RequestParam("filter") String filter) {
+        logger.info("In accountFilter method");
         return accountService.searchByString(filter);
     }
 
     @RequestMapping(value = "/groupFilter")
     @ResponseBody
     public List<Group> groupFilter(@RequestParam("filter") String filter) {
+        logger.info("In groupFilter method");
         return groupService.searchByString(filter);
     }
 }

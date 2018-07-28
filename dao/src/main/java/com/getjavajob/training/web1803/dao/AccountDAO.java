@@ -5,6 +5,8 @@ import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import java.util.List;
 @Repository
 @Transactional
 public class AccountDAO {
+    private static final Logger logger = LoggerFactory.getLogger(AccountDAO.class);
 
     private SessionFactory sessionFactory;
 
@@ -28,6 +31,7 @@ public class AccountDAO {
     }
 
     public boolean create(Account account) throws DaoNameException {
+        logger.info("In create method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Account.class);
@@ -36,21 +40,26 @@ public class AccountDAO {
         boolean emailNotExist = session.createQuery(selectEmail).getResultList().isEmpty();
         if (emailNotExist) {
             session.persist(account);
+            logger.info("new account created.");
             return true;
         } else {
+            logger.warn("Email exists. Thrown exception - " + DaoNameException.class);
             throw new DaoNameException("Email \"" + account.getEmail() + "\" is already used.");
         }
     }
 
     public Account get(int id) {
+        logger.info("In get method");
         return sessionFactory.getCurrentSession().get(Account.class, id);
     }
 
     public byte[] getPhoto(int id) {
+        logger.info("In getPhoto method");
         return sessionFactory.getCurrentSession().get(Account.class, id).getPhoto();
     }
 
     public int loginAndGetId(String email, String password) throws DaoNameException {
+        logger.info("In loginAndGetId method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQueryLogin = criteriaBuilder.createQuery(Account.class);
@@ -62,16 +71,19 @@ public class AccountDAO {
         try {
             account = session.createQuery(selectOnEmail).getSingleResult();
         } catch (NoResultException e) {
+            logger.warn("Login fails. Thrown exception - " + DaoNameException.class);
             throw new DaoNameException("Email: \"" + email + "\" and password: " + password + " not found in database.");
         }
         return account.getId();
     }
 
     public Role getRole(int accountId) {
+        logger.info("In getRole method");
         return sessionFactory.getCurrentSession().get(Account.class, accountId).getRole();
     }
 
     public List<Account> searchByString(String search) {
+        logger.info("In searchByString method. Search string: " + search);
         String lowerSearch = search.toLowerCase();
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -94,12 +106,14 @@ public class AccountDAO {
 
     @Transactional
     public boolean update(Account account) {
+        logger.info("In update method");
         sessionFactory.getCurrentSession().merge(account);
         return true;
     }
 
     @Transactional
     public boolean updateRole(int accountId, Role newRole) {
+        logger.info("In updateRole method");
         Session session = sessionFactory.getCurrentSession();
         Account account = session.find(Account.class, accountId);
         account.setRole(newRole);
@@ -109,6 +123,7 @@ public class AccountDAO {
 
     @Transactional
     public boolean remove(int id) {
+        logger.info("In remove method");
         Session session = sessionFactory.getCurrentSession();
         Account account = session.find(Account.class, id);
         session.remove(account);

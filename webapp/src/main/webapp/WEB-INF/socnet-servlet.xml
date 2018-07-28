@@ -34,7 +34,7 @@
         <property name="customEditors">
             <map>
                 <entry key="com.getjavajob.training.web1803.common.enums.PhoneType"
-                       value="com.getjavajob.training.web1803.webapp.PhoneTypeEditor"/>
+                       value="com.getjavajob.training.web1803.webapp.convertors.PhoneTypeEditor"/>
             </map>
         </property>
     </bean>
@@ -62,7 +62,7 @@ com.getjavajob.training.web1803.webapp"/>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.format_sql">true</prop>
-                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.id.new_generator_mappings">false</prop>
             </props>
         </property>

@@ -7,6 +7,8 @@ import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.List;
 @Repository
 @Transactional
 public class GroupDAO {
+    private static final Logger logger = LoggerFactory.getLogger(GroupDAO.class);
 
     private SessionFactory sessionFactory;
 
@@ -30,6 +33,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean create(Group group) throws DaoNameException {
+        logger.info("In create method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Group> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Group.class);
@@ -38,17 +42,21 @@ public class GroupDAO {
         boolean nameNotExist = session.createQuery(selectName).getResultList().isEmpty();
         if (nameNotExist) {
             session.persist(group);
+            logger.info("New group created.");
             return true;
         } else {
+            logger.warn("Name exists. Thrown exception - " + DaoNameException.class);
             throw new DaoNameException("Group name \"" + group.getName() + "\" is already used.");
         }
     }
 
     public Group get(int groupId) {
+        logger.info("In get method");
         return sessionFactory.getCurrentSession().get(Group.class, groupId);
     }
 
     public List<Group> getAll() {
+        logger.info("In getAll method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
@@ -58,6 +66,7 @@ public class GroupDAO {
     }
 
     public List<Group> getAllByUserId(int userId) {
+        logger.info("In getAllByUserId method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
@@ -66,12 +75,11 @@ public class GroupDAO {
         criteriaQuery.select(from).distinct(true).where(criteriaBuilder.and(
                         criteriaBuilder.equal(accountInGroupJoin.get("userMemberId"), userId),
                         criteriaBuilder.equal(accountInGroupJoin.get("status"), GroupStatus.ACCEPTED)));
-        List<Group> result = session.createQuery(criteriaQuery).getResultList();
-        System.out.println("List<Group>: " + result);
-        return result;
+        return session.createQuery(criteriaQuery).getResultList();
     }
 
     public List<Group> searchByString(String search) {
+        logger.info("In searchByString method");
         String lowerSearch = search.toLowerCase();
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -83,6 +91,7 @@ public class GroupDAO {
     }
 
     public int getId(String name) {
+        logger.info("In getId method");
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
@@ -92,12 +101,14 @@ public class GroupDAO {
     }
 
     public byte[] getPhoto(int id) {
+        logger.info("In getPhoto method");
         Session session = sessionFactory.getCurrentSession();
         Group group = session.get(Group.class, id);
         return group.getPhoto();
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
+        logger.info("In getRoleMemberInGroup method");
         Session session = sessionFactory.getCurrentSession();
         Group group = session.get(Group.class, groupId);
         for (AccountInGroup accountInGroup : group.getAccounts()) {
@@ -109,6 +120,7 @@ public class GroupDAO {
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
+        logger.info("In getStatusMemberInGroup method");
         Session session = sessionFactory.getCurrentSession();
         Group group = session.get(Group.class, groupId);
         for (AccountInGroup accountInGroup : group.getAccounts()) {
@@ -121,6 +133,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean update(Group group) {
+        logger.info("In update method");
         Session session = sessionFactory.getCurrentSession();
         Group currentGroup = session.get(Group.class, group.getId());
         group.setAccounts(currentGroup.getAccounts());
@@ -130,6 +143,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
+        logger.info("In addPendingMemberToGroup method");
         Session session = sessionFactory.getCurrentSession();
         Group currentGroup = session.get(Group.class, idGroup);
         List<AccountInGroup> accounts = currentGroup.getAccounts();
@@ -141,6 +155,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean setStatusMemberInGroup(int idGroup, int member, GroupStatus status) {
+        logger.info("In setStatusMemberInGroup method");
         Session session = sessionFactory.getCurrentSession();
         Group currentGroup = session.get(Group.class, idGroup);
         List<AccountInGroup> accounts = currentGroup.getAccounts();
@@ -157,6 +172,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean setRoleMemberInGroup(int idGroup, int member, GroupRole role) {
+        logger.info("In setRoleMemberInGroup method");
         Session session = sessionFactory.getCurrentSession();
         Group currentGroup = session.get(Group.class, idGroup);
         List<AccountInGroup> accounts = currentGroup.getAccounts();
@@ -173,6 +189,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
+        logger.info("In removeMemberFromGroup method");
         Session session = sessionFactory.getCurrentSession();
         Group currentGroup = session.get(Group.class, idGroup);
         List<AccountInGroup> accounts = currentGroup.getAccounts();
@@ -189,6 +206,7 @@ public class GroupDAO {
 
     @Transactional
     public boolean remove(int idGroup) {
+        logger.info("In remove method");
         Session session = sessionFactory.getCurrentSession();
         Group group = session.get(Group.class, idGroup);
         session.remove(group);
