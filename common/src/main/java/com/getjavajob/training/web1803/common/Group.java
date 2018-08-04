@@ -14,14 +14,14 @@ public class Group implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "group_id")
-    private int id;
+    private Integer id;
     private String name;
     private byte[] photo;
     @Column(name = "create_date")
     private String createDate;
     private String info;
     @Column(name = "user_creator_id")
-    private int userCreatorId;
+    private Integer userCreatorId;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "group_id", nullable = false)
     private List<AccountInGroup> accounts = new ArrayList<>();
@@ -39,11 +39,11 @@ public class Group implements Serializable {
     public Group() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -79,11 +79,11 @@ public class Group implements Serializable {
         this.info = info;
     }
 
-    public int getUserCreatorId() {
+    public Integer getUserCreatorId() {
         return userCreatorId;
     }
 
-    public void setUserCreatorId(int userCreatorId) {
+    public void setUserCreatorId(Integer userCreatorId) {
         this.userCreatorId = userCreatorId;
     }
 
@@ -94,31 +94,6 @@ public class Group implements Serializable {
     public void setAccounts(List<AccountInGroup> accounts) {
         this.accounts = accounts;
     }
-
-    //    public List<Integer> getAcceptedMembersId() {
-//        return acceptedMembersId;
-//    }
-//
-//    public void setAcceptedMembersId(List<Integer> acceptedMembersId) {
-//        this.acceptedMembersId = acceptedMembersId;
-//    }
-//
-//    public List<Integer> getAdminsId() {
-//        return adminsId;
-//    }
-//
-//    public void setAdminsId(List<Integer> adminsId) {
-//        this.adminsId = adminsId;
-//    }
-//
-//    public List<Integer> getPendingMembersId() {
-//        return pendingMembersId;
-//    }
-//
-//    public void setPendingMembersId(List<Integer> pendingMembersId) {
-//        this.pendingMembersId = pendingMembersId;
-//    }
-
 
     @Override
     public boolean equals(Object o) {

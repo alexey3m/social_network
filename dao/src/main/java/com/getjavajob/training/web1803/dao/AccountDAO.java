@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @Transactional
 public class AccountDAO {
     private static final Logger logger = LoggerFactory.getLogger(AccountDAO.class);
+    private static final int SEARCH_RESULT_PER_PAGE = 5;
 
     private SessionFactory sessionFactory;
 
@@ -36,7 +38,8 @@ public class AccountDAO {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Account.class);
         Root<Account> from = criteriaQueryCheckEmail.from(Account.class);
-        CriteriaQuery<Account> selectEmail = criteriaQueryCheckEmail.select(from).where(criteriaBuilder.equal(from.get("email"), account.getEmail()));
+        CriteriaQuery<Account> selectEmail = criteriaQueryCheckEmail.select(from).where(
+                criteriaBuilder.equal(from.get("email"), account.getEmail()));
         boolean emailNotExist = session.createQuery(selectEmail).getResultList().isEmpty();
         if (emailNotExist) {
             session.persist(account);
@@ -82,7 +85,7 @@ public class AccountDAO {
         return sessionFactory.getCurrentSession().get(Account.class, accountId).getRole();
     }
 
-    public List<Account> searchByString(String search) {
+    public List<Account> searchByString(String search, int page) {
         logger.info("In searchByString method. Search string: " + search);
         String lowerSearch = search.toLowerCase();
         Session session = sessionFactory.getCurrentSession();
@@ -100,8 +103,34 @@ public class AccountDAO {
         Predicate whereClause = criteriaBuilder.or(
                 criteriaBuilder.like(exp1, "%" + lowerSearch + "%"),
                 criteriaBuilder.like(exp2, "%" + lowerSearch + "%"));
-        CriteriaQuery<Account> selectEmail = criteriaQuerySearch.select(from).where(whereClause);
-        return session.createQuery(selectEmail).getResultList();
+        CriteriaQuery<Account> select = criteriaQuerySearch.select(from).where(whereClause);
+        TypedQuery<Account> searchQuery = session.createQuery(select);
+        searchQuery.setFirstResult(page == 1 ? 0 : page * SEARCH_RESULT_PER_PAGE - SEARCH_RESULT_PER_PAGE);
+        searchQuery.setMaxResults(SEARCH_RESULT_PER_PAGE);
+        return searchQuery.getResultList();
+    }
+
+    public long searchByStringCount(String search) {
+        logger.info("In searchByStringCount method. Search string: " + search);
+        String lowerSearch = search.toLowerCase();
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Account> from = criteriaQuery.from(Account.class);
+        criteriaQuery.select(criteriaBuilder.count(from));
+        Expression<String> exp1 = criteriaBuilder.concat(from.get("firstName"), " ");
+        exp1 = criteriaBuilder.concat(exp1, from.get("lastName"));
+        exp1 = criteriaBuilder.concat(exp1, " ");
+        exp1 = criteriaBuilder.concat(exp1, from.get("middleName"));
+        Expression<String> exp2 = criteriaBuilder.concat(from.get("firstName"), " ");
+        exp2 = criteriaBuilder.concat(exp2, from.get("middleName"));
+        exp2 = criteriaBuilder.concat(exp2, " ");
+        exp2 = criteriaBuilder.concat(exp2, from.get("lastName"));
+        Predicate whereClause = criteriaBuilder.or(
+                criteriaBuilder.like(exp1, "%" + lowerSearch + "%"),
+                criteriaBuilder.like(exp2, "%" + lowerSearch + "%"));
+        criteriaQuery.where(whereClause);
+        return session.createQuery(criteriaQuery).getSingleResult();
     }
 
     @Transactional

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @Transactional
 public class GroupDAO {
     private static final Logger logger = LoggerFactory.getLogger(GroupDAO.class);
+    private static final int SEARCH_RESULT_PER_PAGE = 5;
 
     private SessionFactory sessionFactory;
 
@@ -38,7 +40,8 @@ public class GroupDAO {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Group> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Group.class);
         Root<Group> from = criteriaQueryCheckEmail.from(Group.class);
-        CriteriaQuery<Group> selectName = criteriaQueryCheckEmail.select(from).where(criteriaBuilder.equal(from.get("name"), group.getName()));
+        CriteriaQuery<Group> selectName = criteriaQueryCheckEmail.select(from).where(criteriaBuilder.equal(
+                from.get("name"), group.getName()));
         boolean nameNotExist = session.createQuery(selectName).getResultList().isEmpty();
         if (nameNotExist) {
             session.persist(group);
@@ -78,17 +81,33 @@ public class GroupDAO {
         return session.createQuery(criteriaQuery).getResultList();
     }
 
-    public List<Group> searchByString(String search) {
-        logger.info("In searchByString method");
+    public List<Group> searchByString(String search, int page) {
+        logger.info("In searchByString method. Search string: " + search);
         String lowerSearch = search.toLowerCase();
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Group> criteriaQuerySearch = criteriaBuilder.createQuery(Group.class);
         Root<Group> from = criteriaQuerySearch.from(Group.class);
-        CriteriaQuery<Group> selectEmail = criteriaQuerySearch.select(from).where(
+        CriteriaQuery<Group> select = criteriaQuerySearch.select(from).where(
                 criteriaBuilder.like(from.get("name"), "%" + lowerSearch + "%"));
-        return session.createQuery(selectEmail).getResultList();
+        TypedQuery<Group> searchQuery = session.createQuery(select);
+        searchQuery.setFirstResult(page == 1 ? 0 : page * SEARCH_RESULT_PER_PAGE - SEARCH_RESULT_PER_PAGE);
+        searchQuery.setMaxResults(SEARCH_RESULT_PER_PAGE);
+        return searchQuery.getResultList();
     }
+
+    public long searchByStringCount(String search) {
+        logger.info("In searchByStringCount method. Search string: " + search);
+        String lowerSearch = search.toLowerCase();
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Group> from = criteriaQuery.from(Group.class);
+        criteriaQuery.select(criteriaBuilder.count(from));
+        criteriaQuery.where(criteriaBuilder.like(from.get("name"), "%" + lowerSearch + "%"));
+        return session.createQuery(criteriaQuery).getSingleResult();
+    }
+
 
     public int getId(String name) {
         logger.info("In getId method");

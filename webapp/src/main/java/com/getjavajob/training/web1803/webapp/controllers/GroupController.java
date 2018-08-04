@@ -179,7 +179,7 @@ public class GroupController {
         group.setAccounts(accounts);
         try {
             boolean result = groupService.create(group);
-            return result ? "redirect:viewGroup?id=" + groupService.getId(name) + "&infoMessage=regGroup" : "redirect:/jsp/create-group.jsp?infoMessage=smFalse";
+            return "redirect:viewGroups";
         } catch (DaoNameException e) {
             return "redirect:/createGroupPage?infoMessage=nameFalse&name=" + name;
         }

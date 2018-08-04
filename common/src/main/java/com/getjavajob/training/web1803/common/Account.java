@@ -43,7 +43,7 @@ public class Account implements Serializable {
     @XmlElement(name = "skype")
     private String skype;
     @XmlElement(name = "icq")
-    private int icq;
+    private int icq;//todo
     @Column(name = "reg_date")
     @XmlElement(name = "regDate")
     private String regDate;
@@ -52,7 +52,8 @@ public class Account implements Serializable {
     private Role role;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id", nullable = false)
-    @XmlElement(name = "phones")
+    @XmlElementWrapper(name = "phones")
+    @XmlElement(name = "phone")
     private List<Phone> phones = new ArrayList<>();
 
     public Account(int id, String email, String password, String firstName, String lastName, String middleName, String birthday,

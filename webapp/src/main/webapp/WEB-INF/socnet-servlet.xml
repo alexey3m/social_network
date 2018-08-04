@@ -5,6 +5,7 @@
        xmlns:jee="http://www.springframework.org/schema/jee"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
@@ -14,7 +15,9 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd
         http://www.springframework.org/schema/jee
-        http://www.springframework.org/schema/jee/spring-jee.xsd">
+        http://www.springframework.org/schema/jee/spring-jee.xsd
+        http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
     <jee:jndi-lookup jndi-name="jdbc/socnet" id="dataSource" expected-type="javax.sql.DataSource"/>
 
@@ -24,7 +27,10 @@
 
     <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
+        <!--<property name="dataSource" ref="dataSource"/>-->
+        <property name="nestedTransactionAllowed" value="true"/>
     </bean>
+
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="99999999999"/>
@@ -42,7 +48,8 @@
     <context:component-scan base-package="com.getjavajob.training.web1803.dao, com.getjavajob.training.web1803.service,
 com.getjavajob.training.web1803.webapp"/>
 
-    <tx:annotation-driven/>
+    <tx:annotation-driven proxy-target-class="true"/>
+
 
     <mvc:annotation-driven/>
     <mvc:resources mapping="/resources/**" location="/resources/"/>
@@ -55,8 +62,11 @@ com.getjavajob.training.web1803.webapp"/>
         </mvc:interceptor>
     </mvc:interceptors>
 
+    <jpa:repositories base-package="com.getjavajob.training.web1803.dao"/>
+
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
+        <!--<property name="jtaTransactionManager" ref="transactionManager"/>-->
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -71,6 +81,31 @@ com.getjavajob.training.web1803.webapp"/>
                 <value>com.getjavajob.training.web1803.common</value>
                 <value>com.getjavajob.training.web1803.common.enums</value>
             </list>
+        </property>
+    </bean>
+
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan">
+            <list>
+                <value>com.getjavajob.training.web1803.common</value>
+                <value>com.getjavajob.training.web1803.common.enums</value>
+            </list>
+        </property>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="true"/>
+            </bean>
+        </property>
+        <property name="jpaPropertyMap">
+            <map>
+                <entry key="hibernate.hbm2ddl.auto" value="update" />
+                <entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+                <entry key="hibernate.show_sql" value="true" />
+                <entry key="hibernate.format_sql" value="true" />
+                <entry key="hibernate.id.new_generator_mappings" value="false" />
+            </map>
         </property>
     </bean>
 </beans>

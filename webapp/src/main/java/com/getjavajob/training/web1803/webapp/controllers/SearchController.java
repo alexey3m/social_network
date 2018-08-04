@@ -44,8 +44,8 @@ public class SearchController {
     @ResponseBody
     public List<String> commonSearchFilter(@RequestParam("filter") String filter) {
         logger.info("In commonSearchFilter method");
-        List<Account> accounts = accountService.searchByString(filter);
-        List<Group> groups = groupService.searchByString(filter);
+        List<Account> accounts = accountService.searchByString(filter, 1);
+        List<Group> groups = groupService.searchByString(filter, 0);
         List<String> result = new ArrayList<>();
         for (Account account : accounts) {
             result.add(account.getFirstName() + " " + account.getMiddleName() + " " + account.getLastName());
@@ -57,17 +57,31 @@ public class SearchController {
         return result;
     }
 
-    @RequestMapping(value = "/accountFilterAjax")
+    @RequestMapping(value = "/accountFilter")
     public @ResponseBody
-    List<Account> accountFilterAjax(@RequestParam("filter") String filter) {
+    List<Account> accountFilter(@RequestParam("filter") String filter, @RequestParam("page") int page) {
         logger.info("In accountFilter method");
-        return accountService.searchByString(filter);
+        return accountService.searchByString(filter, page);
     }
 
-    @RequestMapping(value = "/groupFilterAjax")
+    @RequestMapping(value = "/accountFilterCount")
     public @ResponseBody
-    List<Group> groupFilter(@RequestParam("filter") String filter) {
+    long searchAccountByStringCount(@RequestParam("filter") String filter) {
+        logger.info("In searchAccountByStringCount method");
+        return accountService.searchByStringCount(filter);
+    }
+
+    @RequestMapping(value = "/groupFilter")
+    public @ResponseBody
+    List<Group> groupFilter(@RequestParam("filter") String filter, @RequestParam("page") int page) {
         logger.info("In groupFilter method");
-        return groupService.searchByString(filter);
+        return groupService.searchByString(filter, page - 1);
+    }
+
+    @RequestMapping(value = "/groupFilterCount")
+    public @ResponseBody
+    long searchGroupByStringCount(@RequestParam("filter") String filter) {
+        logger.info("In searchAccountByStringCount method");
+        return groupService.searchByStringCount(filter);
     }
 }

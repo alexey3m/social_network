@@ -77,8 +77,8 @@ public class GroupServiceTest {
                 "Info 1", 1, accounts);
         List<Group> expected = new ArrayList<>();
         expected.add(group);
-        when(groupDAO.searchByString("1")).thenReturn(expected);
-        assertEquals(expected, groupService.searchByString("1"));
+        when(groupDAO.searchByString("1", 1)).thenReturn(expected);
+        assertEquals(expected, groupService.searchByString("1", 1));
     }
 
     @Test

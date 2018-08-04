@@ -91,8 +91,8 @@ public class AccountServiceTest {
         List<Account> accounts = new ArrayList<>();
         accounts.add(account1);
         accounts.add(account2);
-        when(accountDAO.searchByString("ey")).thenReturn(accounts);
-        assertEquals(accounts, accountService.searchByString("ey"));
+        when(accountDAO.searchByString("ey", 1)).thenReturn(accounts);
+        assertEquals(accounts, accountService.searchByString("ey", 1));
     }
 
     @Test

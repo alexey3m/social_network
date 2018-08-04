@@ -46,8 +46,12 @@ public class AccountService {
         return accountDAO.loginAndGetId(email, password);
     }
 
-    public List<Account> searchByString(String search) {
-        return accountDAO.searchByString(search);
+    public List<Account> searchByString(String search, int page) {
+        return accountDAO.searchByString(search, page);
+    }
+
+    public long searchByStringCount(String search) {
+        return accountDAO.searchByStringCount(search);
     }
 
     public Role getRole(int accountId) {

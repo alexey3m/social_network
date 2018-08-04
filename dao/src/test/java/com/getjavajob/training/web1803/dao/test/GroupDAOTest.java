@@ -114,7 +114,7 @@ public class GroupDAOTest {
                 "Info 1", 1, accounts1);
         List<Group> expected = new ArrayList<>();
         expected.add(group1);
-        assertEquals(expected, groupDAO.searchByString("1"));
+        assertEquals(expected, groupDAO.searchByString("1", 1));
     }
 
     @Test

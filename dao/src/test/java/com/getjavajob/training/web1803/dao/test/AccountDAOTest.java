@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -71,6 +72,26 @@ public class AccountDAOTest {
         accountDAO.create(account);
         assertEquals(expected, accountDAO.get(4));
     }
+
+    @Test
+        public void searchByStringTest() {
+        Account expected1 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
+                "", "1990-01-01", null, "bbbbb", 0,
+                "2018-06-13", Role.USER, new ArrayList<>());
+        Account expected2 = new Account(3, "c@c.ru", "123", "Ivan", "Ivanov",
+                "Ivanovich", "1970-05-29", null, "ccccc", 12345,
+                "2018-06-13", Role.USER, new ArrayList<>());
+        List<Account> expected = new ArrayList<>();
+        expected.add(expected1);
+        expected.add(expected2);
+        assertEquals(expected, accountDAO.searchByString("n", 1));
+    }
+
+    @Test
+    public void searchByStringCountTest() {
+        assertEquals(2, accountDAO.searchByStringCount("n"));
+    }
+
 
     @Test
     public void loginAndGetIdTest() throws DaoNameException {
