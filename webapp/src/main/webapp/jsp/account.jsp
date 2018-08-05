@@ -73,6 +73,11 @@
             <strong>Успешно!</strong> <br>Новая роль ${account.firstName} ${account.lastName} - "Администратор"!
         </div>
     </c:if>
+    <c:if test="${infoMessage == 'remove'}">
+        <div class="alert alert-success text-alert" role="alert">
+            <strong>Успешно!</strong> <br>Аккаунт удален!
+        </div>
+    </c:if>
 
     <div class="row">
         <div class="col-md-3">
@@ -83,22 +88,22 @@
                 <div class="control-panel">
                     Панель управления<br>
                 </div>
-                <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
+                <c:if test="${sessionRole == Role.ROLE_ADMIN || sessionId == id}">
                     <div class="control-panel">
                         <a href="updateAccountPage?id=${id}">
                             <button type="button" class="btn btn-sm btn-primary">Обновить аккаунт</button>
                         </a>
                     </div>
                 </c:if>
-                <c:if test="${sessionRole == Role.ADMIN && sessionId != id}">
+                <c:if test="${sessionRole == Role.ROLE_ADMIN && sessionId != id}">
                     <div class="control-panel">
-                        <c:if test="${role == Role.ADMIN}">
+                        <c:if test="${role == Role.ROLE_ADMIN}">
                             <form method="post" action="updateRole?action=toUser&actionId=${id}">
                                 <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Пользователь"
                                 </button>
                             </form>
                         </c:if>
-                        <c:if test="${role == Role.USER}">
+                        <c:if test="${role == Role.ROLE_USER}">
                             <form method="post" action="updateRole?action=toAdmin&actionId=${id}">
                                 <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Администратор"
                                 </button>
@@ -161,16 +166,23 @@
                         <button type="submit" class="btn btn-primary">Скачать аккаунт в XML</button>
                     </a>
                 </div>
+                <div class="control-panel">
+                    <form method="post" action="removeAccount?actionId=${id}">
+                        <button type="submit" class="btn btn-sm btn-primary">Удалить аккаунт</button>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="col-md-9">
             <div class="row">
                 <h5>${account.firstName} ${account.middleName} ${account.lastName}</h5>
             </div>
+            <c:if test="${account.birthday != null}">
             <div class="row">
                 <div class="col-5">День рождения:</div>
                 <div class="col-5">${account.birthday}</div>
             </div>
+            </c:if>
             <c:forEach var="phone" items="${account.phones}">
                 <div class="row">
                     <div class="col-5">
@@ -180,21 +192,30 @@
                     <div class="col-5"><c:out value="${phone.number}"/></div>
                 </div>
             </c:forEach>
-            <div class="row">
-                <div class="col-5">ICQ:</div>
-                <div class="col-5">${account.icq}</div>
-            </div>
+            <c:if test="${account.icq != null}">
+                <div class="row">
+                    <div class="col-5">ICQ:</div>
+                    <div class="col-5">${account.icq}</div>
+                </div>
+            </c:if>
+            <c:if test="${account.skype != null}">
             <div class="row">
                 <div class="col-5">Skype:</div>
                 <div class="col-5">${account.skype}</div>
             </div>
+            </c:if>
             <div class="row">
                 <div class="col-5">Дата регистрации:</div>
                 <div class="col-5">${account.regDate}</div>
             </div>
             <div class="row">
                 <div class="col-5">Роль:</div>
-                <div class="col-5">${account.role}</div>
+                <div class="col-5">
+                    <c:choose>
+                        <c:when test="${account.role == Role.ROLE_ADMIN}">Администратор</c:when>
+                        <c:otherwise>Пользователь</c:otherwise>
+                    </c:choose>
+                </div>
             </div>
             <div class="row">
                 <hr/>
@@ -232,7 +253,7 @@
                                 </p>
                             </div>
                             <div class="float-right">
-                                <c:if test="${sessionRole == Role.ADMIN || sessionId == id}">
+                                <c:if test="${sessionRole == Role.ROLE_ADMIN || sessionId == id}">
                                     <form action="messageAction?action=remove&type=accountWall&assignId=${account.id}&messageId=${message.id}"
                                           method="post">
                                         <button type="submit" class="btn btn-outline-primary">Удалить</button>

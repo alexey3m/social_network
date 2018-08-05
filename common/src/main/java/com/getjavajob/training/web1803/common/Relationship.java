@@ -14,18 +14,18 @@ public class Relationship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private Integer id;
     @Column(name = "user_one_id", nullable = false)
-    private int userOneId;
+    private Integer userOneId;
     @Column(name = "user_two_id", nullable = false)
-    private int userTwoId;
+    private Integer userTwoId;
     @Enumerated(STRING)
     @Column(name = "status", nullable = false)
     private Status type;
     @Column(name = "action_user_id", nullable = false)
-    private int actionUserId;
+    private Integer actionUserId;
 
-    public Relationship(int userOneId, int userTwoId, Status type, int actionUserId) {
+    public Relationship(Integer userOneId, Integer userTwoId, Status type, Integer actionUserId) {
         this.userOneId = userOneId;
         this.userTwoId = userTwoId;
         this.type = type;
@@ -35,27 +35,27 @@ public class Relationship {
     public Relationship() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getUserOneId() {
+    public Integer getUserOneId() {
         return userOneId;
     }
 
-    public void setUserOneId(int userOneId) {
+    public void setUserOneId(Integer userOneId) {
         this.userOneId = userOneId;
     }
 
-    public int getUserTwoId() {
+    public Integer getUserTwoId() {
         return userTwoId;
     }
 
-    public void setUserTwoId(int userTwoId) {
+    public void setUserTwoId(Integer userTwoId) {
         this.userTwoId = userTwoId;
     }
 
@@ -67,11 +67,11 @@ public class Relationship {
         this.type = type;
     }
 
-    public int getActionUserId() {
+    public Integer getActionUserId() {
         return actionUserId;
     }
 
-    public void setActionUserId(int actionUserId) {
+    public void setActionUserId(Integer actionUserId) {
         this.actionUserId = actionUserId;
     }
 

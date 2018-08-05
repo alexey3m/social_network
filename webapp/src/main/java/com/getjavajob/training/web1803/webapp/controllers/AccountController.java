@@ -81,7 +81,7 @@ public class AccountController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error(MESSAGE_ENCODE + e);
+                logger.error(MESSAGE_ENCODE, e);
             }
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/account.jsp");
@@ -116,17 +116,17 @@ public class AccountController {
     public String regAccount(@ModelAttribute Account account,
                              @RequestParam(required = false, name = "uploadPhoto") MultipartFile file, BindingResult result) {
         logger.info("In regAccount method");
-        byte[] currentAccountPhoto = new byte[0];
+        byte[] currentAccountPhoto = null;
         if (!file.isEmpty()) {
             try {
                 currentAccountPhoto = file.getBytes();
             } catch (IOException e) {
-                logger.error("Get bytes from file end with error! Exception: " + e);
+                logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
         account.setPhoto(currentAccountPhoto);
         account.setRegDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        account.setRole(Role.USER);
+        account.setRole(Role.ROLE_USER);
         try {
             accountService.create(account);
             return "redirect:/jsp/login.jsp?&infoMessage=reg";
@@ -140,21 +140,22 @@ public class AccountController {
                                 @RequestParam(required = false, name = "photoUpdate") MultipartFile file,
                                 HttpSession session, BindingResult result) {
         logger.info("In updateAccount method");
-        byte[] currentAccountPhoto = accountService.getPhoto(account.getId());
+        int id = account.getId();
+        byte[] currentAccountPhoto = accountService.getPhoto(id);
         if (!file.isEmpty()) {
             try {
                 currentAccountPhoto = file.getBytes();
             } catch (IOException e) {
-                logger.error("Get bytes from file end with error! Exception: " + e);
+                logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
         account.setPhoto(currentAccountPhoto);
         boolean resultUpdate = accountService.update(account);
         if (resultUpdate) {
             session.setAttribute("userName", account.getFirstName() + " " + account.getLastName());
-            return REDIRECT_TO_VIEW_ACCOUNT + account.getId() + "&infoMessage=updateTrue";
+            return REDIRECT_TO_VIEW_ACCOUNT + id + "&infoMessage=updateTrue";
         } else {
-            return REDIRECT_TO_VIEW_ACCOUNT + account.getId() + "&infoMessage=updateFalse";
+            return REDIRECT_TO_VIEW_ACCOUNT + id + "&infoMessage=updateFalse";
         }
     }
 
@@ -164,7 +165,7 @@ public class AccountController {
         logger.info("In updateAccountPage method");
         int sessionId = (Integer) session.getAttribute("id");
         Role sessionRole = (Role) session.getAttribute("role");
-        if (id != sessionId && sessionRole != Role.ADMIN) {
+        if (id != sessionId && sessionRole != Role.ROLE_ADMIN) {
             return new ModelAndView("/");
         } else {
             Account account = accountService.get(id);
@@ -175,7 +176,7 @@ public class AccountController {
                 try {
                     encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    logger.error(MESSAGE_ENCODE + e);
+                    logger.error(MESSAGE_ENCODE, e);
                 }
             }
             ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
@@ -196,10 +197,10 @@ public class AccountController {
         logger.info("In updateRole method");
         String message = "updateRoleFalse";
         if (action.equals("toUser")) {
-            accountService.updateRole(actionId, Role.USER);
+            accountService.updateRole(actionId, Role.ROLE_USER);
             message = "updateRoleUser";
         } else if (action.equals("toAdmin")) {
-            accountService.updateRole(actionId, Role.ADMIN);
+            accountService.updateRole(actionId, Role.ROLE_ADMIN);
             message = "updateRoleAdmin";
         }
         return REDIRECT_TO_VIEW_ACCOUNT + actionId + "&infoMessage=" + message;
@@ -222,7 +223,7 @@ public class AccountController {
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "utf-8");
             marshaller.marshal(account, file);
         } catch (JAXBException e) {
-            logger.error("Error with JAXB instance. Exception: " + e);
+            logger.error("Error with JAXB instance. Exception: ", e);
         }
         try (FileInputStream inputStream = new FileInputStream(file)) {
             response.setContentType("application/xml");
@@ -238,9 +239,9 @@ public class AccountController {
             inputStream.close();
             outStream.close();
         } catch (FileNotFoundException e) {
-            logger.error("FileNotFoundException: " + e);
+            logger.error("FileNotFoundException: ", e);
         } catch (IOException e) {
-            logger.error("IOException: " + e);
+            logger.error("IOException: ", e);
         }
     }
 
@@ -256,9 +257,9 @@ public class AccountController {
             file.transferTo(fileToUpdate);
             account = (Account) unmarshaller.unmarshal(fileToUpdate);
         } catch (JAXBException e) {
-            logger.error("Error with JAXB instance. Exception: " + e);
+            logger.error("Error with JAXB instance. Exception: ", e);
         } catch (IOException e) {
-            logger.error("Error with transfer to file. Exception: " + e);
+            logger.error("Error with transfer to file. Exception: ", e);
         }
         String encodedPhoto = "";
         byte[] photo = accountService.getPhoto(account.getId());
@@ -267,7 +268,7 @@ public class AccountController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error(MESSAGE_ENCODE + e);
+                logger.error(MESSAGE_ENCODE, e);
             }
         }
         account.setRole(accountService.getRole(account.getId()));
@@ -276,4 +277,14 @@ public class AccountController {
         modelAndView.addObject("encodedPhoto", encodedPhoto);
         return modelAndView;
     }
+
+    @RequestMapping(value = "/removeAccount", method = RequestMethod.POST)
+    public String removeAccount(@RequestParam("actionId") int actionId, HttpSession session) {
+        logger.info("In removeAccount method");
+        int sessionId = (Integer) session.getAttribute("id");
+        accountService.remove(actionId);
+        return REDIRECT_TO_VIEW_ACCOUNT + sessionId +"&infoMessage=remove";
+    }
+
+
 }

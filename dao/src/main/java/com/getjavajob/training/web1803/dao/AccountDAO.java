@@ -80,6 +80,22 @@ public class AccountDAO {
         return account.getId();
     }
 
+    public Account getByEmail(String email) throws DaoNameException {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Account> criteriaQueryLogin = criteriaBuilder.createQuery(Account.class);
+        Root<Account> from = criteriaQueryLogin.from(Account.class);
+        CriteriaQuery<Account> selectOnEmail = criteriaQueryLogin.select(from).where(
+                criteriaBuilder.equal(from.get("email"), email));
+        try {
+            return session.createQuery(selectOnEmail).getSingleResult();
+        } catch (NoResultException e) {
+            e.printStackTrace();
+            logger.warn("Login fails. Thrown exception - " + DaoNameException.class);
+            throw new DaoNameException("Email: \"" + email + "\" not found in database.");
+        }
+    }
+
     public Role getRole(int accountId) {
         logger.info("In getRole method");
         return sessionFactory.getCurrentSession().get(Account.class, accountId).getRole();

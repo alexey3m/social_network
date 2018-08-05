@@ -8,9 +8,9 @@ CREATE TABLE account (
   birthday    DATE,
   photo       MEDIUMBLOB,
   skype       VARCHAR(255),
-  icq         INT(10),
+  icq         VARCHAR(255),
   reg_date    DATE,
-  role        enum ('USER', 'ADMIN'),
+  role        enum ('ROLE_USER', 'ROLE_ADMIN'),
   PRIMARY KEY (account_id)
 );
 
@@ -19,6 +19,7 @@ CREATE TABLE phone (
   account_id   INT                             NOT NULL,
   phone_number VARCHAR(15)                     NOT NULL,
   phone_type   enum ('MOBILE', 'WORK', 'HOME') NOT NULL,
+  PRIMARY KEY (phone_id),
   FOREIGN KEY (account_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -30,6 +31,7 @@ CREATE TABLE relationship (
   user_two_id    INT                                                NOT NULL,
   status         enum ('UNKNOWN', 'PENDING', 'ACCEPTED', 'DECLINE') NOT NULL,
   action_user_id INT                                                NOT NULL,
+  PRIMARY KEY (id),
   FOREIGN KEY (user_one_id) REFERENCES account (account_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
@@ -61,6 +63,7 @@ CREATE TABLE account_in_group (
   user_member_id INT                                                NOT NULL,
   role           enum ('UNKNOWN', 'USER', 'ADMIN')                  NOT NULL,
   status         enum ('UNKNOWN', 'PENDING', 'ACCEPTED', 'DECLINE') NOT NULL,
+  PRIMARY KEY (id),
   FOREIGN KEY (group_id) REFERENCES soc_group (group_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,

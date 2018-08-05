@@ -17,14 +17,14 @@ public class Phone implements Serializable {
     @Column(name = "phone_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @XmlTransient
-    private int phoneId;
+    private Integer phoneId;
     @Column(name = "phone_number", nullable = false)
     private String number;
     @Column(name = "phone_type", nullable = false)
     @Enumerated(STRING)
     private PhoneType phoneType;
 
-    public Phone(int phoneId, String number, PhoneType phoneType) {
+    public Phone(Integer phoneId, String number, PhoneType phoneType) {
         this.phoneId = phoneId;
         this.number = number;
         this.phoneType = phoneType;
@@ -33,12 +33,12 @@ public class Phone implements Serializable {
     public Phone() {
     }
 
-    public int getPhoneId() {
+    public Integer getPhoneId() {
         return phoneId;
     }
 
-    public void setPhoneId(int id) {
-        this.phoneId = id;
+    public void setPhoneId(Integer phoneId) {
+        this.phoneId = phoneId;
     }
 
     public String getNumber() {

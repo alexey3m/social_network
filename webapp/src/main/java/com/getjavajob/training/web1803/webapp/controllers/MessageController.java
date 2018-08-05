@@ -82,7 +82,7 @@ public class MessageController {
         try {
             return new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+            logger.error("Encode bytes to UTF-8 end with error! ", e);
             return null;
         }
     }

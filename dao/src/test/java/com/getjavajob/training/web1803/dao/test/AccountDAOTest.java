@@ -42,8 +42,8 @@ public class AccountDAOTest {
     @Test
     public void createTest() throws DaoNameException {
         Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, "dddd", 1111,
-                "2018-06-13", Role.USER, null);
+                "Nikolaevich", "1982-12-13", null, "dddd", "1111",
+                "2018-06-13", Role.ROLE_USER, null);
         boolean result = accountDAO.create(account);
         String expectedResultNewAccount = "Account{id=4, email='kolya1@mail', password='123', firstName='Nikolay', " +
                 "lastName='Malcev', middleName='Nikolaevich', birthday='1982-12-13', photo=null, skype='dddd', " +
@@ -55,8 +55,8 @@ public class AccountDAOTest {
     @Test(expected = DaoNameException.class)
     public void createExceptionTest() throws DaoNameException {
         Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, "dddd", 1111,
-                "2018-06-13", Role.USER, null);
+                "Nikolaevich", "1982-12-13", null, "dddd", "1111",
+                "2018-06-13", Role.ROLE_USER, null);
         accountDAO.create(account);
         accountDAO.create(account);
     }
@@ -64,11 +64,11 @@ public class AccountDAOTest {
     @Test
     public void getTest() throws DaoNameException {
         Account expected = new Account(4, "kolya1@mail", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, "dddd", 1111,
-                "2018-06-13", Role.USER, null);
+                "Nikolaevich", "1982-12-13", null, "dddd", "1111",
+                "2018-06-13", Role.ROLE_USER, null);
         Account account = new Account(0, "kolya1@mail", "123", "Nikolay", "Malcev",
-                "Nikolaevich", "1982-12-13", null, "dddd", 1111,
-                "2018-06-13", Role.USER, null);
+                "Nikolaevich", "1982-12-13", null, "dddd", "1111",
+                "2018-06-13", Role.ROLE_USER, null);
         accountDAO.create(account);
         assertEquals(expected, accountDAO.get(4));
     }
@@ -76,11 +76,11 @@ public class AccountDAOTest {
     @Test
         public void searchByStringTest() {
         Account expected1 = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                "", "1990-01-01", null, "bbbbb", 0,
-                "2018-06-13", Role.USER, new ArrayList<>());
+                "", "1990-01-01", null, "bbbbb", "0",
+                "2018-06-13", Role.ROLE_USER, new ArrayList<>());
         Account expected2 = new Account(3, "c@c.ru", "123", "Ivan", "Ivanov",
-                "Ivanovich", "1970-05-29", null, "ccccc", 12345,
-                "2018-06-13", Role.USER, new ArrayList<>());
+                "Ivanovich", "1970-05-29", null, "ccccc", "12345",
+                "2018-06-13", Role.ROLE_USER, new ArrayList<>());
         List<Account> expected = new ArrayList<>();
         expected.add(expected1);
         expected.add(expected2);
@@ -105,12 +105,12 @@ public class AccountDAOTest {
 
     @Test
     public void getRoleAdminTest() {
-        assertEquals(Role.ADMIN, accountDAO.getRole(1));
+        assertEquals(Role.ROLE_ADMIN, accountDAO.getRole(1));
     }
 
     @Test
     public void getRoleUserTest() {
-        assertEquals(Role.USER, accountDAO.getRole(2));
+        assertEquals(Role.ROLE_USER, accountDAO.getRole(2));
     }
 
     @Test
@@ -124,22 +124,22 @@ public class AccountDAOTest {
         accountUpdate.setMiddleName("Ivanovych");
         accountUpdate.setBirthday("1988-07-23");
         accountUpdate.setSkype("bbbbb");
-        accountUpdate.setIcq(123456);
+        accountUpdate.setIcq("123456");
         accountUpdate.setRegDate("2018-06-08");
-        accountUpdate.setRole(Role.ADMIN);
+        accountUpdate.setRole(Role.ROLE_ADMIN);
         accountDAO.update(accountUpdate);
         Account expected = new Account(1, "a@a.ru", "456", "Ivan", "Ivanov",
-                "Ivanovych", "1988-07-23", null, "bbbbb", 123456,
-                "2018-06-08", Role.ADMIN, new ArrayList<>());
+                "Ivanovych", "1988-07-23", null, "bbbbb", "123456",
+                "2018-06-08", Role.ROLE_ADMIN, new ArrayList<>());
         assertEquals(expected, accountDAO.get(1));
     }
 
     @Test
     public void updateRoleTest() {
-        boolean result = accountDAO.updateRole(2, Role.ADMIN);
+        boolean result = accountDAO.updateRole(2, Role.ROLE_ADMIN);
         Account expected = new Account(2, "b@b.ru", "123", "Sergey", "Semenov",
-                "", "1990-01-01", null, "bbbbb", 0,
-                "2018-06-13", Role.ADMIN, new ArrayList<>());
+                "", "1990-01-01", null, "bbbbb", "0",
+                "2018-06-13", Role.ROLE_ADMIN, new ArrayList<>());
         assertTrue(result);
         assertEquals(expected, accountDAO.get(2));
     }

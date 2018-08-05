@@ -31,7 +31,7 @@
             </li>
         </ul>
         <div class="col-md-4 navs">
-            <form class="form-inline my-2 my-lg-0" action="<c:url value="/logoutUser"/>">
+            <form class="form-inline my-2 my-lg-0" action="<c:url value="/logout"/>">
                 <div class="text-login mr-sm-2">
                     Пользователь: <c:out value="${sessionScope.userName}"/>
                 </div>

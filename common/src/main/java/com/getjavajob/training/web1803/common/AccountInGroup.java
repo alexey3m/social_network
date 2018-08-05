@@ -16,9 +16,9 @@ public class AccountInGroup implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private Integer id;
     @Column(name = "user_member_id", nullable = false)
-    private int userMemberId;
+    private Integer userMemberId;
     @Enumerated(STRING)
     @Column(name = "role", nullable = false)
     private GroupRole role;
@@ -26,13 +26,13 @@ public class AccountInGroup implements Serializable {
     @Column(name = "status", nullable = false)
     private GroupStatus status;
 
-    public AccountInGroup(int userMemberId, GroupRole role, GroupStatus status) {
+    public AccountInGroup(Integer userMemberId, GroupRole role, GroupStatus status) {
         this.userMemberId = userMemberId;
         this.role = role;
         this.status = status;
     }
 
-    public AccountInGroup(int id, int userMemberId, GroupRole role, GroupStatus status) {
+    public AccountInGroup(Integer id, Integer userMemberId, GroupRole role, GroupStatus status) {
         this.id = id;
         this.userMemberId = userMemberId;
         this.role = role;
@@ -42,19 +42,19 @@ public class AccountInGroup implements Serializable {
     public AccountInGroup() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getUserMemberId() {
+    public Integer getUserMemberId() {
         return userMemberId;
     }
 
-    public void setUserMemberId(int userMemberId) {
+    public void setUserMemberId(Integer userMemberId) {
         this.userMemberId = userMemberId;
     }
 

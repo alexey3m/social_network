@@ -86,7 +86,7 @@ public class GroupController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+                logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
             }
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/group.jsp");
@@ -130,7 +130,7 @@ public class GroupController {
         try {
             encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+            logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
         }
         ModelAndView modelAndView = new ModelAndView("/jsp/update-group.jsp");
         modelAndView.addObject(GROUP, group);
@@ -148,7 +148,7 @@ public class GroupController {
             try {
                 currentAccountPhoto = file.getBytes();
             } catch (IOException e) {
-                logger.error("Get bytes from file end with error! Exception: " + e);
+                logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
         group.setPhoto(currentAccountPhoto);
@@ -168,7 +168,7 @@ public class GroupController {
             try {
                 currentGroupPhoto = file.getBytes();
             } catch (IOException e) {
-                logger.error("Get bytes from file end with error! Exception: " + e);
+                logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
         group.setUserCreatorId((Integer) session.getAttribute("id"));
