@@ -79,8 +79,8 @@ public class AccountInGroup implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AccountInGroup that = (AccountInGroup) o;
-        return id == that.id &&
-                userMemberId == that.userMemberId &&
+        return id.equals(that.id) &&
+                userMemberId.equals(that.userMemberId) &&
                 role == that.role &&
                 status == that.status;
     }

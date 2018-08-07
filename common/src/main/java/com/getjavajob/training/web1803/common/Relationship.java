@@ -80,10 +80,10 @@ public class Relationship {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Relationship that = (Relationship) o;
-        return id == that.id &&
-                userOneId == that.userOneId &&
-                userTwoId == that.userTwoId &&
-                actionUserId == that.actionUserId &&
+        return id.equals(that.id) &&
+                userOneId.equals(that.userOneId) &&
+                userTwoId.equals(that.userTwoId) &&
+                actionUserId.equals(that.actionUserId) &&
                 type == that.type;
     }
 

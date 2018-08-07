@@ -62,7 +62,7 @@ public class Phone implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Phone phone = (Phone) o;
-        return phoneId == phone.phoneId && Objects.equals(number, phone.number) &&
+        return phoneId.equals(phone.phoneId) && Objects.equals(number, phone.number) &&
                 phoneType == phone.phoneType;
     }
 

@@ -42,10 +42,7 @@ public class SocNetAuthenticationSuccessHandler implements AuthenticationSuccess
         session.setAttribute("id", id);
         session.setAttribute("userName", currentAccount.getFirstName() + " " + currentAccount.getLastName());
         session.setAttribute("role", currentAccount.getRole());
-
         response.setStatus(HttpServletResponse.SC_OK);
         response.sendRedirect("/viewAccount?id=" + id);
-
-
     }
 }

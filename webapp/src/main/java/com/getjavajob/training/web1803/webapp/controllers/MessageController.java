@@ -111,24 +111,24 @@ public class MessageController {
                                 @RequestParam(required = false, name = "uploadImage") MultipartFile file,
                                 HttpSession session) {
         logger.info("In messageAction method");
-        int groupId = 0;
-        int accountId = 0;
+//        int groupId = 0;
+//        int accountId = 0;
         MessageType type = null;
         String location;
         switch (inputType) {
             case "accountWall":
                 type = MessageType.ACCOUNT_WALL;
-                accountId = assignId;
+//                accountId = assignId;
                 location = "viewAccount";
                 break;
             case "account":
                 type = MessageType.ACCOUNT;
-                accountId = assignId;
+//                accountId = assignId;
                 location = "viewAccountMess";
                 break;
             case "groupWall":
                 type = MessageType.GROUP_WALL;
-                groupId = assignId;
+//                groupId = assignId;
                 location = "viewGroup";
                 break;
             default:
@@ -136,16 +136,16 @@ public class MessageController {
                 break;
         }
         if (action.equals("new")) {
-            byte[] photo = new byte[0];
+            byte[] photo = null;
             if (!file.isEmpty()) {
                 try {
                     photo = file.getBytes();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Error in get Bytes method", e);
                 }
             }
             int currentId = (Integer) session.getAttribute("id");
-            messageService.create(new Message(groupId, accountId, type, photo, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId));
+            messageService.create(new Message(assignId, type, photo, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId));
         } else if (action.equals("remove")) {
             messageService.remove(messageId);
         }

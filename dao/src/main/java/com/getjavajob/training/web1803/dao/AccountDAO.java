@@ -3,14 +3,13 @@ package com.getjavajob.training.web1803.dao;
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.enums.Role;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -22,27 +21,27 @@ public class AccountDAO {
     private static final Logger logger = LoggerFactory.getLogger(AccountDAO.class);
     private static final int SEARCH_RESULT_PER_PAGE = 5;
 
-    private SessionFactory sessionFactory;
+    private EntityManager entityManager;
 
     @Autowired
-    public AccountDAO(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public AccountDAO(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     public AccountDAO() {
     }
 
+    @Transactional
     public boolean create(Account account) throws DaoNameException {
         logger.info("In create method");
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQueryCheckEmail = criteriaBuilder.createQuery(Account.class);
         Root<Account> from = criteriaQueryCheckEmail.from(Account.class);
         CriteriaQuery<Account> selectEmail = criteriaQueryCheckEmail.select(from).where(
                 criteriaBuilder.equal(from.get("email"), account.getEmail()));
-        boolean emailNotExist = session.createQuery(selectEmail).getResultList().isEmpty();
+        boolean emailNotExist = entityManager.createQuery(selectEmail).getResultList().isEmpty();
         if (emailNotExist) {
-            session.persist(account);
+            entityManager.persist(account);
             logger.info("new account created.");
             return true;
         } else {
@@ -53,18 +52,17 @@ public class AccountDAO {
 
     public Account get(int id) {
         logger.info("In get method");
-        return sessionFactory.getCurrentSession().get(Account.class, id);
+        return entityManager.find(Account.class, id);
     }
 
     public byte[] getPhoto(int id) {
         logger.info("In getPhoto method");
-        return sessionFactory.getCurrentSession().get(Account.class, id).getPhoto();
+        return entityManager.find(Account.class, id).getPhoto();
     }
 
     public int loginAndGetId(String email, String password) throws DaoNameException {
         logger.info("In loginAndGetId method");
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQueryLogin = criteriaBuilder.createQuery(Account.class);
         Root<Account> from = criteriaQueryLogin.from(Account.class);
         CriteriaQuery<Account> selectOnEmail = criteriaQueryLogin.select(from).where(criteriaBuilder.and(
@@ -72,7 +70,7 @@ public class AccountDAO {
                 criteriaBuilder.equal(from.get("password"), password)));
         Account account;
         try {
-            account = session.createQuery(selectOnEmail).getSingleResult();
+            account = entityManager.createQuery(selectOnEmail).getSingleResult();
         } catch (NoResultException e) {
             logger.warn("Login fails. Thrown exception - " + DaoNameException.class);
             throw new DaoNameException("Email: \"" + email + "\" and password: " + password + " not found in database.");
@@ -81,31 +79,28 @@ public class AccountDAO {
     }
 
     public Account getByEmail(String email) throws DaoNameException {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQueryLogin = criteriaBuilder.createQuery(Account.class);
         Root<Account> from = criteriaQueryLogin.from(Account.class);
         CriteriaQuery<Account> selectOnEmail = criteriaQueryLogin.select(from).where(
                 criteriaBuilder.equal(from.get("email"), email));
         try {
-            return session.createQuery(selectOnEmail).getSingleResult();
+            return entityManager.createQuery(selectOnEmail).getSingleResult();
         } catch (NoResultException e) {
-            e.printStackTrace();
-            logger.warn("Login fails. Thrown exception - " + DaoNameException.class);
+            logger.warn("Login fails. Thrown exception - ", e);
             throw new DaoNameException("Email: \"" + email + "\" not found in database.");
         }
     }
 
     public Role getRole(int accountId) {
         logger.info("In getRole method");
-        return sessionFactory.getCurrentSession().get(Account.class, accountId).getRole();
+        return entityManager.find(Account.class, accountId).getRole();
     }
 
     public List<Account> searchByString(String search, int page) {
         logger.info("In searchByString method. Search string: " + search);
         String lowerSearch = search.toLowerCase();
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Account> criteriaQuerySearch = criteriaBuilder.createQuery(Account.class);
         Root<Account> from = criteriaQuerySearch.from(Account.class);
         Expression<String> exp1 = criteriaBuilder.concat(from.get("firstName"), " ");
@@ -120,7 +115,7 @@ public class AccountDAO {
                 criteriaBuilder.like(exp1, "%" + lowerSearch + "%"),
                 criteriaBuilder.like(exp2, "%" + lowerSearch + "%"));
         CriteriaQuery<Account> select = criteriaQuerySearch.select(from).where(whereClause);
-        TypedQuery<Account> searchQuery = session.createQuery(select);
+        TypedQuery<Account> searchQuery = entityManager.createQuery(select);
         searchQuery.setFirstResult(page == 1 ? 0 : page * SEARCH_RESULT_PER_PAGE - SEARCH_RESULT_PER_PAGE);
         searchQuery.setMaxResults(SEARCH_RESULT_PER_PAGE);
         return searchQuery.getResultList();
@@ -129,8 +124,7 @@ public class AccountDAO {
     public long searchByStringCount(String search) {
         logger.info("In searchByStringCount method. Search string: " + search);
         String lowerSearch = search.toLowerCase();
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Account> from = criteriaQuery.from(Account.class);
         criteriaQuery.select(criteriaBuilder.count(from));
@@ -146,32 +140,30 @@ public class AccountDAO {
                 criteriaBuilder.like(exp1, "%" + lowerSearch + "%"),
                 criteriaBuilder.like(exp2, "%" + lowerSearch + "%"));
         criteriaQuery.where(whereClause);
-        return session.createQuery(criteriaQuery).getSingleResult();
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 
     @Transactional
     public boolean update(Account account) {
         logger.info("In update method");
-        sessionFactory.getCurrentSession().merge(account);
+        entityManager.merge(account);
         return true;
     }
 
     @Transactional
     public boolean updateRole(int accountId, Role newRole) {
         logger.info("In updateRole method");
-        Session session = sessionFactory.getCurrentSession();
-        Account account = session.find(Account.class, accountId);
+        Account account = entityManager.find(Account.class, accountId);
         account.setRole(newRole);
-        session.merge(account);
+        entityManager.merge(account);
         return true;
     }
 
     @Transactional
     public boolean remove(int id) {
         logger.info("In remove method");
-        Session session = sessionFactory.getCurrentSession();
-        Account account = session.find(Account.class, id);
-        session.remove(account);
+        Account account = entityManager.find(Account.class, id);
+        entityManager.remove(account);
         return true;
     }
 }

@@ -4,15 +4,15 @@ import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
-import com.getjavajob.training.web1803.dao.repository.GroupRepository;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
+import com.getjavajob.training.web1803.dao.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.getjavajob.training.web1803.dao.repository.GroupSpecification.searchByMemberId;
+import static com.getjavajob.training.web1803.dao.GroupSpecification.searchByMemberId;
 import static org.springframework.data.domain.PageRequest.of;
 
 @Service
@@ -31,7 +31,7 @@ public class GroupService {
         if (repository.existsByName(name)) {
             throw new DaoNameException("Name " + name + " already used");
         } else {
-            repository.save(group);
+            repository.saveAndFlush(group);
             return true;
         }
     }
@@ -41,7 +41,7 @@ public class GroupService {
     }
 
     public List<Group> getAll() {
-        return (List<Group>) repository.findAll();
+        return repository.findAll();
     }
 
     public List<Group> searchByString(String search, int page) {

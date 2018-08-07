@@ -31,13 +31,13 @@ public class MessageServiceTest {
     @Test
     public void createTest() {
 
-        when(messageDAO.create(new Message(0, 1, MessageType.ACCOUNT, null, "Text account 1", "2018-06-17", 1))).thenReturn(1);
-        assertEquals(1, messageService.create(new Message(0, 1, MessageType.ACCOUNT, null, "Text account 1", "2018-06-17", 1)));
+        when(messageDAO.create(new Message(1, MessageType.ACCOUNT, null, "Text account 1", "2018-06-17", 1))).thenReturn(1);
+        assertEquals(1, messageService.create(new Message(1, MessageType.ACCOUNT, null, "Text account 1", "2018-06-17", 1)));
     }
 
     @Test
     public void getTest() {
-        Message message = new Message(1, 1, MessageType.ACCOUNT, null, "Text account 1",
+        Message message = new Message(1, MessageType.ACCOUNT, null, "Text account 1",
                 "2018-06-17", 1);
         when(messageDAO.get(1)).thenReturn(message);
         assertEquals(message, messageService.get(1));
@@ -45,9 +45,9 @@ public class MessageServiceTest {
 
     @Test
     public void getAllByTypeAndAssignIdTest() {
-        Message message1 = new Message(1, 1, MessageType.ACCOUNT, null, "Text account 1",
+        Message message1 = new Message(1, MessageType.ACCOUNT, null, "Text account 1",
                 "2018-06-17", 1);
-        Message message2 = new Message(2, 1, MessageType.ACCOUNT, null, "Text account 1-2",
+        Message message2 = new Message(1, MessageType.ACCOUNT, null, "Text account 1-2",
                 "2018-06-17", 1);
         List<Message> messages = new ArrayList<>();
         messages.add(message1);

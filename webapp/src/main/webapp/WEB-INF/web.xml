@@ -36,12 +36,12 @@
 
     <error-page>
         <error-code>404</error-code>
-        <location>/jsp/404page.jsp</location>
+        <location>/jsp/404.jsp</location>
     </error-page>
 
     <error-page>
         <error-code>403</error-code>
-        <location>/jsp/403page.jsp</location>
+        <location>/jsp/403.jsp</location>
     </error-page>
 
     <listener>

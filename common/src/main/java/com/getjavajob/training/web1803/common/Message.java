@@ -26,8 +26,7 @@ public class Message {
     @Column(name = "user_creator_id", nullable = false)
     private Integer userCreatorId;
 
-    public Message(Integer id, Integer assignId, MessageType type, byte[] photo, String text, String dateCreate, Integer userCreatorId) {
-        this.id = id;
+    public Message(Integer assignId, MessageType type, byte[] photo, String text, String dateCreate, Integer userCreatorId) {
         this.assignId = assignId;
         this.type = type;
         this.photo = photo;
@@ -112,9 +111,9 @@ public class Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return id == message.id &&
-                assignId == message.assignId &&
-                userCreatorId == message.userCreatorId &&
+        return id.equals(message.id) &&
+                assignId.equals(message.assignId) &&
+                userCreatorId.equals(message.userCreatorId) &&
                 type == message.type &&
                 Objects.equals(text, message.text) &&
                 Objects.equals(dateCreate, message.dateCreate);

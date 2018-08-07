@@ -194,8 +194,8 @@ public class Account implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return id == account.id &&
-                icq == account.icq &&
+        return id.equals(account.id) &&
+                icq.equals(account.icq) &&
                 role == account.role &&
                 Objects.equals(email, account.email) &&
                 Objects.equals(password, account.password) &&

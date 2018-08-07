@@ -100,8 +100,8 @@ public class Group implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return id == group.id &&
-                userCreatorId == group.userCreatorId &&
+        return id.equals(group.id) &&
+                userCreatorId.equals(group.userCreatorId) &&
                 Objects.equals(name, group.name) &&
                 Arrays.equals(photo, group.photo) &&
                 Objects.equals(createDate, group.createDate) &&

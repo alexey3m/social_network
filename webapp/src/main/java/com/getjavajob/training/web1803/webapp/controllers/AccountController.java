@@ -208,7 +208,7 @@ public class AccountController {
 
     @RequestMapping(value = "/page404")
     public String updateRole() {
-        return "/jsp/404page.jsp";
+        return "/jsp/404.jsp";
     }
 
     @RequestMapping(value = "/accountToXml")
@@ -283,7 +283,7 @@ public class AccountController {
         logger.info("In removeAccount method");
         int sessionId = (Integer) session.getAttribute("id");
         accountService.remove(actionId);
-        return REDIRECT_TO_VIEW_ACCOUNT + sessionId +"&infoMessage=remove";
+        return REDIRECT_TO_VIEW_ACCOUNT + sessionId + "&infoMessage=remove";
     }
 
 
