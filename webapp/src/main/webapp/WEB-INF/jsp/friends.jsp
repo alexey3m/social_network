@@ -7,14 +7,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="<c:url value="/resources/css/friends.css"/>" rel="stylesheet" type="text/css"/>
-    <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/css/friends.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
     <title>Мои друзья Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">
@@ -107,10 +107,10 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="<c:url value="/resources/js/jquery-3.3.1.js"/>"></script>
-<script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
-<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
-<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
-<script src="<c:url value="/resources/js/socnet-custom.js"/>"></script>
+<script src="<c:url value="/js/jquery-3.3.1.js"/>"></script>
+<script src="<c:url value="/js/jquery-ui.js"/>"></script>
+<script src="<c:url value="/js/popper.min.js"/>"></script>
+<script src="<c:url value="/js/bootstrap.min.js"/>"></script>
+<script src="<c:url value="/js/socnet-custom.js"/>"></script>
 </body>
 </html>

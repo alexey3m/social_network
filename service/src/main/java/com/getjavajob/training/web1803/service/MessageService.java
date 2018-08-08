@@ -18,6 +18,9 @@ public class MessageService {
         this.messageDAO = messageDAO;
     }
 
+    public MessageService() {
+    }
+
     public int create(Message message) {
         return messageDAO.create(message);
     }

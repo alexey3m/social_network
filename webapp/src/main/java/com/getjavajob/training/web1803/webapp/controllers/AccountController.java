@@ -14,7 +14,6 @@ import com.getjavajob.training.web1803.webapp.convertors.PhoneTypeEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +31,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Controller
+@RestController
+@RequestMapping("/view")
 public class AccountController {
     private static final String ACCOUNT = "account";
     private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
@@ -49,6 +49,12 @@ public class AccountController {
         this.accountService = accountService;
         this.relationshipService = relationshipService;
         this.messageService = messageService;
+    }
+
+    @RequestMapping("/")
+    public String greeting() {
+        System.out.println("in / login");
+        return "login";
     }
 
     @RequestMapping(value = "/viewAccount", method = RequestMethod.GET)

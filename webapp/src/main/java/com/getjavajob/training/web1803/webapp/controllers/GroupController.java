@@ -143,15 +143,19 @@ public class GroupController {
                               @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
                               HttpSession session) {
         logger.info("In updateGroup method");
-        byte[] currentAccountPhoto = groupService.getPhoto(group.getId());
+        Group currentGroup = groupService.get(group.getId());
+        byte[] currentGroupPhoto = currentGroup.getPhoto();
         if (!file.isEmpty()) {
             try {
-                currentAccountPhoto = file.getBytes();
+                currentGroupPhoto = file.getBytes();
             } catch (IOException e) {
                 logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
-        group.setPhoto(currentAccountPhoto);
+        group.setPhoto(currentGroupPhoto);
+        group.setUserCreatorId(currentGroup.getUserCreatorId());
+        group.setCreateDate(currentGroup.getCreateDate());
+        group.setAccounts(currentGroup.getAccounts());
         boolean result = groupService.update(group);
         String redirect = "redirect:/viewGroup?id=" + group.getId() + "&infoMessage=";
         return result ? redirect + "updateTrue" : redirect + "updateFalse";
@@ -178,7 +182,7 @@ public class GroupController {
         accounts.add(new AccountInGroup(group.getUserCreatorId(), GroupRole.ADMIN, GroupStatus.ACCEPTED));
         group.setAccounts(accounts);
         try {
-            boolean result = groupService.create(group);
+            groupService.create(group);
             return "redirect:viewGroups";
         } catch (DaoNameException e) {
             return "redirect:/createGroupPage?infoMessage=nameFalse&name=" + name;

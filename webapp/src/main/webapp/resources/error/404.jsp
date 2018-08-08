@@ -9,33 +9,17 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="<c:url value="/resources/css/groups.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/search-result.css"/>" rel="stylesheet" type="text/css"/>
     <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
-    <title>Мои группы Social net!</title>
+    <title>Страница не найдена.  Social net!</title>
 </head>
 <body>
 <jsp:include page="/jsp/navbar.jsp"/>
 <main role="main" class="container">
-    <div>
-        <h5>Мои группы</h5>
+    <div align="center">
+        <h1>Ошибка 404</h1><br>
+        <h3>Запрашиваемая страница не найдена.</h3>
     </div>
-    <c:forEach var="group" items="${myGroups}">
-        <div class="row row-groups">
-            <a href="viewGroup?id=${group.id}">
-                    ${group.name}
-            </a>
-        </div>
-    </c:forEach>
-    <div>
-        <h5>Все группы Социальной сети</h5>
-    </div>
-    <c:forEach var="group" items="${allGroups}">
-        <div class="row row-groups">
-            <a href="viewGroup?id=${group.id}">
-                    ${group.name}
-            </a>
-        </div>
-    </c:forEach>
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

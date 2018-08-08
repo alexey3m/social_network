@@ -1,7 +1,6 @@
 package com.getjavajob.training.web1803.service;
 
 import com.getjavajob.training.web1803.common.Account;
-import com.getjavajob.training.web1803.dao.AccountDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,13 +19,13 @@ import java.util.List;
 @Service
 public class SocNetUserDetailService implements UserDetailsService {
 
-    private AccountDAO accountDAO;
-    @Autowired
+    private AccountService accountService;
     private BCryptPasswordEncoder encoder;
 
     @Autowired
-    public SocNetUserDetailService(AccountDAO accountDAO) {
-        this.accountDAO = accountDAO;
+    public SocNetUserDetailService(AccountService accountService, BCryptPasswordEncoder encoder) {
+        this.accountService = accountService;
+        this.encoder = encoder;
     }
 
     public SocNetUserDetailService() {
@@ -37,7 +36,8 @@ public class SocNetUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account;
         try {
-            account = accountDAO.getByEmail(username);
+            System.out.println("accountDAO " + accountService);
+            account = accountService.getByEmail(username);
         } catch (DaoNameException e) {
             throw new UsernameNotFoundException("Username " + username + " not found.");
         }

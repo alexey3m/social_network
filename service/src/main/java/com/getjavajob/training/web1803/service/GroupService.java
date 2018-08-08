@@ -26,6 +26,9 @@ public class GroupService {
         this.repository = repository;
     }
 
+    public GroupService() {
+    }
+
     public boolean create(Group group) throws DaoNameException {
         String name = group.getName();
         if (repository.existsByName(name)) {
