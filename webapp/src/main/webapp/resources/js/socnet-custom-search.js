@@ -34,7 +34,7 @@ $(function () {
             });
             displayPrevAcc();
             displayNextAcc();
-        },
+        }
     });
 
 
@@ -52,9 +52,6 @@ $(function () {
             });
             displayPrevGr();
             displayNextGr();
-        },
-        error: function (e) {
-            alert('Error: ' + e);
         }
     });
 
@@ -75,9 +72,6 @@ function getAccounts() {
             while (currentCount < 4) {
                 $('#rowAcc' + currentCount++).hide();
             }
-        },
-        error: function (e) {
-            alert('Error: ' + e);
         }
     });
 }
@@ -119,7 +113,6 @@ function getGroups() {
         url: "/groupFilter?filter=" + filter + "&page=" + pageGr,
         dataType: "json",
         success: function (data) {
-
             var currentCount;
             $.each(data, function (i, obj) {
                 $('#rowGr' + i).show().find('#templateColGr').html(
@@ -129,7 +122,7 @@ function getGroups() {
             while (currentCount < 4) {
                 $('#rowGr' + currentCount++).hide();
             }
-        },
+        }
     });
 }
 

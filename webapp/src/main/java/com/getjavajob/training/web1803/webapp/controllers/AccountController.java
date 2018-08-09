@@ -37,6 +37,8 @@ import java.util.*;
 @ImportResource({"classpath*:security.xml"})
 public class AccountController {
     private static final String ACCOUNT = "account";
+    private static final String UTF8_ENCODING = "UTF-8";
+    private static final String ENCODED_PHOTO = "encodedPhoto";
     private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
     private static final String MESSAGE_ENCODE = "Encode bytes to UTF-8 end with error! Exception: ";
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
@@ -97,7 +99,7 @@ public class AccountController {
         if (photo != null) {
             byte[] encodedPhotoBytes = Base64.getEncoder().encode(account.getPhoto());
             try {
-                encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
+                encodedPhoto = new String(encodedPhotoBytes, UTF8_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 logger.error(MESSAGE_ENCODE, e);
             }
@@ -114,7 +116,7 @@ public class AccountController {
         modelAndView.addObject("messages", messages);
         modelAndView.addObject("messagesAccounts", messagesAccounts);
         modelAndView.addObject("sessionId", sessionId);
-        modelAndView.addObject("encodedPhoto", encodedPhoto);
+        modelAndView.addObject(ENCODED_PHOTO, encodedPhoto);
         return modelAndView;
     }
 
@@ -192,14 +194,14 @@ public class AccountController {
             if (photo != null) {
                 byte[] encodedPhotoBytes = Base64.getEncoder().encode(photo);
                 try {
-                    encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
+                    encodedPhoto = new String(encodedPhotoBytes, UTF8_ENCODING);
                 } catch (UnsupportedEncodingException e) {
                     logger.error(MESSAGE_ENCODE, e);
                 }
             }
             ModelAndView modelAndView = new ModelAndView("update-account");
             modelAndView.addObject(ACCOUNT, account);
-            modelAndView.addObject("encodedPhoto", encodedPhoto);
+            modelAndView.addObject(ENCODED_PHOTO, encodedPhoto);
             return modelAndView;
         }
     }
@@ -254,7 +256,6 @@ public class AccountController {
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outStream.write(buffer, 0, bytesRead);
             }
-            inputStream.close();
             outStream.close();
         } catch (FileNotFoundException e) {
             logger.error("FileNotFoundException: ", e);
@@ -284,7 +285,7 @@ public class AccountController {
         if (photo != null) {
             byte[] encodedPhotoBytes = Base64.getEncoder().encode(photo);
             try {
-                encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
+                encodedPhoto = new String(encodedPhotoBytes, UTF8_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 logger.error(MESSAGE_ENCODE, e);
             }
@@ -292,7 +293,7 @@ public class AccountController {
         account.setRole(accountService.getRole(account.getId()));
         ModelAndView modelAndView = new ModelAndView("update-account");
         modelAndView.addObject(ACCOUNT, account);
-        modelAndView.addObject("encodedPhoto", encodedPhoto);
+        modelAndView.addObject(ENCODED_PHOTO, encodedPhoto);
         return modelAndView;
     }
 
