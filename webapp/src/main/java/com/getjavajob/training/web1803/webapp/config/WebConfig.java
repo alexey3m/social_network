@@ -27,7 +27,7 @@ import java.util.Map;
 @EnableWebMvc
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private final static long MAX_UPLOAD_FILE_SIZE_IN_BYTES = 10485760;
+    private static final long MAX_UPLOAD_FILE_SIZE_IN_BYTES = 10485760;
 
     @Value("${spring.mvc.view.prefix}")
     private String location;
@@ -61,7 +61,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    static public CustomEditorConfigurer customEditorConfigurer() {
+    public static CustomEditorConfigurer customEditorConfigurer() {
         CustomEditorConfigurer configurer = new CustomEditorConfigurer();
         Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new HashMap<>();
         customEditors.put(PhoneType.class, PhoneTypeEditor.class);

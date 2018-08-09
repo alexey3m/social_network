@@ -61,7 +61,7 @@ public class AccountController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home(HttpSession session) {
         int sessionId = (Integer) session.getAttribute("id");
-        return "redirect:viewAccount?id=" + sessionId;
+        return REDIRECT_TO_VIEW_ACCOUNT + sessionId;
     }
 
     @RequestMapping(value = "/errorAccess", method = RequestMethod.GET)
@@ -102,7 +102,7 @@ public class AccountController {
                 logger.error(MESSAGE_ENCODE, e);
             }
         }
-        ModelAndView modelAndView = new ModelAndView("account");
+        ModelAndView modelAndView = new ModelAndView(ACCOUNT);
         modelAndView.addObject("id", id);
         modelAndView.addObject(ACCOUNT, account);
         modelAndView.addObject("actionAccount", actionAccount);

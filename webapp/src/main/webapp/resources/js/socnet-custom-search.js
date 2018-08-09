@@ -35,9 +35,6 @@ $(function () {
             displayPrevAcc();
             displayNextAcc();
         },
-        error: function (e) {
-            alert('Error: ' + e);
-        }
     });
 
 
@@ -69,7 +66,6 @@ function getAccounts() {
         url: "/accountFilter?filter=" + filter + "&page=" + pageAcc,
         dataType: "json",
         success: function (data) {
-            var $templateRow = $('#templateRowAcc');
             var currentCount;
             $.each(data, function (i, obj) {
                 $('#rowAcc' + i).show().find('#templateColAcc').html(
@@ -123,7 +119,7 @@ function getGroups() {
         url: "/groupFilter?filter=" + filter + "&page=" + pageGr,
         dataType: "json",
         success: function (data) {
-            var $templateRow = $('#templateRowGr');
+
             var currentCount;
             $.each(data, function (i, obj) {
                 $('#rowGr' + i).show().find('#templateColGr').html(
@@ -134,9 +130,6 @@ function getGroups() {
                 $('#rowGr' + currentCount++).hide();
             }
         },
-        error: function (e) {
-            alert('Error: ' + e);
-        }
     });
 }
 

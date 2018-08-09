@@ -89,7 +89,7 @@ public class GroupController {
                 logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
             }
         }
-        ModelAndView modelAndView = new ModelAndView("group");
+        ModelAndView modelAndView = new ModelAndView(GROUP);
         modelAndView.addObject("groupId", groupId);
         modelAndView.addObject("infoMessage", infoMessage);
         modelAndView.addObject("actionId", actionId);
