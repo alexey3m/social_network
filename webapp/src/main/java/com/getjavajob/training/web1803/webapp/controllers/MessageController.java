@@ -146,4 +146,15 @@ public class MessageController {
         }
         return "redirect:" + location + "?id=" + assignId;
     }
+
+    @RequestMapping(value = "/goChat")
+    public ModelAndView goChat(HttpSession session) {
+        int sessionId = (Integer) session.getAttribute("id");
+        ModelAndView modelAndView = new ModelAndView("chat");
+        Account currentAccount = accountService.get(sessionId);
+
+        modelAndView.addObject("username", currentAccount.getFirstName() + " " + currentAccount.getLastName());
+        modelAndView.addObject("id", sessionId);
+        return modelAndView;
+    }
 }

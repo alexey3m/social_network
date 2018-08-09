@@ -24,7 +24,13 @@
                     <a href="viewAccountMess?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
                 </div>
             </c:forEach>
+            <div class="control-panel">
+                <a href="goChat">
+                    <button type="button" class="btn btn-sm btn-primary">Общий чат</button>
+                </a>
+            </div>
         </div>
+
         <div class="col-md-9">
             <c:if test="${assignId != 0}">
                 <h5>Новое сообщение</h5>

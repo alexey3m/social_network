@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         SocNetUserDetailService userDetailService = new SocNetUserDetailService();
         http.authorizeRequests()
-                .antMatchers("/view/", "/WEB-INF/jsp/reg.jsp", "/regPage", "/reg", "/resources/**").permitAll()
+                .antMatchers("/WEB-INF/jsp/reg.jsp", "/regPage", "/reg", "/resources/**").permitAll()
                 .antMatchers("/removeAccount").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()

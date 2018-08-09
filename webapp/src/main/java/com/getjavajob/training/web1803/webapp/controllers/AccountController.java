@@ -35,7 +35,6 @@ import java.util.*;
 
 @Controller
 @ImportResource({"classpath*:security.xml"})
-//@RequestMapping("/view")
 public class AccountController {
     private static final String ACCOUNT = "account";
     private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
@@ -57,6 +56,12 @@ public class AccountController {
     @RequestMapping(value = "/loginPage", method = RequestMethod.GET)
     public String loginPage() {
         return "login";
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String home(HttpSession session) {
+        int sessionId = (Integer) session.getAttribute("id");
+        return "redirect:viewAccount?id=" + sessionId;
     }
 
     @RequestMapping(value = "/errorAccess", method = RequestMethod.GET)
@@ -291,13 +296,11 @@ public class AccountController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/removeAccount", method = RequestMethod.POST)
+    @RequestMapping(value = "/removeAccount")
     public String removeAccount(@RequestParam("actionId") int actionId, HttpSession session) {
         logger.info("In removeAccount method");
         int sessionId = (Integer) session.getAttribute("id");
         accountService.remove(actionId);
         return REDIRECT_TO_VIEW_ACCOUNT + sessionId + "&infoMessage=remove";
     }
-
-
 }
