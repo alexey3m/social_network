@@ -21,10 +21,17 @@ public class AccountService {
         this.accountDAO = accountDAO;
     }
 
+    public AccountService() {
+    }
+
     @Transactional
     public boolean create(Account account) throws DaoNameException {
         String birthday = account.getBirthday();
+        String icq = account.getIcq();
+        String skype = account.getSkype();
         account.setBirthday(birthday.length() == 0 ? null : birthday);
+        account.setIcq(icq.length() == 0 ? null : icq);
+        account.setSkype(skype.length() == 0 ? null : skype);
         accountDAO.create(account);
         return true;
     }
@@ -46,8 +53,16 @@ public class AccountService {
         return accountDAO.loginAndGetId(email, password);
     }
 
-    public List<Account> searchByString(String search) {
-        return accountDAO.searchByString(search);
+    public Account getByEmail(String email) throws DaoNameException {
+        return accountDAO.getByEmail(email);
+    }
+
+    public List<Account> searchByString(String search, int page) {
+        return accountDAO.searchByString(search, page);
+    }
+
+    public long searchByStringCount(String search) {
+        return accountDAO.searchByStringCount(search);
     }
 
     public Role getRole(int accountId) {
@@ -57,7 +72,11 @@ public class AccountService {
     public boolean update(Account account) {
         Account currentAccount = accountDAO.get(account.getId());
         String birthday = account.getBirthday();
-        account.setBirthday(birthday.equals("") ? null : birthday);
+        String icq = account.getIcq();
+        String skype = account.getSkype();
+        account.setBirthday(birthday.length() == 0 ? null : birthday);
+        account.setIcq(icq.length() == 0 ? null : icq);
+        account.setSkype(skype.length() == 0 ? null : skype);
         account.setRole(currentAccount.getRole());
         account.setRegDate(currentAccount.getRegDate());
         accountDAO.update(account);

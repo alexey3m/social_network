@@ -11,14 +11,14 @@
     <!-- Custom styles for this template -->
     <link href="<c:url value="/resources/css/search-result.css"/>" rel="stylesheet" type="text/css"/>
     <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
-    <title>Страница не найдена.  Social net!</title>
+    <title>Нет доступа.  Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <div align="center">
-        <h1>Ошибка 404</h1><br>
-        <h3>Запрашиваемая страница не найдена.</h3>
+        <h1>Ошибка 403</h1><br>
+        <h3>У вас нет доступа.</h3>
     </div>
 </main><!-- /.container -->
 <!-- Optional JavaScript -->

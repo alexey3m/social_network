@@ -15,7 +15,7 @@
     <title>Обновление аккаунта Social-Network</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <%--@elvariable id="account" type="com.getjavajob.training.web1803.common.Account"--%>
 

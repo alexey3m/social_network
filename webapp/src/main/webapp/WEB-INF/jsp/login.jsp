@@ -9,17 +9,18 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="${pageContext.request.contextPath}/resources/css/login.css" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/login.css"/>" rel="stylesheet" type="text/css"/>
     <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
     <title>Вход в Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${sessionScope.email != null}">
         <c:redirect url="/viewAccount?id=${sessionScope.id}"/>
     </c:if>
-    <form class="form-signin" action="<c:url value="/loginUser"/>" method="post">
+    <c:url var="loginUrl" value="/login" />
+    <form class="form-signin" action="${contextPath}/login" method="post">
         <c:set var="infoMessage" scope="session" value="${param.infoMessage}"/>
         <c:if test="${infoMessage == 'alert'}">
             <div class="alert alert-danger form-signin-alert" role="alert">
@@ -32,13 +33,13 @@
             </div>
         </c:if>
         <h2 class="form-signin-heading">Социальная сеть</h2>
-        <label for="inputEmail" class="sr-only">Email</label>
-        <input type="email" id="inputEmail" name="inputEmail" class="form-control" placeholder="Email" autofocus>
-        <label for="inputPassword" class="sr-only">Пароль</label>
-        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Пароль">
+        <label for="username" class="sr-only">Email</label>
+        <input type="email" id="username" name="username" class="form-control" placeholder="Email" autofocus>
+        <label for="password" class="sr-only">Пароль</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="Пароль">
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="rememberMe" value="true"> Запомнить меня
+                <input type="checkbox" name="remember-me" value="true"> Запомнить меня
             </label>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>

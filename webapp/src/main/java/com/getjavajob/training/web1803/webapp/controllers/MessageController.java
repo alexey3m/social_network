@@ -65,7 +65,7 @@ public class MessageController {
                 allAccountsMessages.put(accountId, accountService.get(accountId));
             }
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/accountMess.jsp");
+        ModelAndView modelAndView = new ModelAndView("accountMess");
         modelAndView.addObject("sessionId", sessionId);
         modelAndView.addObject("assignId", assignId);
         modelAndView.addObject("newMessageAccount", newMessageAccount);
@@ -82,7 +82,7 @@ public class MessageController {
         try {
             return new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+            logger.error("Encode bytes to UTF-8 end with error! ", e);
             return null;
         }
     }
@@ -111,24 +111,19 @@ public class MessageController {
                                 @RequestParam(required = false, name = "uploadImage") MultipartFile file,
                                 HttpSession session) {
         logger.info("In messageAction method");
-        int groupId = 0;
-        int accountId = 0;
         MessageType type = null;
         String location;
         switch (inputType) {
             case "accountWall":
                 type = MessageType.ACCOUNT_WALL;
-                accountId = assignId;
                 location = "viewAccount";
                 break;
             case "account":
                 type = MessageType.ACCOUNT;
-                accountId = assignId;
                 location = "viewAccountMess";
                 break;
             case "groupWall":
                 type = MessageType.GROUP_WALL;
-                groupId = assignId;
                 location = "viewGroup";
                 break;
             default:
@@ -136,19 +131,30 @@ public class MessageController {
                 break;
         }
         if (action.equals("new")) {
-            byte[] photo = new byte[0];
+            byte[] photo = null;
             if (!file.isEmpty()) {
                 try {
                     photo = file.getBytes();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Error in get Bytes method", e);
                 }
             }
             int currentId = (Integer) session.getAttribute("id");
-            messageService.create(new Message(groupId, accountId, type, photo, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId));
+            messageService.create(new Message(assignId, type, photo, text, new SimpleDateFormat("yyyy-MM-dd").format(new Date()), currentId));
         } else if (action.equals("remove")) {
             messageService.remove(messageId);
         }
         return "redirect:" + location + "?id=" + assignId;
+    }
+
+    @RequestMapping(value = "/goChat")
+    public ModelAndView goChat(HttpSession session) {
+        int sessionId = (Integer) session.getAttribute("id");
+        ModelAndView modelAndView = new ModelAndView("chat");
+        Account currentAccount = accountService.get(sessionId);
+
+        modelAndView.addObject("username", currentAccount.getFirstName() + " " + currentAccount.getLastName());
+        modelAndView.addObject("id", sessionId);
+        return modelAndView;
     }
 }

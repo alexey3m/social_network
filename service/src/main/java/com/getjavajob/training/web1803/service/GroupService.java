@@ -1,50 +1,76 @@
 package com.getjavajob.training.web1803.service;
 
+import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
-import com.getjavajob.training.web1803.dao.GroupDAO;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
+import com.getjavajob.training.web1803.dao.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.getjavajob.training.web1803.dao.GroupSpecification.searchByMemberId;
+import static org.springframework.data.domain.PageRequest.of;
+
 @Service
 public class GroupService {
-    private GroupDAO groupDAO;
+    private static final int SEARCH_RESULT_PER_PAGE = 5;
+
+    private GroupRepository repository;
 
     @Autowired
-    public GroupService(GroupDAO groupDAO) {
-        this.groupDAO = groupDAO;
+    public GroupService(GroupRepository repository) {
+        this.repository = repository;
+    }
+
+    public GroupService() {
     }
 
     public boolean create(Group group) throws DaoNameException {
-        return groupDAO.create(group);
+        String name = group.getName();
+        if (repository.existsByName(name)) {
+            throw new DaoNameException("Name " + name + " already used");
+        } else {
+            repository.saveAndFlush(group);
+            return true;
+        }
     }
 
     public Group get(int groupId) {
-        return groupDAO.get(groupId);
+        return repository.findById(groupId).get();
     }
 
     public List<Group> getAll() {
-        return groupDAO.getAll();
+        return repository.findAll();
     }
 
-    public List<Group> searchByString(String search) {
-        return groupDAO.searchByString(search);
+    public List<Group> searchByString(String search, int page) {
+        return repository.findByNameIgnoreCaseContaining(search, createPageRequest(page)).getContent();
+    }
+
+    public long searchByStringCount(String search) {
+        return repository.countByNameIgnoreCaseContaining(search);
     }
 
     public List<Group> getAllByUserId(int userId) {
-        return groupDAO.getAllByUserId(userId);
+        return repository.findAll(searchByMemberId(userId));
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
-        return groupDAO.getRoleMemberInGroup(groupId, memberId);
+        Group group = repository.findById(groupId).get();
+        for (AccountInGroup accountInGroup : group.getAccounts()) {
+            if (accountInGroup.getUserMemberId() == memberId) {
+                return accountInGroup.getRole();
+            }
+        }
+        return GroupRole.UNKNOWN;
     }
 
     public byte[] getPhoto(int id) {
-        byte[] photo = groupDAO.getPhoto(id);
+        byte[] photo = repository.findById(id).get().getPhoto();
         if (photo != null) {
             return photo.length == 0 ? null : photo;
         } else {
@@ -53,34 +79,82 @@ public class GroupService {
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
-        return groupDAO.getStatusMemberInGroup(groupId, memberId);
+        Group group = repository.findById(groupId).get();
+        for (AccountInGroup accountInGroup : group.getAccounts()) {
+            if (accountInGroup.getUserMemberId() == memberId) {
+                return accountInGroup.getStatus();
+            }
+        }
+        return GroupStatus.UNKNOWN;
     }
 
     public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
-        return groupDAO.addPendingMemberToGroup(idGroup, idNewMember);
+        Group currentGroup = repository.findById(idGroup).get();
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        accounts.add(new AccountInGroup(idNewMember, GroupRole.USER, GroupStatus.PENDING));
+        currentGroup.setAccounts(accounts);
+        repository.save(currentGroup);
+        return true;
     }
 
     public boolean setStatusMemberInGroup(int idGroup, int idMember, GroupStatus status) {
-        return groupDAO.setStatusMemberInGroup(idGroup, idMember, status);
+        Group currentGroup = repository.findById(idGroup).get();
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        for (AccountInGroup accountInGroup : accounts) {
+            if (accountInGroup.getUserMemberId() == idMember) {
+                accountInGroup.setStatus(status);
+                break;
+            }
+        }
+        currentGroup.setAccounts(accounts);
+        repository.save(currentGroup);
+        return true;
     }
 
     public boolean setRoleMemberInGroup(int idGroup, int idMember, GroupRole role) {
-        return groupDAO.setRoleMemberInGroup(idGroup, idMember, role);
+        Group currentGroup = repository.findById(idGroup).get();
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        for (AccountInGroup accountInGroup : accounts) {
+            if (accountInGroup.getUserMemberId() == idMember) {
+                accountInGroup.setRole(role);
+                break;
+            }
+        }
+        currentGroup.setAccounts(accounts);
+        repository.save(currentGroup);
+        return true;
     }
 
     public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
-        return groupDAO.removeMemberFromGroup(idGroup, idMemberToDelete);
+        Group currentGroup = repository.findById(idGroup).get();
+        List<AccountInGroup> accounts = currentGroup.getAccounts();
+        for (AccountInGroup accountInGroup : accounts) {
+            if (accountInGroup.getUserMemberId() == idMemberToDelete) {
+                accounts.remove(accountInGroup);
+                break;
+            }
+        }
+        currentGroup.setAccounts(accounts);
+        repository.save(currentGroup);
+        return true;
     }
 
     public int getId(String name) {
-        return groupDAO.getId(name);
+        return repository.findByName(name).getId();
     }
 
     public boolean update(Group group) {
-        return groupDAO.update(group);
+        repository.save(group);
+        return true;
     }
 
     public boolean remove(int id) {
-        return groupDAO.remove(id);
+        repository.deleteById(id);
+        return true;
     }
+
+    private Pageable createPageRequest(int page) {
+        return of(page, SEARCH_RESULT_PER_PAGE);
+    }
+
 }

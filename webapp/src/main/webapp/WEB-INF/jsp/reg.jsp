@@ -15,7 +15,7 @@
     <title>Регистрация аккаунта Social-Network</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:set var="infoMessage" scope="page" value="${param.infoMessage}"/>
     <c:if test="${infoMessage == 'emailFalse'}">
@@ -29,7 +29,7 @@
         <form:label path="email" class="sr-only">Email</form:label>
         <form:input type="text" path="email" class="form-control" placeholder="Email" required="required" />
         <form:label path="password" class="sr-only">Пароль</form:label>
-        <form:input type="password" path="password" class="form-control mb-2" placeholder="Пароль" />
+        <form:input type="password" path="password" class="form-control mb-2" placeholder="Пароль"/>
         <form:label path="lastName" class="sr-only">Фамилия</form:label>
         <form:input type="text" path="lastName" class="form-control" placeholder="Фамилия" />
         <form:label path="firstName" class="sr-only">Имя</form:label>

@@ -3,26 +3,28 @@ package com.getjavajob.training.web1803.common;
 import com.getjavajob.training.web1803.common.enums.PhoneType;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 import static javax.persistence.EnumType.STRING;
 
 @Entity
-@Table(name = "phone")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Phone implements Serializable {
 
     @Id
     @Column(name = "phone_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int phoneId;
+    @XmlTransient
+    private Integer phoneId;
     @Column(name = "phone_number", nullable = false)
     private String number;
     @Column(name = "phone_type", nullable = false)
     @Enumerated(STRING)
     private PhoneType phoneType;
 
-    public Phone(int phoneId, String number, PhoneType phoneType) {
+    public Phone(Integer phoneId, String number, PhoneType phoneType) {
         this.phoneId = phoneId;
         this.number = number;
         this.phoneType = phoneType;
@@ -31,12 +33,12 @@ public class Phone implements Serializable {
     public Phone() {
     }
 
-    public int getPhoneId() {
+    public Integer getPhoneId() {
         return phoneId;
     }
 
-    public void setPhoneId(int id) {
-        this.phoneId = id;
+    public void setPhoneId(Integer phoneId) {
+        this.phoneId = phoneId;
     }
 
     public String getNumber() {
@@ -60,7 +62,7 @@ public class Phone implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Phone phone = (Phone) o;
-        return phoneId == phone.phoneId && Objects.equals(number, phone.number) &&
+        return phoneId.equals(phone.phoneId) && Objects.equals(number, phone.number) &&
                 phoneType == phone.phoneType;
     }
 

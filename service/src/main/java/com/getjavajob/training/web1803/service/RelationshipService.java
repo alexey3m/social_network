@@ -22,6 +22,9 @@ public class RelationshipService {
         this.accountDAO = accountDAO;
     }
 
+    public RelationshipService() {
+    }
+
     public boolean addQueryFriend(int idFrom, int idTo) {
         return idFrom < idTo ? relationshipDAO.createQueryFriend(new Relationship(idFrom, idTo, Status.PENDING, idFrom)) :
                 relationshipDAO.createQueryFriend(new Relationship(idTo, idFrom, Status.PENDING, idFrom));

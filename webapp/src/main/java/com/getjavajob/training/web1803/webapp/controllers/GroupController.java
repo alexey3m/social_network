@@ -86,10 +86,10 @@ public class GroupController {
             try {
                 encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+                logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
             }
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/group.jsp");
+        ModelAndView modelAndView = new ModelAndView(GROUP);
         modelAndView.addObject("groupId", groupId);
         modelAndView.addObject("infoMessage", infoMessage);
         modelAndView.addObject("actionId", actionId);
@@ -115,7 +115,7 @@ public class GroupController {
         int sessionId = (Integer) session.getAttribute("id");
         List<Group> myGroups = groupService.getAllByUserId(sessionId);
         List<Group> allGroups = groupService.getAll();
-        ModelAndView modelAndView = new ModelAndView("/jsp/groups.jsp");
+        ModelAndView modelAndView = new ModelAndView("groups");
         modelAndView.addObject("myGroups", myGroups);
         modelAndView.addObject("allGroups", allGroups);
         return modelAndView;
@@ -130,9 +130,9 @@ public class GroupController {
         try {
             encodedPhoto = new String(encodedPhotoBytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Encode bytes to UTF-8 end with error! Exception: " + e);
+            logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/update-group.jsp");
+        ModelAndView modelAndView = new ModelAndView("update-group");
         modelAndView.addObject(GROUP, group);
         modelAndView.addObject("encodedPhoto", encodedPhoto);
         return modelAndView;
@@ -143,15 +143,19 @@ public class GroupController {
                               @RequestParam(required = false, name = "uploadPhoto") MultipartFile file,
                               HttpSession session) {
         logger.info("In updateGroup method");
-        byte[] currentAccountPhoto = groupService.getPhoto(group.getId());
+        Group currentGroup = groupService.get(group.getId());
+        byte[] currentGroupPhoto = currentGroup.getPhoto();
         if (!file.isEmpty()) {
             try {
-                currentAccountPhoto = file.getBytes();
+                currentGroupPhoto = file.getBytes();
             } catch (IOException e) {
-                logger.error("Get bytes from file end with error! Exception: " + e);
+                logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
-        group.setPhoto(currentAccountPhoto);
+        group.setPhoto(currentGroupPhoto);
+        group.setUserCreatorId(currentGroup.getUserCreatorId());
+        group.setCreateDate(currentGroup.getCreateDate());
+        group.setAccounts(currentGroup.getAccounts());
         boolean result = groupService.update(group);
         String redirect = "redirect:/viewGroup?id=" + group.getId() + "&infoMessage=";
         return result ? redirect + "updateTrue" : redirect + "updateFalse";
@@ -168,7 +172,7 @@ public class GroupController {
             try {
                 currentGroupPhoto = file.getBytes();
             } catch (IOException e) {
-                logger.error("Get bytes from file end with error! Exception: " + e);
+                logger.error("Get bytes from file end with error! Exception: ", e);
             }
         }
         group.setUserCreatorId((Integer) session.getAttribute("id"));
@@ -178,8 +182,8 @@ public class GroupController {
         accounts.add(new AccountInGroup(group.getUserCreatorId(), GroupRole.ADMIN, GroupStatus.ACCEPTED));
         group.setAccounts(accounts);
         try {
-            boolean result = groupService.create(group);
-            return result ? "redirect:viewGroup?id=" + groupService.getId(name) + "&infoMessage=regGroup" : "redirect:/jsp/create-group.jsp?infoMessage=smFalse";
+            groupService.create(group);
+            return "redirect:viewGroups";
         } catch (DaoNameException e) {
             return "redirect:/createGroupPage?infoMessage=nameFalse&name=" + name;
         }
@@ -188,7 +192,7 @@ public class GroupController {
     @RequestMapping(value = "/createGroupPage", method = RequestMethod.GET)
     public ModelAndView createGroupPage() {
         logger.info("In createGroupPage method");
-        return new ModelAndView("/jsp/create-group.jsp", GROUP, new Group());
+        return new ModelAndView("create-group", GROUP, new Group());
     }
 
 

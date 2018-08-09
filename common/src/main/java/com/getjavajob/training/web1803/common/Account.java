@@ -20,43 +20,34 @@ public class Account implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id", nullable = false)
     @XmlAttribute(name = "id")
-    private int id;
+    private Integer id;
     @Column(name = "email", nullable = false)
-    @XmlElement(name = "email")
     private String email;
     @Column(name = "password", nullable = false)
-    @XmlElement(name = "password")
     private String password;
     @Column(name = "first_name")
-    @XmlElement(name = "firstName")
     private String firstName;
     @Column(name = "last_name")
-    @XmlElement(name = "lastName")
     private String lastName;
     @Column(name = "middle_name")
-    @XmlElement(name = "middleName")
     private String middleName;
-    @XmlElement(name = "birthday")
     private String birthday;
     @XmlTransient
     private byte[] photo;
-    @XmlElement(name = "skype")
     private String skype;
-    @XmlElement(name = "icq")
-    private int icq;
+    private String icq;
     @Column(name = "reg_date")
-    @XmlElement(name = "regDate")
     private String regDate;
     @Enumerated(STRING)
-    @XmlElement(name = "role")
     private Role role;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id", nullable = false)
-    @XmlElement(name = "phones")
+    @XmlElementWrapper(name = "phones")
+    @XmlElement(name = "phone")
     private List<Phone> phones = new ArrayList<>();
 
-    public Account(int id, String email, String password, String firstName, String lastName, String middleName, String birthday,
-                   byte[] photo, String skype, int icq, String regDate, Role role, List<Phone> phones) {
+    public Account(Integer id, String email, String password, String firstName, String lastName, String middleName, String birthday,
+                   byte[] photo, String skype, String icq, String regDate, Role role, List<Phone> phones) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -75,11 +66,11 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -147,11 +138,11 @@ public class Account implements Serializable {
         this.skype = skype;
     }
 
-    public int getIcq() {
+    public String getIcq() {
         return icq;
     }
 
-    public void setIcq(int icq) {
+    public void setIcq(String icq) {
         this.icq = icq;
     }
 
@@ -203,8 +194,8 @@ public class Account implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return id == account.id &&
-                icq == account.icq &&
+        return id.equals(account.id) &&
+                icq.equals(account.icq) &&
                 role == account.role &&
                 Objects.equals(email, account.email) &&
                 Objects.equals(password, account.password) &&

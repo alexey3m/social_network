@@ -40,7 +40,7 @@ public class FriendController {
         List<Account> myRequest = relationshipService.getFriendRequestsFromId(id);
         List<Account> pendingRequest = relationshipService.getPendingRequestsToId(id);
         List<Account> friends = relationshipService.getAcceptedFriendsList(id);
-        ModelAndView modelAndView = new ModelAndView("/jsp/friends.jsp");
+        ModelAndView modelAndView = new ModelAndView("friends");
         modelAndView.addObject("id", id);
         modelAndView.addObject("infoMessage", infoMessage);
         modelAndView.addObject("actionId", actionId);

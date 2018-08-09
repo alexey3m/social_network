@@ -15,7 +15,7 @@
     <title>Создание новой группы Social-Network</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:set var="infoMessage" scope="page" value="${param.infoMessage}"/>
     <c:set var="oldName" scope="page" value="${param.name}"/>

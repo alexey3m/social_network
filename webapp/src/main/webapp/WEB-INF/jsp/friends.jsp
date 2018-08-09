@@ -14,7 +14,7 @@
     <title>Мои друзья Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'friendsAddQueryTrue'}">
         <div class="alert alert-success text-alert" role="alert">

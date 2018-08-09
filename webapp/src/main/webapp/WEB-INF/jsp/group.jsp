@@ -10,14 +10,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="resources/css/group.css" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/group.css"/>" rel="stylesheet" type="text/css"/>
     <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
     <title>Группа Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <c:if test="${infoMessage == 'regGroup'}">
         <div class="alert alert-success text-alert" role="alert">
@@ -90,7 +90,7 @@
                 <div class="control-panel">
                     Панель управления<br>
                 </div>
-                <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ADMIN}">
+                <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ROLE_ADMIN}">
                     <div class="control-panel">
                         <a href="updateGroupPage?id=${groupId}">
                             <button type="button" class="btn btn-sm btn-primary">Обновить группу</button>
@@ -239,7 +239,7 @@
                                     </p>
                                 </div>
                                 <div class="float-right">
-                                    <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ADMIN}">
+                                    <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ROLE_ADMIN}">
                                         <form action="messageAction?action=remove&type=groupWall&assignId=${group.id}&messageId=${message.id}"
                                               method="post">
                                             <button type="submit" class="btn btn-outline-primary">Удалить</button>

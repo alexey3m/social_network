@@ -15,7 +15,7 @@
     <title>Обновление группы Social-Network</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <%--@elvariable id="group" type="com.getjavajob.training.web1803.common.Group"--%>
     <form:form id="formConfirm" class="form-reg" method="post" action="/updateGroup" enctype="multipart/form-data" modelAttribute="group" >

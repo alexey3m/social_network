@@ -14,7 +14,7 @@
     <title>Мои группы Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <div>
         <h5>Мои группы</h5>
