@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <!-- Custom styles for this template -->
-    <link href="<c:url value="/css/navbar.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/navbar.css"/>" rel="stylesheet" type="text/css"/>
     <title>Account Social net!</title>
 </head>
 <body>

@@ -14,7 +14,7 @@
     <title>Нет доступа.  Social net!</title>
 </head>
 <body>
-<jsp:include page="/jsp/navbar.jsp"/>
+<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
     <div align="center">
         <h1>Ошибка 403</h1><br>

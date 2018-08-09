@@ -89,7 +89,7 @@ public class GroupController {
                 logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
             }
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/group.jsp");
+        ModelAndView modelAndView = new ModelAndView("group");
         modelAndView.addObject("groupId", groupId);
         modelAndView.addObject("infoMessage", infoMessage);
         modelAndView.addObject("actionId", actionId);
@@ -115,7 +115,7 @@ public class GroupController {
         int sessionId = (Integer) session.getAttribute("id");
         List<Group> myGroups = groupService.getAllByUserId(sessionId);
         List<Group> allGroups = groupService.getAll();
-        ModelAndView modelAndView = new ModelAndView("/jsp/groups.jsp");
+        ModelAndView modelAndView = new ModelAndView("groups");
         modelAndView.addObject("myGroups", myGroups);
         modelAndView.addObject("allGroups", allGroups);
         return modelAndView;
@@ -132,7 +132,7 @@ public class GroupController {
         } catch (UnsupportedEncodingException e) {
             logger.error("Encode bytes to UTF-8 end with error! Exception: ", e);
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/update-group.jsp");
+        ModelAndView modelAndView = new ModelAndView("update-group");
         modelAndView.addObject(GROUP, group);
         modelAndView.addObject("encodedPhoto", encodedPhoto);
         return modelAndView;
@@ -192,7 +192,7 @@ public class GroupController {
     @RequestMapping(value = "/createGroupPage", method = RequestMethod.GET)
     public ModelAndView createGroupPage() {
         logger.info("In createGroupPage method");
-        return new ModelAndView("/jsp/create-group.jsp", GROUP, new Group());
+        return new ModelAndView("create-group", GROUP, new Group());
     }
 
 

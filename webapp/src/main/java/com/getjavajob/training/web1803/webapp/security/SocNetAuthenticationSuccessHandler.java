@@ -4,9 +4,11 @@ import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
 import com.getjavajob.training.web1803.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+@Component
+@ComponentScan(basePackages = "com.getjavajob.training.web1803.service")
 public class SocNetAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private AccountService accountService;
@@ -33,7 +37,9 @@ public class SocNetAuthenticationSuccessHandler implements AuthenticationSuccess
         Account currentAccount = new Account();
         String email = user.getUsername();
         try {
+            System.out.println("SocNetAuthenticationSuccessHandler accountService " + accountService);
             currentAccount = accountService.getByEmail(email);
+            System.out.println("currentAccount " + currentAccount);
         } catch (DaoNameException e) {
             e.printStackTrace();
         }

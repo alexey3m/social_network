@@ -65,7 +65,7 @@ public class MessageController {
                 allAccountsMessages.put(accountId, accountService.get(accountId));
             }
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/accountMess.jsp");
+        ModelAndView modelAndView = new ModelAndView("accountMess");
         modelAndView.addObject("sessionId", sessionId);
         modelAndView.addObject("assignId", assignId);
         modelAndView.addObject("newMessageAccount", newMessageAccount);
@@ -111,24 +111,19 @@ public class MessageController {
                                 @RequestParam(required = false, name = "uploadImage") MultipartFile file,
                                 HttpSession session) {
         logger.info("In messageAction method");
-//        int groupId = 0;
-//        int accountId = 0;
         MessageType type = null;
         String location;
         switch (inputType) {
             case "accountWall":
                 type = MessageType.ACCOUNT_WALL;
-//                accountId = assignId;
                 location = "viewAccount";
                 break;
             case "account":
                 type = MessageType.ACCOUNT;
-//                accountId = assignId;
                 location = "viewAccountMess";
                 break;
             case "groupWall":
                 type = MessageType.GROUP_WALL;
-//                groupId = assignId;
                 location = "viewGroup";
                 break;
             default:

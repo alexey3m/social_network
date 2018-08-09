@@ -14,6 +14,8 @@ import com.getjavajob.training.web1803.webapp.convertors.PhoneTypeEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +33,9 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@RestController
-@RequestMapping("/view")
+@Controller
+@ImportResource({"classpath*:security.xml"})
+//@RequestMapping("/view")
 public class AccountController {
     private static final String ACCOUNT = "account";
     private static final String REDIRECT_TO_VIEW_ACCOUNT = "redirect:viewAccount?id=";
@@ -51,10 +54,14 @@ public class AccountController {
         this.messageService = messageService;
     }
 
-    @RequestMapping("/")
-    public String greeting() {
-        System.out.println("in / login");
+    @RequestMapping(value = "/loginPage", method = RequestMethod.GET)
+    public String loginPage() {
         return "login";
+    }
+
+    @RequestMapping(value = "/errorAccess", method = RequestMethod.GET)
+    public String errorAccessPage() {
+        return "403";
     }
 
     @RequestMapping(value = "/viewAccount", method = RequestMethod.GET)
@@ -90,7 +97,7 @@ public class AccountController {
                 logger.error(MESSAGE_ENCODE, e);
             }
         }
-        ModelAndView modelAndView = new ModelAndView("/jsp/account.jsp");
+        ModelAndView modelAndView = new ModelAndView("account");
         modelAndView.addObject("id", id);
         modelAndView.addObject(ACCOUNT, account);
         modelAndView.addObject("actionAccount", actionAccount);
@@ -109,13 +116,13 @@ public class AccountController {
     @RequestMapping(value = "/regPage", method = RequestMethod.GET)
     public ModelAndView viewRegPage() {
         logger.info("In viewRegPage method");
-        return new ModelAndView("/jsp/reg.jsp", ACCOUNT, new Account());
+        return new ModelAndView("reg", ACCOUNT, new Account());
     }
 
     @RequestMapping(value = "/searchPage", method = RequestMethod.GET)
     public String searchPage() {
         logger.info("In searchPage method");
-        return "/jsp/search.jsp";
+        return "search";
     }
 
     @RequestMapping(value = "/reg", method = RequestMethod.POST)
@@ -135,7 +142,7 @@ public class AccountController {
         account.setRole(Role.ROLE_USER);
         try {
             accountService.create(account);
-            return "redirect:/jsp/login.jsp?&infoMessage=reg";
+            return "redirect:/loginPage?&infoMessage=reg";
         } catch (DaoNameException e) {
             return "redirect:/regPage?infoMessage=emailFalse";
         }
@@ -185,7 +192,7 @@ public class AccountController {
                     logger.error(MESSAGE_ENCODE, e);
                 }
             }
-            ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
+            ModelAndView modelAndView = new ModelAndView("update-account");
             modelAndView.addObject(ACCOUNT, account);
             modelAndView.addObject("encodedPhoto", encodedPhoto);
             return modelAndView;
@@ -214,7 +221,7 @@ public class AccountController {
 
     @RequestMapping(value = "/page404")
     public String updateRole() {
-        return "/jsp/404.jsp";
+        return "404";
     }
 
     @RequestMapping(value = "/accountToXml")
@@ -278,7 +285,7 @@ public class AccountController {
             }
         }
         account.setRole(accountService.getRole(account.getId()));
-        ModelAndView modelAndView = new ModelAndView("/jsp/update-account.jsp");
+        ModelAndView modelAndView = new ModelAndView("update-account");
         modelAndView.addObject(ACCOUNT, account);
         modelAndView.addObject("encodedPhoto", encodedPhoto);
         return modelAndView;

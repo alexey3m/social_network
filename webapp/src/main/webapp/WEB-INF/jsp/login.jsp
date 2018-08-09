@@ -7,10 +7,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="<c:url value="/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>">
     <!-- Custom styles for this template -->
-    <link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet" type="text/css"/>
-    <link href="<c:url value="/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/login.css"/>" rel="stylesheet" type="text/css"/>
+    <link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" type="text/css"/>
     <title>Вход в Social net!</title>
 </head>
 <body>
@@ -20,7 +20,7 @@
         <c:redirect url="/viewAccount?id=${sessionScope.id}"/>
     </c:if>
     <c:url var="loginUrl" value="/login" />
-    <form class="form-signin" action="${loginUrl}" method="post">
+    <form class="form-signin" action="${contextPath}/login" method="post">
         <c:set var="infoMessage" scope="session" value="${param.infoMessage}"/>
         <c:if test="${infoMessage == 'alert'}">
             <div class="alert alert-danger form-signin-alert" role="alert">
@@ -53,10 +53,10 @@
 </main><!-- /.container -->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="<c:url value="/js/jquery-3.3.1.js"/>"></script>
-<script src="<c:url value="/js/jquery-ui.js"/>"></script>
-<script src="<c:url value="/js/popper.min.js"/>"></script>
-<script src="<c:url value="/js/bootstrap.min.js"/>"></script>
-<script src="<c:url value="/js/socnet-custom.js"/>"></script>
+<script src="<c:url value="/resources/js/jquery-3.3.1.js"/>"></script>
+<script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
+<script src="<c:url value="/resources/js/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+<script src="<c:url value="/resources/js/socnet-custom.js"/>"></script>
 </body>
 </html>

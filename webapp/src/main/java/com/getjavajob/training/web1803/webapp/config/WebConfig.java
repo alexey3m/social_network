@@ -5,11 +5,13 @@ import com.getjavajob.training.web1803.webapp.convertors.PhoneTypeEditor;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -21,18 +23,17 @@ import java.beans.PropertyEditor;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@ImportResource({"classpath*:/WEB-INF/security.xml"})
 @EnableWebMvc
-//@ComponentScan(basePackages = {"com.getjavajob.training.web1803.common", "com.getjavajob.training.web1803.webapp"}, useDefaultFilters = false,
-//        includeFilters = {
-////                @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
-//                @ComponentScan.Filter(type = FilterType.ANNOTATION, value = RestController.class)
-//        })
 @Configuration
-//@Resource(name="jdbc/socnet", type=javax.sql.DataSource.class, lookup="jdbc/socnet")
-//@ImportResource({"classpath*:security.xml"})
 public class WebConfig implements WebMvcConfigurer {
     private final static long MAX_UPLOAD_FILE_SIZE_IN_BYTES = 10485760;
+
+    @Value("${spring.mvc.view.prefix}")
+    private String location;
+
+    @Value("${spring.mvc.view.suffix}")
+    private String suffix;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -47,8 +48,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix("/WEB-INF/jsp/");
-        resolver.setSuffix(".jsp");
+        resolver.setPrefix(location);
+        resolver.setSuffix(suffix);
         return resolver;
     }
 
@@ -91,11 +92,7 @@ public class WebConfig implements WebMvcConfigurer {
                 resource.setProperty("factory", "org.apache.tomcat.jdbc.pool.DataSourceFactory");
                 resource.setProperty("driverClassName", "com.mysql.jdbc.Driver");
                 context.getNamingResources().addResource(resource);
-
-
             }
         };
-
-
     }
 }

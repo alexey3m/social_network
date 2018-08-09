@@ -35,7 +35,7 @@ public class SearchController {
     public ModelAndView viewSearch(@RequestParam(required = false, name = "inputSearch") String searchString) {
         logger.info("In viewSearch method");
         String temp = searchString.replaceAll("\\s+", " ").trim();
-        ModelAndView modelAndView = new ModelAndView("/jsp/search-result.jsp");
+        ModelAndView modelAndView = new ModelAndView("search-result");
         modelAndView.addObject("searchString", temp);
         return modelAndView;
     }
