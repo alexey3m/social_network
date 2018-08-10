@@ -91,7 +91,7 @@
                 <c:if test="${sessionRole == Role.ROLE_ADMIN || sessionId == id}">
                     <div class="control-panel">
                         <a href="updateAccountPage?id=${id}">
-                            <button type="button" class="btn btn-sm btn-primary">Обновить аккаунт</button>
+                            <button type="button" class="btn btn-sm btn-primary btn-block">Обновить аккаунт</button>
                         </a>
                     </div>
                 </c:if>
@@ -99,13 +99,13 @@
                     <div class="control-panel">
                         <c:if test="${role == Role.ROLE_ADMIN}">
                             <form method="post" action="updateRole?action=toUser&actionId=${id}">
-                                <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Пользователь"
+                                <button type="submit" class="btn btn-sm btn-primary btn-block">Изменить роль на <br>"Пользователь"
                                 </button>
                             </form>
                         </c:if>
                         <c:if test="${role == Role.ROLE_USER}">
                             <form method="post" action="updateRole?action=toAdmin&actionId=${id}">
-                                <button type="submit" class="btn btn-sm btn-primary">Изменить роль на "Администратор"
+                                <button type="submit" class="btn btn-sm btn-primary btn-block">Изменить роль на <br>"Администратор"
                                 </button>
                             </form>
                         </c:if>
@@ -114,61 +114,61 @@
                 <c:if test="${sessionId != id && status == Status.UNKNOWN}">
                     <div class="control-panel">
                         <form method="post" action="accountFriends?action=add&actionId=${id}">
-                            <button type="submit" class="btn btn-primary">Добавить в друзья!</button>
+                            <button type="submit" class="btn btn-sm btn-primary btn-block">Добавить в друзья!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.PENDING && pendingStatus != Status.PENDING}">
                     <div class="control-panel">
                         <form method="post" action="friends?action=removeRequest&actionId=${id}">
-                            <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
+                            <button type="submit" class="btn btn-sm btn-secondary btn-block">Удалить мой запрос!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId == id && status == Status.DECLINE}">
                     <div class="control-panel">
-                        <button type="submit" class="btn btn-danger" disabled>Ваш запрос был отклонен!</button>
+                        <button type="submit" class="btn btn-sm btn-danger btn-block" disabled>Ваш запрос был отклонен!</button>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && status == Status.ACCEPTED}">
                     <div class="control-panel">
                         <form method="post" action="accountFriends?action=remove&actionId=${id}">
-                            <button type="submit" class="btn btn-warning">Удалить из друзей!</button>
+                            <button type="submit" class="btn btn-sm btn-warning btn-block">Удалить из друзей!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id && pendingStatus == Status.PENDING}">
                     <div class="control-panel">
                         <form method="post" action="accountFriends?action=accept&actionId=${id}">
-                            <button type="submit" class="btn btn-success">Принять в друзья!</button>
+                            <button type="submit" class="btn btn-sm btn-success btn-block">Принять в друзья!</button>
                         </form>
                         <form method="post" action="accountFriends?action=decline&actionId=${id}">
-                            <button type="submit" class="btn btn-danger">Отклонить запрос!</button>
+                            <button type="submit" class="btn btn-sm btn-danger btn-block">Отклонить запрос!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId == id}">
                     <div class="control-panel">
                         <form method="get" action="createGroupPage">
-                            <button type="submit" class="btn btn-primary">Создать группу!</button>
+                            <button type="submit" class="btn btn-sm btn-primary btn-block">Создать группу!</button>
                         </form>
                     </div>
                 </c:if>
                 <c:if test="${sessionId != id}">
                     <div class="control-panel">
                         <a href="viewAccountMess?assignId=${id}">
-                            <button type="submit" class="btn btn-primary">Отправить сообщение!</button>
+                            <button type="submit" class="btn btn-sm btn-primary btn-block">Отправить сообщение!</button>
                         </a>
                     </div>
                 </c:if>
                 <div class="control-panel">
                     <a href="accountToXml?id=${id}">
-                        <button type="submit" class="btn btn-primary">Скачать аккаунт в XML</button>
+                        <button type="submit" class="btn btn-sm btn-primary btn-block">Скачать аккаунт в <br>XML</button>
                     </a>
                 </div>
                 <div class="control-panel">
                     <form method="post" action="removeAccount?actionId=${id}">
-                        <button type="submit" class="btn btn-sm btn-primary">Удалить аккаунт</button>
+                        <button type="submit" class="btn btn-sm btn-primary btn-block">Удалить аккаунт</button>
                     </form>
                 </div>
             </div>
