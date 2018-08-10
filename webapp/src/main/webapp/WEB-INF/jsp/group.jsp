@@ -93,7 +93,7 @@
                 <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ROLE_ADMIN}">
                     <div class="control-panel">
                         <a href="updateGroupPage?id=${groupId}">
-                            <button type="button" class="btn btn-sm btn-primary btn-block">Обновить группу</button>
+                            <button type="button" class="btn btn-sm btn-primary">Обновить группу</button>
                         </a>
                     </div>
                 </c:if>
@@ -101,7 +101,7 @@
                     <div class="control-panel">
                         <form method="post"
                               action="groupAction?action=addPending&groupId=${groupId}&actionId=${sessionId}">
-                            <button type="submit" class="btn btn-primary btn-block">Вступить в группу!</button>
+                            <button type="submit" class="btn btn-primary">Вступить в группу!</button>
                         </form>
                     </div>
                 </c:if>
@@ -109,7 +109,7 @@
                     <div class="control-panel">
                         <form method="post"
                               action="groupAction?action=removeRequest&groupId=${groupId}&actionId=${sessionId}">
-                            <button type="submit" class="btn btn-secondary btn-block">Удалить мой запрос!</button>
+                            <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
                         </form>
                     </div>
                 </c:if>
@@ -117,7 +117,7 @@
                     <div class="control-panel">
                         <form method="post"
                               action="groupAction?action=leaveGroup&groupId=${groupId}&actionId=${sessionId}">
-                            <button type="submit" class="btn btn-warning btn-block">Покинуть группу!</button>
+                            <button type="submit" class="btn btn-warning">Покинуть группу!</button>
                         </form>
                     </div>
                 </c:if>
@@ -152,14 +152,14 @@
                                     ${currentAccount.firstName} ${currentAccount.middleName} ${currentAccount.lastName}
                             </a>
                         </div>
-                        <div class="col-4">
+                        <div class="col-5">
                             <form class="d-inline" method="post"
                                   action="groupAction?action=acceptMember&groupId=${groupId}&actionId=${currentAccount.id}">
-                                <button type="submit" class="btn btn-sm btn-success btn-block">Добавить в группу!</button>
+                                <button type="submit" class="btn btn-sm btn-success">Добавить в группу!</button>
                             </form>
                             <form class="d-inline" method="post"
                                   action="groupAction?action=declineMember&groupId=${groupId}&actionId=${currentAccount.id}">
-                                <button type="submit" class="btn btn-sm btn-danger btn-block">Отклонить запрос!</button>
+                                <button type="submit" class="btn btn-sm btn-danger">Отклонить запрос!</button>
                             </form>
                         </div>
                     </div>
@@ -185,7 +185,7 @@
                             <c:if test="${rowRole == GroupRole.ADMIN && currentAccount.id != sessionId}">
                                 <form class="d-inline" method="post"
                                       action="groupAction?action=toUser&groupId=${groupId}&actionId=${currentAccount.id}">
-                                    <button type="submit" class="btn btn-sm btn-primary">Установить роль <br>"Пользователь
+                                    <button type="submit" class="btn btn-sm btn-primary">Установить роль "Пользователь
                                         группы"
                                     </button>
                                 </form>
@@ -193,7 +193,7 @@
                             <c:if test="${rowRole == GroupRole.USER && currentAccount.id != sessionId}">
                                 <form class="d-inline" method="post"
                                       action="groupAction?action=toAdmin&groupId=${groupId}&actionId=${currentAccount.id}">
-                                    <button type="submit" class="btn btn-sm btn-primary">Установить роль <br>"Администратор
+                                    <button type="submit" class="btn btn-sm btn-primary">Установить роль "Администратор
                                         группы"
                                     </button>
                                 </form>
