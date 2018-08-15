@@ -84,13 +84,17 @@ public class WebConfig implements WebMvcConfigurer {
                 resource.setName("jdbc/socnet");
                 resource.setType("javax.sql.DataSource");
                 resource.setAuth("Container");
-                resource.setProperty("username", "root");
-                resource.setProperty("password", "12345678");
-                resource.setProperty("url", "jdbc:mysql://localhost:3306/gjj_social_network?verifyServerCertificate=false" +
-                        "&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&useUnicode=true" +
-                        "&characterEncoding=utf8");
+                resource.setProperty("username", "bbb5523adc7727");
+                resource.setProperty("password", "c669d157");
+                resource.setProperty("url", "jdbc:mysql://us-cdbr-iron-east-04.cleardb.net:3306/heroku_e005d7733619d8f?reconnect=true&amp;characterEncoding=utf8");
                 resource.setProperty("factory", "org.apache.tomcat.jdbc.pool.DataSourceFactory");
                 resource.setProperty("driverClassName", "com.mysql.jdbc.Driver");
+                resource.setProperty("maxTotal", "10");
+                resource.setProperty("maxIdle", "5");
+                resource.setProperty("maxWaitMillis", "10000");
+                resource.setProperty("testOnBorrow", "true");
+                resource.setProperty("validationQuery", "SELECT 1");
+                resource.setProperty("removeAbandoned", "true");
                 context.getNamingResources().addResource(resource);
             }
         };

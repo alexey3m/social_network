@@ -14,6 +14,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -22,6 +23,7 @@ import java.util.Properties;
 @EnableJpaRepositories("com.getjavajob.training.web1803.dao")
 @Configuration
 @ImportResource({"classpath*:context.xml"})
+@Resource(name="jdbc/socnet", type=javax.sql.DataSource.class, lookup="jdbc/socnet")
 @EnableConfigurationProperties
 public class PersistanceJPAConfig {
 

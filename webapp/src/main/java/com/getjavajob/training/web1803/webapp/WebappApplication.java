@@ -7,18 +7,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import javax.servlet.ServletContext;
-
 @Configuration
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.getjavajob.training.web1803.*"})
+@ComponentScan(basePackages = {"com.getjavajob.training.web1803.common.*",
+        "com.getjavajob.training.web1803.dao.*",
+        "com.getjavajob.training.web1803.service",
+        "com.getjavajob.training.web1803.webapp.*"})
 @EnableJpaRepositories(basePackages = "com.getjavajob.training.web1803.dao")
 public class WebappApplication extends SpringBootServletInitializer {
-
-    @Override
-    public void onStartup(ServletContext servletContext) {
-        servletContext.setInitParameter("com.sun.faces.expressionFactory", "org.apache.el.ExpressionFactoryImpl");
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(WebappApplication.class, args);

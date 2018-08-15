@@ -28,7 +28,7 @@
         <div class="row">
             <div class="col-md-3">
                 <label>Текущее фото группы</label>
-                <img src="data:image/jpg;base64, ${encodedPhoto}" onerror="this.src='resources/img/noPhotoAvailable.jpg'" class="img-fluid"
+                <img src="data:image/jpg;base64, ${encodedPhoto}" onerror="this.src='resources/img/no-image-group.png'" class="img-fluid"
                      alt="Responsive image">
             </div>
             <div class="col">
