@@ -18,19 +18,19 @@
 <main role="main" class="container">
     <div class="row">
         <div class="col-md-3">
+            <div class="control-panel">
+                <a href="goChat">
+                    <button type="button" class="btn btn-sm btn-primary btn-block">Общий чат</button>
+                </a>
+            </div>
+            <br>
             <h5>Контакты</h5>
             <c:forEach var="account" items="${contacts}">
                 <div class="row">
                     <a href="viewAccountMess?assignId=${account.id}">${account.firstName} ${account.lastName}</a>
                 </div>
             </c:forEach>
-            <div class="control-panel">
-                <a href="goChat">
-                    <button type="button" class="btn btn-sm btn-primary">Общий чат</button>
-                </a>
-            </div>
         </div>
-
         <div class="col-md-9">
             <c:if test="${assignId != 0}">
                 <h5>Новое сообщение</h5>
@@ -79,7 +79,7 @@
                         </div>
                         <div class="card-body form-inline">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <img src="getMessagePhoto?id=${message.id}"
                                          onerror="this.src='resources/img/no-image-group.png'" class="img-fluid"
                                          alt="Responsive image">

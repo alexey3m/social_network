@@ -14,13 +14,19 @@
     <title>Вход в Social net!</title>
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top changeZ">
+    <a class="navbar-brand" href="<c:url value="/"/>">Социальная сеть</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
 <main role="main" class="container">
     <c:if test="${sessionScope.email != null}">
         <c:redirect url="/viewAccount?id=${sessionScope.id}"/>
     </c:if>
     <c:url var="loginUrl" value="/login" />
-    <form class="form-signin" action="${contextPath}/login" method="post">
+    <form class="form-signin" action="${loginUrl}" method="post">
         <c:set var="infoMessage" scope="session" value="${param.infoMessage}"/>
         <c:if test="${infoMessage == 'alert'}">
             <div class="alert alert-danger form-signin-alert" role="alert">

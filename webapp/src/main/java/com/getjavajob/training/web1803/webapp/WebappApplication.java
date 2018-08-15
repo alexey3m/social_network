@@ -11,7 +11,10 @@ import javax.servlet.ServletContext;
 
 @Configuration
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.getjavajob.training.web1803.*"})
+@ComponentScan(basePackages = {"com.getjavajob.training.web1803.common.*",
+        "com.getjavajob.training.web1803.dao.*",
+        "com.getjavajob.training.web1803.service",
+        "com.getjavajob.training.web1803.webapp.*"})
 @EnableJpaRepositories(basePackages = "com.getjavajob.training.web1803.dao")
 public class WebappApplication extends SpringBootServletInitializer {
 

@@ -58,9 +58,9 @@
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <form method="post" action="friends?action=removeRequest&actionId=${account.id}">
-                    <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
+                    <button type="submit" class="btn btn-sm btn-secondary btn-block">Удалить мой запрос!</button>
                 </form>
             </div>
         </div>
@@ -77,12 +77,12 @@
             </div>
             <div class="col-2">
                 <form method="post" action="friends?action=accept&actionId=${account.id}">
-                    <button type="submit" class="btn btn-sm btn-success">Принять в друзья!</button>
+                    <button type="submit" class="btn btn-sm btn-success btn-block">Принять в друзья!</button>
                 </form>
             </div>
             <div class="col-2">
                 <form method="post" action="friends?action=decline&actionId=${account.id}">
-                    <button type="submit" class="btn btn-sm btn-danger">Отклонить запрос!</button>
+                    <button type="submit" class="btn btn-sm btn-danger btn-block">Отклонить запрос!</button>
                 </form>
             </div>
         </div>
@@ -97,9 +97,9 @@
                         ${account.firstName} ${account.middleName} ${account.lastName}
                 </a>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <form method="post" action="friends?action=remove&actionId=${account.id}">
-                    <button type="submit" class="btn btn-sm btn-warning">Удалить из друзей!</button>
+                    <button type="submit" class="btn btn-sm btn-warning btn-block">Удалить из друзей!</button>
                 </form>
             </div>
         </div>

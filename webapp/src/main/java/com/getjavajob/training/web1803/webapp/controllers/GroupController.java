@@ -125,7 +125,11 @@ public class GroupController {
     public ModelAndView updateGroupPage(@RequestParam("id") int id, HttpSession session) {
         logger.info("In updateGroupPage method");
         Group group = groupService.get(id);
-        byte[] encodedPhotoBytes = Base64.getEncoder().encode(group.getPhoto());
+        byte[] photo = group.getPhoto();
+        byte[] encodedPhotoBytes = {};
+        if (photo != null) {
+            encodedPhotoBytes = Base64.getEncoder().encode(photo);
+        }
         String encodedPhoto = "";
         try {
             encodedPhoto = new String(encodedPhotoBytes, "UTF-8");

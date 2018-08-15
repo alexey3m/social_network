@@ -93,7 +93,7 @@
                 <c:if test="${role == GroupRole.ADMIN || globalRole == Role.ROLE_ADMIN}">
                     <div class="control-panel">
                         <a href="updateGroupPage?id=${groupId}">
-                            <button type="button" class="btn btn-sm btn-primary">Обновить группу</button>
+                            <button type="button" class="btn btn-sm btn-primary btn-block">Обновить группу</button>
                         </a>
                     </div>
                 </c:if>
@@ -101,7 +101,7 @@
                     <div class="control-panel">
                         <form method="post"
                               action="groupAction?action=addPending&groupId=${groupId}&actionId=${sessionId}">
-                            <button type="submit" class="btn btn-primary">Вступить в группу!</button>
+                            <button type="submit" class="btn btn-sm btn-primary btn-block">Вступить в группу!</button>
                         </form>
                     </div>
                 </c:if>
@@ -109,7 +109,7 @@
                     <div class="control-panel">
                         <form method="post"
                               action="groupAction?action=removeRequest&groupId=${groupId}&actionId=${sessionId}">
-                            <button type="submit" class="btn btn-secondary">Удалить мой запрос!</button>
+                            <button type="submit" class="btn btn-sm btn-secondary btn-block">Удалить мой запрос!</button>
                         </form>
                     </div>
                 </c:if>
@@ -117,7 +117,7 @@
                     <div class="control-panel">
                         <form method="post"
                               action="groupAction?action=leaveGroup&groupId=${groupId}&actionId=${sessionId}">
-                            <button type="submit" class="btn btn-warning">Покинуть группу!</button>
+                            <button type="submit" class="btn btn-sm btn-warning btn-block">Покинуть группу!</button>
                         </form>
                     </div>
                 </c:if>

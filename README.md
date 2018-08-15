@@ -27,7 +27,7 @@ MySQL ddl is located in the `db/ddl.sql`
 ![picture](screenshot/friends.JPG)  
 ![picture](screenshot/group.JPG)  
   
-The project hosted at [https://socnetershov.herokuapp.com](https://socnetershov.herokuapp.com)  
+The project hosted at [https://socialnetershov.herokuapp.com](https://socialnetershov.herokuapp.com)  
   
 Test account: petrov@gmail.com  
 Password: qwerty  
