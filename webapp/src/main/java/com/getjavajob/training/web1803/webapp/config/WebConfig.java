@@ -86,7 +86,7 @@ public class WebConfig implements WebMvcConfigurer {
                 resource.setAuth("Container");
                 resource.setProperty("username", "bbb5523adc7727");
                 resource.setProperty("password", "c669d157");
-                resource.setProperty("url", "jdbc:mysql://us-cdbr-iron-east-04.cleardb.net:3306/heroku_e005d7733619d8f?reconnect=true&amp;characterEncoding=utf8");
+                resource.setProperty("url", "jdbc:mysql://us-cdbr-iron-east-04.cleardb.net:3306/heroku_e005d7733619d8f?reconnect=true&characterEncoding=utf8");
                 resource.setProperty("factory", "org.apache.tomcat.jdbc.pool.DataSourceFactory");
                 resource.setProperty("driverClassName", "com.mysql.jdbc.Driver");
                 resource.setProperty("maxTotal", "10");
