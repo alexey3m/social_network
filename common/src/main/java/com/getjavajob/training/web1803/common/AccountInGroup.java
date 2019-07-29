@@ -2,15 +2,28 @@ package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Objects;
 
 import static javax.persistence.EnumType.STRING;
 
-@Value
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@AllArgsConstructor
 @Entity
 @Table(name = "account_in_group")
 public class AccountInGroup implements Serializable {

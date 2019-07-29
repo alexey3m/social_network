@@ -1,16 +1,30 @@
 package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.PhoneType;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.Objects;
 
 import static javax.persistence.EnumType.STRING;
 
-@Value
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@AllArgsConstructor
 @Entity
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Phone implements Serializable {

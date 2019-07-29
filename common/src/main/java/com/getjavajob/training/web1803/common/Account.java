@@ -1,18 +1,39 @@
 package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.Role;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static javax.persistence.EnumType.STRING;
 
-@Value
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@AllArgsConstructor
 @Entity
 @XmlRootElement(name = "account")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -46,6 +67,6 @@ public class Account implements Serializable {
     @JoinColumn(name = "account_id", nullable = false)
     @XmlElementWrapper(name = "phones")
     @XmlElement(name = "phone")
-    private List<Phone> phones = new ArrayList<>();
+    private List<Phone> phones;
 
 }
