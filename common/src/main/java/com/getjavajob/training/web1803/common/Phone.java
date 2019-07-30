@@ -4,6 +4,7 @@ import com.getjavajob.training.web1803.common.enums.PhoneType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -25,6 +26,7 @@ import static javax.persistence.EnumType.STRING;
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Phone implements Serializable {

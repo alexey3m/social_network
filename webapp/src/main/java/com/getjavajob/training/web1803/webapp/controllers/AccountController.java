@@ -170,13 +170,9 @@ public class AccountController {
             }
         }
         account.setPhoto(currentAccountPhoto);
-        boolean resultUpdate = accountService.update(account);
-        if (resultUpdate) {
-            session.setAttribute("userName", account.getFirstName() + " " + account.getLastName());
-            return REDIRECT_TO_VIEW_ACCOUNT + id + "&infoMessage=updateTrue";
-        } else {
-            return REDIRECT_TO_VIEW_ACCOUNT + id + "&infoMessage=updateFalse";
-        }
+        accountService.update(account);
+        session.setAttribute("userName", account.getFirstName() + " " + account.getLastName());
+        return REDIRECT_TO_VIEW_ACCOUNT + id + "&infoMessage=updateTrue";
     }
 
     @RequestMapping(value = "/updateAccountPage", method = RequestMethod.GET)

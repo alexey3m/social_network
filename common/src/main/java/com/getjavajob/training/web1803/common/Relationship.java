@@ -1,9 +1,9 @@
 package com.getjavajob.training.web1803.common;
 
 import com.getjavajob.training.web1803.common.enums.Status;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -20,7 +20,7 @@ import static javax.persistence.EnumType.STRING;
 @Setter
 @EqualsAndHashCode
 @ToString
-@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Relationship {
 
@@ -38,4 +38,10 @@ public class Relationship {
     @Column(name = "action_user_id", nullable = false)
     private Integer actionUserId;
 
+    public Relationship(Integer userOneId, Integer userTwoId, Status type, Integer actionUserId) {
+        this.userOneId = userOneId;
+        this.userTwoId = userTwoId;
+        this.type = type;
+        this.actionUserId = actionUserId;
+    }
 }

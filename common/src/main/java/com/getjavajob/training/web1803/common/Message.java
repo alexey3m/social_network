@@ -4,6 +4,7 @@ import com.getjavajob.training.web1803.common.enums.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -21,6 +22,7 @@ import static javax.persistence.EnumType.STRING;
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Message {
 
@@ -40,4 +42,12 @@ public class Message {
     @Column(name = "user_creator_id", nullable = false)
     private Integer userCreatorId;
 
+    public Message(Integer assignId, MessageType type, byte[] photo, String text, String dateCreate, Integer userCreatorId) {
+        this.assignId = assignId;
+        this.type = type;
+        this.photo = photo;
+        this.text = text;
+        this.dateCreate = dateCreate;
+        this.userCreatorId = userCreatorId;
+    }
 }

@@ -44,7 +44,7 @@ public class SearchController {
     @ResponseBody
     public List<String> commonSearchFilter(@RequestParam("filter") String filter) {
         logger.info("In commonSearchFilter method");
-        List<Account> accounts = accountService.searchByString(filter, 1);
+        List<Account> accounts = accountService.searchByStringPages(filter, 1);
         List<Group> groups = groupService.searchByString(filter, 0);
         List<String> result = new ArrayList<>();
         for (Account account : accounts) {
@@ -61,7 +61,7 @@ public class SearchController {
     public @ResponseBody
     List<Account> accountFilter(@RequestParam("filter") String filter, @RequestParam("page") int page) {
         logger.info("In accountFilter method");
-        return accountService.searchByString(filter, page);
+        return accountService.searchByStringPages(filter, page);
     }
 
     @RequestMapping(value = "/accountFilterCount")

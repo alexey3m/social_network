@@ -4,6 +4,7 @@ import com.getjavajob.training.web1803.common.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -34,6 +35,7 @@ import static javax.persistence.EnumType.STRING;
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @XmlRootElement(name = "account")
 @XmlAccessorType(XmlAccessType.FIELD)

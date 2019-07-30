@@ -5,14 +5,14 @@ import com.getjavajob.training.web1803.common.Group;
 import com.getjavajob.training.web1803.common.enums.GroupRole;
 import com.getjavajob.training.web1803.common.enums.GroupStatus;
 import com.getjavajob.training.web1803.dao.exceptions.DaoNameException;
-import com.getjavajob.training.web1803.dao.GroupRepository;
+import com.getjavajob.training.web1803.dao.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.getjavajob.training.web1803.dao.GroupSpecification.searchByMemberId;
+import static com.getjavajob.training.web1803.dao.repository.specifications.GroupSpecification.searchByMemberId;
 import static org.springframework.data.domain.PageRequest.of;
 
 @Service

@@ -4,8 +4,5 @@ public enum GroupStatus {
     UNKNOWN,
     PENDING,
     ACCEPTED,
-    DECLINE;
-
-    GroupStatus() {
-    }
+    DECLINE
 }

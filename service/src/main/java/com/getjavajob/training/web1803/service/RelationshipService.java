@@ -3,8 +3,8 @@ package com.getjavajob.training.web1803.service;
 import com.getjavajob.training.web1803.common.Account;
 import com.getjavajob.training.web1803.common.Relationship;
 import com.getjavajob.training.web1803.common.enums.Status;
-import com.getjavajob.training.web1803.dao.AccountDAO;
 import com.getjavajob.training.web1803.dao.RelationshipDAO;
+import com.getjavajob.training.web1803.dao.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +14,12 @@ import java.util.List;
 @Service
 public class RelationshipService {
     private RelationshipDAO relationshipDAO;
-    private AccountDAO accountDAO;
+    private AccountRepository accountRepository;
 
     @Autowired
-    public RelationshipService(RelationshipDAO relationshipDAO, AccountDAO accountDAO) {
+    public RelationshipService(RelationshipDAO relationshipDAO, AccountRepository accountRepository) {
         this.relationshipDAO = relationshipDAO;
-        this.accountDAO = accountDAO;
+        this.accountRepository = accountRepository;
     }
 
     public RelationshipService() {
@@ -59,7 +59,7 @@ public class RelationshipService {
         List<Integer> friendsId = relationshipDAO.getFriendsIdList(id);
         List<Account> friends = new ArrayList<>();
         for (int idFriend : friendsId) {
-            friends.add(accountDAO.get(idFriend));
+            friends.add(accountRepository.getOne(idFriend));
         }
         return friends;
     }
@@ -68,7 +68,7 @@ public class RelationshipService {
         List<Integer> friendsId = relationshipDAO.getPendingRequestToId(id);
         List<Account> friends = new ArrayList<>();
         for (int idFriend : friendsId) {
-            friends.add(accountDAO.get(idFriend));
+            friends.add(accountRepository.getOne(idFriend));
         }
         return friends;
     }
@@ -77,7 +77,7 @@ public class RelationshipService {
         List<Integer> friendsId = relationshipDAO.getFriendRequestsFromId(id);
         List<Account> friends = new ArrayList<>();
         for (int idFriend : friendsId) {
-            friends.add(accountDAO.get(idFriend));
+            friends.add(accountRepository.getOne(idFriend));
         }
         return friends;
     }

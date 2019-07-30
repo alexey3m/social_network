@@ -1,4 +1,4 @@
-package com.getjavajob.training.web1803.dao;
+package com.getjavajob.training.web1803.dao.repository.specifications;
 
 import com.getjavajob.training.web1803.common.AccountInGroup;
 import com.getjavajob.training.web1803.common.Group;
@@ -11,7 +11,7 @@ import static javax.persistence.criteria.JoinType.INNER;
 
 public class GroupSpecification {
     public static Specification<Group> searchByMemberId(final int memberId) {
-        return (Specification<Group>) (root, query, criteriaBuilder) -> {
+        return (root, query, criteriaBuilder) -> {
             Join<Group, AccountInGroup> accountInGroupJoin = root.join("accounts", INNER);
             return criteriaBuilder.and(
                     criteriaBuilder.equal(accountInGroupJoin.get("userMemberId"), memberId),

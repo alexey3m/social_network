@@ -3,6 +3,7 @@ package com.getjavajob.training.web1803.common;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -23,6 +24,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "soc_group")
 public class Group implements Serializable {

@@ -1,4 +1,4 @@
-package com.getjavajob.training.web1803.dao;
+package com.getjavajob.training.web1803.dao.repository;
 
 import com.getjavajob.training.web1803.common.Group;
 import org.springframework.data.domain.Page;
