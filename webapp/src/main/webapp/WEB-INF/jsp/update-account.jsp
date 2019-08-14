@@ -1,4 +1,4 @@
-<%@ page import="com.getjavajob.training.web1803.common.enums.PhoneType" %>
+<%@ page import="com.ershov.socialnet.common.enums.PhoneType" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -17,7 +17,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
-    <%--@elvariable id="account" type="com.getjavajob.training.web1803.common.Account"--%>
+    <%--@elvariable id="account" type="com.ershov.socialnet.common.Account"--%>
 
         <form action="updateAccountPageFromXml" method="post" enctype="multipart/form-data" class="form-upd" >
             <label>Загрузить аккаунт для обновления из XML файла?</label>

@@ -1,0 +1,53 @@
+package com.ershov.socialnet.common;
+
+import com.ershov.socialnet.common.enums.MessageType;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import static javax.persistence.EnumType.STRING;
+
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "message_id", nullable = false)
+    private Integer id;
+    @Column(name = "assign_id", nullable = false)
+    private Integer assignId;
+    @Enumerated(STRING)
+    @Column(name = "type", nullable = false)
+    private MessageType type;
+    private byte[] photo;
+    private String text;
+    @Column(name = "date_create", nullable = false)
+    private String dateCreate;
+    @Column(name = "user_creator_id", nullable = false)
+    private Integer userCreatorId;
+
+    public Message(Integer assignId, MessageType type, byte[] photo, String text, String dateCreate, Integer userCreatorId) {
+        this.assignId = assignId;
+        this.type = type;
+        this.photo = photo;
+        this.text = text;
+        this.dateCreate = dateCreate;
+        this.userCreatorId = userCreatorId;
+    }
+}

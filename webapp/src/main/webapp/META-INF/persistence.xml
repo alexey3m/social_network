@@ -1,12 +1,12 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"  version="2.0">
 
     <persistence-unit name="default">
-        <class>com.getjavajob.training.web1803.common.Account</class>
-        <class>com.getjavajob.training.web1803.common.Phone</class>
-        <class>com.getjavajob.training.web1803.common.Group</class>
-        <class>com.getjavajob.training.web1803.common.AccountInGroup</class>
-        <class>com.getjavajob.training.web1803.common.Message</class>
-        <class>com.getjavajob.training.web1803.common.Relationship</class>
+        <class>com.ershov.socialnet.common.Account</class>
+        <class>com.ershov.socialnet.common.Phone</class>
+        <class>com.ershov.socialnet.common.Group</class>
+        <class>com.ershov.socialnet.common.AccountInGroup</class>
+        <class>com.ershov.socialnet.common.Message</class>
+        <class>com.ershov.socialnet.common.Relationship</class>
     </persistence-unit>
 
 </persistence>

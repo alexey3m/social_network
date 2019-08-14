@@ -29,7 +29,7 @@
             <strong>Ошибка!</strong> <br>Что-то пошло не так..
         </div>
     </c:if>
-    <%--@elvariable id="group" type="com.getjavajob.training.web1803.common.Group"--%>
+    <%--@elvariable id="group" type="com.ershov.socialnet.common.Group"--%>
     <form:form class="form-reg" method="post" action="/createGroup" enctype="multipart/form-data" modelAttribute="group">
         <h2 class="form-reg-heading">Создание новой группы</h2>
         <form:label path="name" class="sr-only">Имя группы</form:label>

@@ -116,7 +116,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.getjavajob.training.web1803.webapp.WebappApplication</mainClass>
+                    <mainClass>com.ershov.socialnet.webapp.WebappApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

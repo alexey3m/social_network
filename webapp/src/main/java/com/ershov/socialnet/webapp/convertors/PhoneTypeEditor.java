@@ -1,0 +1,26 @@
+package com.ershov.socialnet.webapp.convertors;
+
+import com.ershov.socialnet.common.enums.PhoneType;
+
+import java.beans.PropertyEditorSupport;
+
+public class PhoneTypeEditor extends PropertyEditorSupport {
+
+    @Override
+    public void setAsText(String text) {
+        switch (text) {
+            case "MOBILE":
+                this.setValue(PhoneType.MOBILE);
+                break;
+            case "WORK":
+                this.setValue(PhoneType.WORK);
+                break;
+            case "HOME":
+                this.setValue(PhoneType.HOME);
+                break;
+            default:
+                this.setValue("");
+                break;
+        }
+    }
+}

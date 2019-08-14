@@ -1,6 +1,6 @@
-<%@ page import="com.getjavajob.training.web1803.common.enums.Role" %>
-<%@ page import="com.getjavajob.training.web1803.common.enums.GroupRole" %>
-<%@ page import="com.getjavajob.training.web1803.common.enums.GroupStatus" %>
+<%@ page import="com.ershov.socialnet.common.enums.Role" %>
+<%@ page import="com.ershov.socialnet.common.enums.GroupRole" %>
+<%@ page import="com.ershov.socialnet.common.enums.GroupStatus" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>

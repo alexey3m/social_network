@@ -29,7 +29,7 @@
             <strong>Ошибка!</strong> <br>Данная электронная почта уже используется!
         </div>
     </c:if>
-    <%--@elvariable id="account" type="com.getjavajob.training.web1803.common.Account"--%>
+    <%--@elvariable id="account" type="com.ershov.socialnet.common.Account"--%>
     <form:form class="form-reg" method="post" action="/reg" enctype="multipart/form-data" modelAttribute="account" onsubmit="updateIndexedInputNames();">
         <h2 class="form-reg-heading">Форма регистрации</h2>
         <form:label path="email" class="sr-only">Email</form:label>

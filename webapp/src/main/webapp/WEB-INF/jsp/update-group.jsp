@@ -17,7 +17,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/navbar.jsp"/>
 <main role="main" class="container">
-    <%--@elvariable id="group" type="com.getjavajob.training.web1803.common.Group"--%>
+    <%--@elvariable id="group" type="com.ershov.socialnet.common.Group"--%>
     <form:form id="formConfirm" class="form-reg" method="post" action="/updateGroup" enctype="multipart/form-data" modelAttribute="group" >
         <h2 class="form-reg-heading">Форма обновления группы</h2>
         <form:input type="hidden" path="id" value="${group.id}"/>
