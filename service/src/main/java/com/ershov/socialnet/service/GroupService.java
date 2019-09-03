@@ -6,11 +6,13 @@ import com.ershov.socialnet.common.enums.GroupRole;
 import com.ershov.socialnet.common.enums.GroupStatus;
 import com.ershov.socialnet.dao.exceptions.DaoNameException;
 import com.ershov.socialnet.dao.repository.GroupRepository;
+import com.ershov.socialnet.service.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.ershov.socialnet.dao.repository.specifications.GroupSpecification.searchByMemberId;
 import static org.springframework.data.domain.PageRequest.of;
@@ -19,59 +21,59 @@ import static org.springframework.data.domain.PageRequest.of;
 public class GroupService {
     private static final int SEARCH_RESULT_PER_PAGE = 5;
 
-    private GroupRepository repository;
+    private GroupRepository groupRepository;
 
     @Autowired
-    public GroupService(GroupRepository repository) {
-        this.repository = repository;
-    }
-
-    public GroupService() {
+    public GroupService(GroupRepository groupRepository) {
+        this.groupRepository = groupRepository;
     }
 
     public boolean create(Group group) throws DaoNameException {
         String name = group.getName();
-        if (repository.existsByName(name)) {
+        if (groupRepository.existsByName(name)) {
             throw new DaoNameException("Name " + name + " already used");
         } else {
-            repository.saveAndFlush(group);
+            groupRepository.saveAndFlush(group);
             return true;
         }
     }
 
     public Group get(int groupId) {
-        return repository.findById(groupId).get();
+        return groupRepository.findById(groupId).orElseThrow(ServiceException::new);
     }
 
     public List<Group> getAll() {
-        return repository.findAll();
+        return groupRepository.findAll();
     }
 
     public List<Group> searchByString(String search, int page) {
-        return repository.findByNameIgnoreCaseContaining(search, createPageRequest(page)).getContent();
+        return groupRepository.findByNameIgnoreCaseContaining(search, createPageRequest(page)).getContent();
     }
 
     public long searchByStringCount(String search) {
-        return repository.countByNameIgnoreCaseContaining(search);
+        return groupRepository.countByNameIgnoreCaseContaining(search);
     }
 
     public List<Group> getAllByUserId(int userId) {
-        return repository.findAll(searchByMemberId(userId));
+        return groupRepository.findAll(searchByMemberId(userId));
     }
 
     public GroupRole getRoleMemberInGroup(int groupId, int memberId) {
-        Group group = repository.findById(groupId).get();
-        for (AccountInGroup accountInGroup : group.getAccounts()) {
-            if (accountInGroup.getUserMemberId() == memberId) {
-                return accountInGroup.getRole();
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            for (AccountInGroup accountInGroup : foundGroup.get().getAccounts()) {
+                if (accountInGroup.getUserMemberId() == memberId) {
+                    return accountInGroup.getRole();
+                }
             }
         }
         return GroupRole.UNKNOWN;
     }
 
-    public byte[] getPhoto(int id) {
-        byte[] photo = repository.findById(id).get().getPhoto();
-        if (photo != null) {
+    public byte[] getPhoto(int groupId) {
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            byte[] photo = foundGroup.get().getPhoto();
             return photo.length == 0 ? null : photo;
         } else {
             return null;
@@ -79,77 +81,91 @@ public class GroupService {
     }
 
     public GroupStatus getStatusMemberInGroup(int groupId, int memberId) {
-        Group group = repository.findById(groupId).get();
-        for (AccountInGroup accountInGroup : group.getAccounts()) {
-            if (accountInGroup.getUserMemberId() == memberId) {
-                return accountInGroup.getStatus();
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            for (AccountInGroup accountInGroup : foundGroup.get().getAccounts()) {
+                if (accountInGroup.getUserMemberId() == memberId) {
+                    return accountInGroup.getStatus();
+                }
             }
         }
         return GroupStatus.UNKNOWN;
     }
 
-    public boolean addPendingMemberToGroup(int idGroup, int idNewMember) {
-        Group currentGroup = repository.findById(idGroup).get();
-        List<AccountInGroup> accounts = currentGroup.getAccounts();
-        accounts.add(new AccountInGroup(idNewMember, GroupRole.USER, GroupStatus.PENDING));
-        currentGroup.setAccounts(accounts);
-        repository.save(currentGroup);
-        return true;
-    }
-
-    public boolean setStatusMemberInGroup(int idGroup, int idMember, GroupStatus status) {
-        Group currentGroup = repository.findById(idGroup).get();
-        List<AccountInGroup> accounts = currentGroup.getAccounts();
-        for (AccountInGroup accountInGroup : accounts) {
-            if (accountInGroup.getUserMemberId() == idMember) {
-                accountInGroup.setStatus(status);
-                break;
-            }
+    public boolean addPendingMemberToGroup(int groupId, int newMemberId) {
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            Group group = foundGroup.get();
+            List<AccountInGroup> accounts = group.getAccounts();
+            accounts.add(new AccountInGroup(newMemberId, GroupRole.USER, GroupStatus.PENDING));
+            group.setAccounts(accounts);
+            groupRepository.save(group);
+            return true;
         }
-        currentGroup.setAccounts(accounts);
-        repository.save(currentGroup);
-        return true;
+        return false;
     }
 
-    public boolean setRoleMemberInGroup(int idGroup, int idMember, GroupRole role) {
-        Group currentGroup = repository.findById(idGroup).get();
-        List<AccountInGroup> accounts = currentGroup.getAccounts();
-        for (AccountInGroup accountInGroup : accounts) {
-            if (accountInGroup.getUserMemberId() == idMember) {
-                accountInGroup.setRole(role);
-                break;
+    public boolean setStatusMemberInGroup(int groupId, int memberId, GroupStatus status) {
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            Group group = foundGroup.get();
+            List<AccountInGroup> accounts = group.getAccounts();
+            for (AccountInGroup accountInGroup : accounts) {
+                if (accountInGroup.getUserMemberId() == memberId) {
+                    accountInGroup.setStatus(status);
+                    break;
+                }
             }
+            group.setAccounts(accounts);
+            groupRepository.save(group);
+            return true;
         }
-        currentGroup.setAccounts(accounts);
-        repository.save(currentGroup);
-        return true;
+        return false;
     }
 
-    public boolean removeMemberFromGroup(int idGroup, int idMemberToDelete) {
-        Group currentGroup = repository.findById(idGroup).get();
-        List<AccountInGroup> accounts = currentGroup.getAccounts();
-        for (AccountInGroup accountInGroup : accounts) {
-            if (accountInGroup.getUserMemberId() == idMemberToDelete) {
-                accounts.remove(accountInGroup);
-                break;
+    public boolean setRoleMemberInGroup(int groupId, int memberId, GroupRole role) {
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            Group group = foundGroup.get();
+            List<AccountInGroup> accounts = group.getAccounts();
+            for (AccountInGroup accountInGroup : accounts) {
+                if (accountInGroup.getUserMemberId() == memberId) {
+                    accountInGroup.setRole(role);
+                    break;
+                }
             }
+            group.setAccounts(accounts);
+            groupRepository.save(group);
+            return true;
         }
-        currentGroup.setAccounts(accounts);
-        repository.save(currentGroup);
-        return true;
+        return false;
     }
 
-    public int getId(String name) {
-        return repository.findByName(name).getId();
+    public boolean removeMemberFromGroup(int groupId, int memberToDeleteId) {
+        Optional<Group> foundGroup = groupRepository.findById(groupId);
+        if (foundGroup.isPresent()) {
+            Group group = foundGroup.get();
+            List<AccountInGroup> accounts = group.getAccounts();
+            for (AccountInGroup accountInGroup : accounts) {
+                if (accountInGroup.getUserMemberId() == memberToDeleteId) {
+                    accounts.remove(accountInGroup);
+                    break;
+                }
+            }
+            group.setAccounts(accounts);
+            groupRepository.save(group);
+            return true;
+        }
+        return false;
     }
 
     public boolean update(Group group) {
-        repository.save(group);
+        groupRepository.save(group);
         return true;
     }
 
     public boolean remove(int id) {
-        repository.deleteById(id);
+        groupRepository.deleteById(id);
         return true;
     }
 

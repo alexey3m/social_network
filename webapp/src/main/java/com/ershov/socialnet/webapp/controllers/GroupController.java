@@ -12,6 +12,7 @@ import com.ershov.socialnet.dao.exceptions.DaoNameException;
 import com.ershov.socialnet.service.AccountService;
 import com.ershov.socialnet.service.GroupService;
 import com.ershov.socialnet.service.MessageService;
+import com.ershov.socialnet.service.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,12 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class GroupController {
@@ -58,8 +64,10 @@ public class GroupController {
         Map<Integer, GroupRole> acceptedMembersRole = new HashMap<>();
         Map<Integer, Account> messagesAccounts = new HashMap<>();
         Account actionAccount = actionId == 0 ? new Account() : accountService.get(actionId);
-        Group group = groupService.get(groupId);
-        if (group == null) {
+        Group group = null;
+        try {
+            groupService.get(groupId);
+        } catch (ServiceException e) {
             return new ModelAndView("redirect:page404");
         }
         GroupRole role = groupService.getRoleMemberInGroup(groupId, sessionId);
