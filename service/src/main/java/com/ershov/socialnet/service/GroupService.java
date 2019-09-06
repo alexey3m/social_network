@@ -10,6 +10,7 @@ import com.ershov.socialnet.service.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class GroupService {
         this.groupRepository = groupRepository;
     }
 
+    @Transactional
     public boolean create(Group group) throws DaoNameException {
         String name = group.getName();
         if (groupRepository.existsByName(name)) {
@@ -92,6 +94,7 @@ public class GroupService {
         return GroupStatus.UNKNOWN;
     }
 
+    @Transactional
     public boolean addPendingMemberToGroup(int groupId, int newMemberId) {
         Optional<Group> foundGroup = groupRepository.findById(groupId);
         if (foundGroup.isPresent()) {
@@ -105,6 +108,7 @@ public class GroupService {
         return false;
     }
 
+    @Transactional
     public boolean setStatusMemberInGroup(int groupId, int memberId, GroupStatus status) {
         Optional<Group> foundGroup = groupRepository.findById(groupId);
         if (foundGroup.isPresent()) {
@@ -123,6 +127,7 @@ public class GroupService {
         return false;
     }
 
+    @Transactional
     public boolean setRoleMemberInGroup(int groupId, int memberId, GroupRole role) {
         Optional<Group> foundGroup = groupRepository.findById(groupId);
         if (foundGroup.isPresent()) {
@@ -141,6 +146,7 @@ public class GroupService {
         return false;
     }
 
+    @Transactional
     public boolean removeMemberFromGroup(int groupId, int memberToDeleteId) {
         Optional<Group> foundGroup = groupRepository.findById(groupId);
         if (foundGroup.isPresent()) {
@@ -159,11 +165,13 @@ public class GroupService {
         return false;
     }
 
+    @Transactional
     public boolean update(Group group) {
         groupRepository.save(group);
         return true;
     }
 
+    @Transactional
     public boolean remove(int id) {
         groupRepository.deleteById(id);
         return true;

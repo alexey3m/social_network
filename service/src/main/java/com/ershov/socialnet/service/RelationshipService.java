@@ -5,8 +5,10 @@ import com.ershov.socialnet.common.Relationship;
 import com.ershov.socialnet.common.enums.Status;
 import com.ershov.socialnet.dao.RelationshipDAO;
 import com.ershov.socialnet.dao.repository.AccountRepository;
+import com.ershov.socialnet.dao.repository.RelationshipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,45 +16,66 @@ import java.util.List;
 @Service
 public class RelationshipService {
     private RelationshipDAO relationshipDAO;
+
     private AccountRepository accountRepository;
+    private RelationshipRepository relationshipRepository;
 
     @Autowired
-    public RelationshipService(RelationshipDAO relationshipDAO, AccountRepository accountRepository) {
-        this.relationshipDAO = relationshipDAO;
+    public RelationshipService(AccountRepository accountRepository, RelationshipRepository relationshipRepository) {
         this.accountRepository = accountRepository;
+        this.relationshipRepository = relationshipRepository;
     }
 
-    public RelationshipService() {
-    }
-
+    @Transactional
     public boolean addQueryFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.createQueryFriend(new Relationship(idFrom, idTo, Status.PENDING, idFrom)) :
-                relationshipDAO.createQueryFriend(new Relationship(idTo, idFrom, Status.PENDING, idFrom));
+        relationshipRepository.saveAndFlush(
+                idFrom < idTo ?
+                        new Relationship(idFrom, idTo, Status.PENDING, idFrom) :
+                        new Relationship(idTo, idFrom, Status.PENDING, idFrom));
+        return true;
     }
 
+    @Transactional
     public boolean acceptFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.updateQueryFriend(new Relationship(idFrom, idTo, Status.ACCEPTED, idFrom)) :
-                relationshipDAO.updateQueryFriend(new Relationship(idTo, idFrom, Status.ACCEPTED, idFrom));
+        Relationship relationship = idFrom < idTo ?
+                relationshipRepository.findByUserOneIdAndUserTwoId(idFrom, idTo) :
+                relationshipRepository.findByUserOneIdAndUserTwoId(idTo, idFrom);
+        relationship.setStatus(Status.ACCEPTED);
+        relationshipRepository.saveAndFlush(relationship);
+        return true;
     }
 
+    @Transactional
     public boolean declineFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.updateQueryFriend(new Relationship(idFrom, idTo, Status.DECLINE, idFrom)) :
-                relationshipDAO.updateQueryFriend(new Relationship(idTo, idFrom, Status.DECLINE, idFrom));
+        Relationship relationship = idFrom < idTo ?
+                relationshipRepository.findByUserOneIdAndUserTwoId(idFrom, idTo) :
+                relationshipRepository.findByUserOneIdAndUserTwoId(idTo, idFrom);
+        relationship.setStatus(Status.DECLINE);
+        relationshipRepository.saveAndFlush(relationship);
+        return true;
     }
 
+    @Transactional
     public boolean removeFriend(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.removeFriend(new Relationship(idFrom, idTo, null, 0)) :
-                relationshipDAO.removeFriend(new Relationship(idTo, idFrom, null, 0));
+        Relationship relationship = idFrom < idTo ?
+                relationshipRepository.findByUserOneIdAndUserTwoId(idFrom, idTo) :
+                relationshipRepository.findByUserOneIdAndUserTwoId(idTo, idFrom);
+        relationshipRepository.delete(relationship);
+        return true;
     }
 
     public Status getStatus(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.getStatus(new Relationship(idFrom, idTo, null, 0)) :
-                relationshipDAO.getStatus(new Relationship(idTo, idFrom, null, 0));
+        Relationship relationship = idFrom < idTo ?
+                relationshipRepository.findByUserOneIdAndUserTwoId(idFrom, idTo) :
+                relationshipRepository.findByUserOneIdAndUserTwoId(idTo, idFrom);
+        return relationship.getStatus();
     }
 
     public Status getPendingRequestToMe(int idFrom, int idTo) {
-        return idFrom < idTo ? relationshipDAO.getPendingRequestToMe(new Relationship(idFrom, idTo, null, idFrom)) :
-                relationshipDAO.getPendingRequestToMe(new Relationship(idTo, idFrom, null, idFrom));
+        Relationship relationship = idFrom < idTo ?
+                relationshipRepository.findByUserOneIdAndUserTwoIdAndActionUserId(idFrom, idTo, idFrom) :
+                relationshipRepository.findByUserOneIdAndUserTwoIdAndActionUserId(idTo, idFrom, idFrom);
+        return relationship.getStatus();
     }
 
     public List<Account> getAcceptedFriendsList(int id) {

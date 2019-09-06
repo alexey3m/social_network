@@ -104,7 +104,7 @@ public class MessageController {
 
     @RequestMapping(value = "/messageAction", method = RequestMethod.POST)
     public String messageAction(@RequestParam("assignId") int assignId,
-                                @RequestParam("type") String inputType,
+                                @RequestParam("status") String inputStatus,
                                 @RequestParam("action") String action,
                                 @RequestParam(required = false, name = "inputNewMessage") String text,
                                 @RequestParam(required = false, name = "messageId") Integer messageId,
@@ -113,7 +113,7 @@ public class MessageController {
         logger.info("In messageAction method");
         MessageType type = null;
         String location;
-        switch (inputType) {
+        switch (inputStatus) {
             case "accountWall":
                 type = MessageType.ACCOUNT_WALL;
                 location = "viewAccount";

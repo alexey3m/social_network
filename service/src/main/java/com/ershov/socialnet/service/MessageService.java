@@ -6,6 +6,7 @@ import com.ershov.socialnet.dao.repository.MessageRepository;
 import com.ershov.socialnet.service.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class MessageService {
         this.repository = repository;
     }
 
+    @Transactional
     public Message create(Message message) {
         return repository.saveAndFlush(message);
     }
@@ -57,6 +59,7 @@ public class MessageService {
         return result;
     }
 
+    @Transactional
     public void remove(int id) {
         repository.deleteById(id);
         repository.flush();

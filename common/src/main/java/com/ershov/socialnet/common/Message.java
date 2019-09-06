@@ -33,7 +33,7 @@ public class Message {
     @Column(name = "assign_id", nullable = false)
     private Integer assignId;
     @Enumerated(STRING)
-    @Column(name = "type", nullable = false)
+    @Column(name = "status", nullable = false)
     private MessageType type;
     private byte[] photo;
     private String text;

@@ -34,14 +34,14 @@ public class Relationship {
     private Integer userTwoId;
     @Enumerated(STRING)
     @Column(name = "status", nullable = false)
-    private Status type;
+    private Status status;
     @Column(name = "action_user_id", nullable = false)
     private Integer actionUserId;
 
-    public Relationship(Integer userOneId, Integer userTwoId, Status type, Integer actionUserId) {
+    public Relationship(Integer userOneId, Integer userTwoId, Status status, Integer actionUserId) {
         this.userOneId = userOneId;
         this.userTwoId = userTwoId;
-        this.type = type;
+        this.status = status;
         this.actionUserId = actionUserId;
     }
 }
